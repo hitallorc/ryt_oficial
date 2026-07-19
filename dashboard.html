@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RYT - Meu Painel</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0f172a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="RYT">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <script>tailwind.config = { darkMode: 'class' }</script>
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; transition: background-color 0.4s ease, color 0.4s ease; }
+        .chat-drawer { transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .glass-panel { backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
+        .modal-blur { backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+        
+        details > summary { list-style: none; outline: none; }
+        details > summary::-webkit-details-marker { display: none; }
+        details[open] summary ~ * { animation: slideDown 0.3s ease-in-out; }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body class="bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-950 min-h-screen text-slate-900 dark:text-slate-100 relative">
+
+    <nav class="bg-white/70 dark:bg-slate-900/70 glass-panel border-b border-slate-200/50 dark:border-slate-800/50 sticky top-0 z-40 transition-all">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="index.html" class="text-2xl font-black tracking-tighter hover:opacity-80 transition-opacity">RYT<span class="text-teal-500">.</span>com.br</a>
+            <div class="flex items-center gap-4 md:gap-6">
+                <a href="tutorial.html" class="hidden md:flex items-center gap-2 text-xs font-bold text-slate-500 hover:text-teal-500 transition-colors"><i data-lucide="help-circle" class="w-4 h-4"></i> Como Funciona</a>
+                <a href="analytics.html" class="hidden md:flex items-center gap-2 text-xs font-bold text-slate-500 hover:text-teal-500 transition-colors uppercase tracking-widest"><i data-lucide="bar-chart-2" class="w-4 h-4"></i> Analytics</a>
+                <a href="simulador.html" class="hidden md:flex items-center gap-2 text-xs font-bold text-slate-500 hover:text-teal-500 transition-colors uppercase tracking-widest"><i data-lucide="calculator" class="w-4 h-4"></i> Simulador</a>
+                <button onclick="toggleTheme()" class="p-2.5 bg-slate-100/80 dark:bg-slate-800/80 rounded-full hover:scale-110 transition-all"><i data-lucide="moon" id="themeIcon" class="w-5 h-5 text-teal-600 dark:text-teal-400"></i></button>
+                <div class="flex items-center gap-3 border-l border-slate-200 dark:border-slate-700 pl-4 md:pl-6">
+                    <img id="userAvatar" src="https://via.placeholder.com/150" class="w-10 h-10 rounded-full object-cover border-2 border-teal-500 shadow-sm">
+                    <div class="hidden md:block">
+                        <p id="userName" class="text-xs font-black text-slate-800 dark:text-white">Carregando...</p>
+                        <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Painel</p>
+                    </div>
+                    <button onclick="logout()" class="ml-2 p-2.5 bg-red-50 text-red-500 rounded-full hover:scale-110 transition-all" title="Sair"><i data-lucide="log-out" class="w-4 h-4"></i></button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-6 py-12">
+        <header class="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4">
+            <div><h1 class="text-3xl font-black text-slate-800 dark:text-white mb-2 tracking-tight">Visão Geral</h1><p class="text-sm font-medium text-slate-500 dark:text-slate-400">Gerencie anúncios, aluguéis e pedidos de terceiros.</p></div>
+            <div class="flex gap-3 w-full md:w-auto">
+                <a href="tutorial.html" class="md:hidden bg-white px-4 py-3.5 rounded-2xl shadow-sm border border-slate-200 text-slate-600"><i data-lucide="help-circle" class="w-5 h-5"></i></a>
+                <a href="cadastro.html" class="flex-1 md:flex-none bg-gradient-to-r from-teal-600 to-teal-500 text-white px-8 py-3.5 rounded-full font-black text-sm shadow-lg hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2"><i data-lucide="plus-circle" class="w-5 h-5"></i> NOVO ANÚNCIO</a>
+            </div>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+            <section class="lg:col-span-1 bg-white/80 dark:bg-slate-900/80 glass-panel rounded-[2.5rem] p-6 sm:p-8 shadow-xl border border-slate-200/60 dark:border-slate-800/60">
+                <div class="flex items-center gap-3 mb-8"><div class="p-3 bg-teal-50 text-teal-600 rounded-2xl"><i data-lucide="package"></i></div><h2 class="text-xl font-black">Meus Itens</h2></div>
+                <div id="myItemsList" class="space-y-4 max-h-[500px] overflow-y-auto no-scrollbar pr-2"></div>
+            </section>
+            
+            <section class="lg:col-span-2 space-y-8">
+                <div class="bg-white/80 dark:bg-slate-900/80 glass-panel rounded-[2.5rem] p-6 sm:p-8 shadow-xl border border-slate-200/60 dark:border-slate-800/60">
+                    <div class="flex items-center gap-3 mb-6"><div class="p-3 bg-blue-50 text-blue-600 rounded-2xl"><i data-lucide="arrow-up-right"></i></div><h2 class="text-xl font-black">Aluguéis que eu fiz</h2></div>
+                    <div id="myRentalsList" class="space-y-2 max-h-[600px] overflow-y-auto no-scrollbar pr-2"></div>
+                </div>
+                
+                <div class="bg-white/80 dark:bg-slate-900/80 glass-panel rounded-[2.5rem] p-6 sm:p-8 shadow-xl border border-slate-200/60 dark:border-slate-800/60">
+                    <div class="flex items-center gap-3 mb-6"><div class="p-3 bg-emerald-50 text-emerald-600 rounded-2xl"><i data-lucide="arrow-down-left"></i></div><h2 class="text-xl font-black">Meus itens alugados</h2></div>
+                    <div id="rentalsOfMyItemsList" class="space-y-2 max-h-[600px] overflow-y-auto no-scrollbar pr-2"></div>
+                </div>
+            </section>
+
+            <section class="lg:col-span-1 bg-white/80 dark:bg-slate-900/80 glass-panel rounded-[2.5rem] p-6 sm:p-8 shadow-xl border border-slate-200/60 dark:border-slate-800/60">
+                <div class="flex items-center gap-3 mb-8"><div class="relative p-3 bg-purple-50 text-purple-600 rounded-2xl"><i data-lucide="message-square"></i><span id="unreadBadge" class="hidden absolute -top-1 -right-1 flex h-3.5 w-3.5"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span><span class="relative inline-flex rounded-full h-3.5 w-3.5 bg-red-500 border-2 border-white"></span></span></div><h2 class="text-xl font-black">Mensagens</h2></div>
+                <div id="conversationsList" class="space-y-1 max-h-[500px] overflow-y-auto no-scrollbar pr-2"></div>
+            </section>
+        </div>
+    </main>
+
+    <div id="modalPix" class="fixed inset-0 bg-slate-900/60 z-[105] hidden modal-blur flex items-center justify-center p-4 transition-opacity">
+        <div class="bg-white dark:bg-slate-900 w-full max-w-sm rounded-[2rem] shadow-2xl p-8 relative border border-slate-100 dark:border-slate-800 animate-in zoom-in-95 duration-200">
+            <button onclick="fecharModalPix()" class="absolute top-5 right-5 p-2 bg-slate-100 dark:bg-slate-800 rounded-full text-slate-500 hover:scale-110 transition-transform"><i data-lucide="x" class="w-4 h-4"></i></button>
+            <div class="text-center space-y-4">
+                <div class="w-16 h-16 bg-teal-100 dark:bg-teal-900/30 rounded-full flex items-center justify-center mx-auto mb-2">
+                    <i data-lucide="qr-code" class="w-8 h-8 text-teal-600 dark:text-teal-400"></i>
+                </div>
+                <h3 class="text-xl font-black text-slate-800 dark:text-white">Pagamento PIX</h3>
+                <p class="text-sm font-bold text-slate-500">Valor a transferir: <span id="pixModalValor" class="text-teal-600 text-lg ml-1"></span></p>
+                <div class="w-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-3 flex items-center justify-between gap-3 shadow-inner">
+                    <p class="text-sm font-black text-teal-600 dark:text-teal-400 truncate flex-1 select-all text-left" id="pixCodeDashboard">pagamentos@ryt.com.br</p>
+                    <button onclick="navigator.clipboard.writeText('pagamentos@ryt.com.br'); alert('Chave PIX copiada!');" class="bg-teal-50 dark:bg-teal-900/30 text-teal-600 p-2 rounded-lg hover:bg-teal-100 transition-colors flex shrink-0">
+                        <i data-lucide="copy" class="w-4 h-4"></i>
+                    </button>
+                </div>
+                <button onclick="confirmarPagamentoPix()" class="w-full bg-teal-500 hover:bg-teal-600 text-white py-4 rounded-xl font-black text-sm transition-all flex items-center justify-center gap-2 shadow-lg shadow-teal-500/30 mt-4">
+                    <i data-lucide="check-circle" class="w-5 h-5"></i> JÁ REALIZEI O PAGAMENTO
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="evidenceModal" class="fixed inset-0 bg-slate-900/60 z-[100] flex items-center justify-center hidden modal-blur p-4 transition-opacity">
+        <div class="bg-white dark:bg-slate-900 w-full max-w-sm rounded-[2rem] shadow-2xl p-8 relative border border-slate-100 dark:border-slate-800 animate-in zoom-in-95 duration-200">
+            <button onclick="fecharEvidenceModal()" class="absolute top-5 right-5 p-2 bg-slate-100 dark:bg-slate-800 rounded-full hover:scale-110 transition-transform"><i data-lucide="x" class="w-4 h-4 text-slate-500"></i></button>
+            <div class="flex items-center gap-3 mb-2"><div class="p-2 bg-teal-50 dark:bg-teal-900/30 text-teal-600 rounded-xl"><i data-lucide="camera" class="w-5 h-5"></i></div><h3 id="evidenceTitle" class="text-xl font-black text-slate-800 dark:text-white tracking-tight">Vistoria</h3></div>
+            <p id="evidenceSubtitle" class="text-xs text-slate-500 dark:text-slate-400 font-medium mb-6">Tire de 1 a 3 fotos do item para comprovar o estado físico. Segurança para ambos!</p>
+            <label class="w-full bg-slate-50 dark:bg-slate-800 border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-[1.5rem] p-8 flex flex-col items-center justify-center cursor-pointer hover:border-teal-500 hover:bg-teal-50/50 dark:hover:bg-slate-800/80 transition-all mb-4 group">
+                <i data-lucide="scan-line" class="w-10 h-10 text-teal-500 mb-3 group-hover:scale-110 transition-transform"></i>
+                <span class="text-sm font-black text-slate-700 dark:text-slate-200">Abrir Câmera</span>
+                <span class="text-[10px] font-bold text-slate-400 mt-1 uppercase tracking-widest" id="evidenceCount">0/3 Fotos</span>
+                <input type="file" id="evidencePhotosInput" accept="image/*" capture="environment" multiple class="hidden">
+            </label>
+            <div id="evidencePreviewGrid" class="grid grid-cols-3 gap-2 mb-6 hidden"></div>
+            <button id="btnSubmitEvidence" onclick="enviarEvidence()" class="w-full bg-teal-600 text-white py-4 rounded-xl font-black text-sm shadow-lg shadow-teal-500/20 hover:bg-teal-700 transition-colors disabled:opacity-50 flex items-center justify-center gap-2">
+                <i data-lucide="shield-check" class="w-4 h-4"></i> CONFIRMAR
+            </button>
+        </div>
+    </div>
+
+    <div id="modalDevolucao" class="fixed inset-0 bg-slate-900/60 z-[105] hidden modal-blur flex items-center justify-center p-4 transition-opacity">
+        <div class="bg-white dark:bg-slate-900 w-full max-w-sm rounded-[2rem] shadow-2xl p-8 relative border border-slate-100 dark:border-slate-800 animate-in zoom-in-95 duration-200">
+            <button onclick="fecharModalDevolucao()" class="absolute top-5 right-5 p-2 bg-slate-100 dark:bg-slate-800 rounded-full text-slate-500 hover:scale-110 transition-transform"><i data-lucide="x" class="w-4 h-4"></i></button>
+            <div class="flex items-center gap-3 mb-4">
+                <div class="p-2 bg-blue-50 dark:bg-blue-900/30 text-blue-600 rounded-xl"><i data-lucide="refresh-cw" class="w-5 h-5"></i></div>
+                <h3 class="text-xl font-black text-slate-800 dark:text-white tracking-tight">Devolver Equipamento</h3>
+            </div>
+            
+            <div id="devolucaoNormalView">
+                <p class="text-sm font-bold text-slate-600 dark:text-slate-300 text-center mb-6 mt-2">O equipamento está sendo devolvido nas mesmas condições da retirada?</p>
+                <button id="btnDevolucaoRapida" onclick="processarDevolucaoRapida()" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white py-4 rounded-xl font-black text-sm transition-all flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/30 mb-5">
+                    <i data-lucide="thumbs-up" class="w-5 h-5"></i> SIM, TUDO PERFEITO
+                </button>
+                <button onclick="abrirTelaDisputa()" class="w-full text-center text-[11px] font-bold text-slate-400 hover:text-red-500 transition-colors uppercase tracking-widest underline decoration-dotted underline-offset-4">
+                    Tive problemas / Iniciar disputa
+                </button>
+            </div>
+
+            <div id="devolucaoDisputaView" class="hidden animate-in fade-in slide-in-from-bottom-2">
+                <p class="text-sm font-black text-red-500 text-center mb-4">Relatar Avaria ou Problema</p>
+                <div class="space-y-2 mb-6">
+                    <label class="text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase ml-1">Descreva o que aconteceu:</label>
+                    <textarea id="textoProblema" rows="4" placeholder="Ex: A tela trincou durante o uso..." class="w-full bg-red-50 dark:bg-red-900/10 border border-red-200 dark:border-red-900/50 rounded-xl px-4 py-3 text-sm font-medium focus:ring-2 focus:ring-red-500 dark:text-white placeholder:text-red-300 dark:placeholder:text-red-800/50 outline-none"></textarea>
+                </div>
+                <button id="btnDevolucaoDisputa" onclick="processarDevolucaoComDisputa()" class="w-full bg-red-600 hover:bg-red-700 text-white py-4 rounded-xl font-black text-sm transition-all flex items-center justify-center gap-2 shadow-lg shadow-red-600/30 mb-5">
+                    <i data-lucide="alert-triangle" class="w-5 h-5"></i> ENVIAR PARA ANÁLISE
+                </button>
+                <button onclick="voltarDevolucaoNormal()" class="w-full text-center text-[11px] font-bold text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors uppercase tracking-widest">
+                    Cancelar e voltar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="chatDrawer" class="fixed bottom-6 right-6 w-[340px] md:w-[400px] h-[500px] bg-white dark:bg-slate-900 shadow-2xl shadow-slate-900/20 rounded-[2rem] border border-slate-100 dark:border-slate-800 flex-col z-50 overflow-hidden hidden translate-y-full chat-drawer">
+        <header class="bg-white/80 dark:bg-slate-900/80 glass-panel p-4 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center relative z-10 shrink-0">
+            <div class="flex items-center gap-3 min-w-0">
+                <button id="btnBackChat" onclick="mostrarListaChats()" class="hidden p-2 hover:bg-slate-100 dark:bg-slate-800 rounded-full transition-colors shrink-0"><i data-lucide="arrow-left" class="w-4 h-4 text-slate-500"></i></button>
+                <div id="chatHeaderAvatar" class="w-10 h-10 rounded-full bg-gradient-to-tr from-teal-500 to-emerald-400 flex items-center justify-center text-white font-black text-xs shadow-md shrink-0">RYT</div>
+                <div class="flex flex-col min-w-0">
+                    <h4 id="chatHeaderName" class="text-sm font-black text-slate-800 dark:text-white truncate">Mensagens</h4>
+                    <p id="chatHeaderItem" class="text-[9px] font-bold text-teal-600 dark:text-teal-400 truncate w-full hidden"></p>
+                </div>
+            </div>
+            <button onclick="toggleChat()" class="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-full transition-colors shrink-0"><i data-lucide="x" class="w-5 h-5 text-slate-500"></i></button>
+        </header>
+
+        <div id="chatListView" class="flex-1 overflow-y-auto p-3 bg-slate-50/50 dark:bg-slate-950/50 flex flex-col gap-2 no-scrollbar">
+            <div onclick="abrirChatBot()" class="p-3 bg-white dark:bg-slate-800 rounded-2xl flex items-center gap-3 border border-slate-200 dark:border-slate-700 hover:shadow-md cursor-pointer transition-all">
+                <div class="w-10 h-10 rounded-full bg-slate-900 dark:bg-teal-500 flex items-center justify-center text-white shrink-0"><i data-lucide="bot" class="w-5 h-5"></i></div>
+                <div class="flex-1 min-w-0"><p class="font-black text-xs text-slate-900 dark:text-white">Suporte RYT</p><p class="text-[10px] text-slate-500 dark:text-slate-400">Atendimento Automático</p></div>
+            </div>
+            <div id="drawerConversationsList" class="space-y-2"></div>
+        </div>
+
+        <div id="chatThreadView" class="hidden flex-1 flex-col overflow-hidden bg-slate-50/50 dark:bg-slate-950/50">
+            <div id="chatMessages" class="flex-1 overflow-y-auto p-4 space-y-4 flex flex-col scroll-smooth"></div>
+            <div id="quickReplies" class="hidden flex gap-2 p-3 overflow-x-auto no-scrollbar bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800 shrink-0"></div>
+            <div class="p-3 bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800 flex gap-2 relative z-10 shrink-0">
+                <input type="text" id="chatInput" placeholder="Mensagem..." class="flex-1 bg-slate-100 dark:bg-slate-800 border-none rounded-full px-4 py-2 text-sm font-medium focus:ring-2 focus:ring-teal-500 dark:text-white placeholder:text-slate-400">
+                <button onclick="enviarMensagem()" class="bg-teal-500 hover:bg-teal-600 text-white p-2.5 rounded-full shadow-md transition-all hover:scale-105 active:scale-95"><i data-lucide="send" class="w-4 h-4 ml-0.5"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
+    <script>
+        lucide.createIcons();
+        let currentUserId = null; let currentRecipientId = null; let currentItemId = null;
+        let evidenceRentalId = null; let evidenceType = null; let selectedEvidenceFiles = [];
+        let idLocacaoParaDevolver = null; let pixRentalId = null;
+
+        function toggleTheme() { document.documentElement.classList.toggle('dark'); const isDark = document.documentElement.classList.contains('dark'); document.getElementById('themeIcon').setAttribute('data-lucide', isDark ? 'sun' : 'moon'); lucide.createIcons(); }
+        function formatTime(iso) { return new Date(iso).toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'}); }
+        function formatDate(iso) { const d = new Date(iso); const hoje = new Date(); if(d.toDateString() === hoje.toDateString()) return formatTime(iso); hoje.setDate(hoje.getDate() - 1); if(d.toDateString() === hoje.toDateString()) return "Ontem"; return d.toLocaleDateString('pt-BR', {day:'2-digit', month:'2-digit'}); }
+        function formatDataSimples(dataStr) { if (!dataStr) return ''; const partes = dataStr.split('-'); return `${partes[2]}/${partes[1]}`; }
+
+        const statusConfig = {
+            'pending_approval': { label: 'Solicitações Pendentes', color: 'bg-purple-500', open: true, order: 0 },
+            'awaiting_payment': { label: 'Aguardando Pagamento', color: 'bg-orange-500', open: true, order: 1 },
+            'in_use': { label: 'Equipamento em Uso', color: 'bg-amber-500', open: true, order: 2 },
+            'confirmed': { label: 'Aguardando Retirada', color: 'bg-blue-500', open: true, order: 3 },
+            'issue_reported': { label: 'Em Análise (Avaria)', color: 'bg-red-500', open: true, order: 4 },
+            'completed': { label: 'Concluídos', color: 'bg-emerald-500', open: false, order: 5 },
+            'cancelled': { label: 'Cancelados', color: 'bg-slate-500', open: false, order: 6 }
+        };
+
+        async function checkAuth() {
+            const { data: { session }, error } = await supabaseClient.auth.getSession();
+            if (error || !session) { window.location.href = 'login.html'; return null; }
+            const user = session.user; currentUserId = user.id;
+            const meta = user.user_metadata;
+            document.getElementById('userName').innerText = meta?.full_name || user.email.split('@')[0];
+            document.getElementById('userAvatar').src = meta?.avatar_url || 'https://via.placeholder.com/150';
+            return user;
+        }
+
+        async function loadDashboard() {
+            const user = await checkAuth(); if (!user) return;
+            
+            // CARREGA ITENS DO LOCADOR
+            const { data: myItems } = await supabaseClient.from('items').select('*').eq('owner_id', user.id).order('created_at', { ascending: false });
+            const itemsContainer = document.getElementById('myItemsList');
+            if (!myItems || myItems.length === 0) {
+                itemsContainer.innerHTML = `<p class="text-center text-xs text-slate-500 py-8">Nenhum item cadastrado.</p>`;
+            } else {
+                itemsContainer.innerHTML = myItems.map(i => `
+                    <div class="bg-white dark:bg-slate-800/80 rounded-2xl p-4 border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-all flex flex-col gap-3 cursor-pointer w-full group" onclick="window.location.href='detalhes.html?id=${i.id}'">
+                        <div class="flex items-start gap-3">
+                            <img src="${i.image_url}" class="w-12 h-12 rounded-xl object-cover border border-slate-100 dark:border-slate-700 shrink-0 opacity-${i.is_active ? '100' : '50'}">
+                            <div class="flex-1 min-w-0 pt-1">
+                                <p class="font-black text-sm text-slate-800 dark:text-white line-clamp-2 leading-snug group-hover:text-teal-600 transition-colors ${i.is_active ? '' : 'line-through text-slate-400'}">${i.title}</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between pt-3 border-t border-slate-100 dark:border-slate-700/50">
+                            <p class="text-[10px] font-black flex items-center gap-1.5 whitespace-nowrap uppercase tracking-wider ${i.is_active ? 'text-teal-600' : 'text-red-500'}">
+                                <span class="w-2 h-2 rounded-full ${i.is_active ? 'bg-teal-500' : 'bg-red-500'}"></span>
+                                ${i.is_active ? 'Ativo' : 'Pausado'}
+                            </p>
+                            <div class="flex items-center gap-1.5 shrink-0">
+                                <button onclick="window.alternarStatusItem(event, '${i.id}', ${i.is_active})" class="p-2 bg-slate-50 dark:bg-slate-700 text-slate-600 dark:text-slate-300 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors border border-slate-200 dark:border-slate-600" title="${i.is_active ? 'Pausar' : 'Ativar'}"><i data-lucide="${i.is_active ? 'pause' : 'play'}" class="w-3.5 h-3.5"></i></button>
+                                <button onclick="window.excluirItem(event, '${i.id}')" class="p-2 bg-red-50 dark:bg-red-500/10 text-red-500 rounded-lg hover:bg-red-100 dark:hover:bg-red-500/20 transition-colors border border-red-100 dark:border-red-900/50" title="Excluir"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+            
+            // CARREGA ALUGUÉIS COMO CLIENTE (LOCATÁRIO)
+            const { data: rentals } = await supabaseClient.from('rentals').select('*, items(title, image_url, owner_id)').eq('renter_id', user.id).order('created_at', { ascending: false });
+            const cRentals = document.getElementById('myRentalsList');
+            if (!rentals || rentals.length === 0) {
+                cRentals.innerHTML = `<p class="text-center text-xs text-slate-500 py-8">Você ainda não alugou nada.</p>`;
+            } else {
+                const ownerIds = [...new Set(rentals.map(r => r.items?.owner_id).filter(Boolean))];
+                if(ownerIds.length > 0){
+                    const { data: owners } = await supabaseClient.from('profiles').select('id, full_name').in('id', ownerIds);
+                    const oMap = {}; if(owners) owners.forEach(o => oMap[o.id] = o.full_name);
+                    rentals.forEach(r => r.owner_name = oMap[r.items?.owner_id] || 'Locador');
+                }
+                cRentals.innerHTML = renderRentalsGrouped(rentals, true);
+            }
+
+            // CARREGA ALUGUÉIS DOS SEUS ITENS (DONO)
+            if (myItems && myItems.length > 0) {
+                const myItemIds = myItems.map(i => i.id);
+                const { data: theirRentals } = await supabaseClient.from('rentals').select('*, items(title, image_url)').in('item_id', myItemIds).order('created_at', { ascending: false });
+                const c = document.getElementById('rentalsOfMyItemsList');
+                
+                if (!theirRentals || theirRentals.length === 0) { 
+                    c.innerHTML = `<p class="text-center text-xs text-slate-500 py-8">Nenhum pedido recebido ainda.</p>`; 
+                } else {
+                    const renterIds = [...new Set(theirRentals.map(r => r.renter_id))];
+                    const { data: profiles } = await supabaseClient.from('profiles').select('id, full_name, avatar_url').in('id', renterIds);
+                    const pMap = {}; if (profiles) profiles.forEach(p => pMap[p.id] = p);
+                    
+                    theirRentals.forEach(r => {
+                        r.renter_name = pMap[r.renter_id]?.full_name || 'Usuário';
+                        r.renter_avatar = pMap[r.renter_id]?.avatar_url || 'https://via.placeholder.com/100';
+                    });
+                    c.innerHTML = renderRentalsGrouped(theirRentals, false);
+                }
+            }
+            lucide.createIcons();
+            loadConversations(user.id);
+        }
+
+        window.alternarStatusItem = async function(event, id, statusAtual) { event.preventDefault(); event.stopPropagation(); const btn = event.currentTarget; const iconeOriginal = btn.innerHTML; btn.innerHTML = '<i data-lucide="loader-2" class="w-3.5 h-3.5 animate-spin text-slate-500"></i>'; lucide.createIcons(); const novoStatus = !statusAtual; const { error } = await supabaseClient.from('items').update({ is_active: novoStatus }).eq('id', id); if (error) { alert("Erro: " + error.message); btn.innerHTML = iconeOriginal; lucide.createIcons(); } else { loadDashboard(); } };
+        window.excluirItem = async function(event, id) { event.preventDefault(); event.stopPropagation(); const btn = event.currentTarget; const iconeOriginal = btn.innerHTML; const { data: rent } = await supabaseClient.from('rentals').select('id').eq('item_id', id).in('status', ['confirmed', 'in_use', 'issue_reported', 'awaiting_payment', 'pending_approval']); if (rent && rent.length > 0) return alert("⚠️ Item possui aluguéis pendentes. Aguarde ou pause o anúncio."); if (!confirm("Excluir este anúncio definitivamente?")) return; btn.innerHTML = '<i data-lucide="loader-2" class="w-3.5 h-3.5 animate-spin text-red-500"></i>'; lucide.createIcons(); const { error } = await supabaseClient.from('items').delete().eq('id', id); if (error) { if (error.code === '23503') { alert("ℹ️ Item possui histórico financeiro. Ele foi PAUSADO."); await supabaseClient.from('items').update({ is_active: false }).eq('id', id); loadDashboard(); } else { alert("Erro: " + error.message); btn.innerHTML = iconeOriginal; lucide.createIcons(); } } else { loadDashboard(); } };
+
+        // SISTEMA DE ACEITE DO LOCADOR COM NEGOCIAÇÃO
+        window.responderSolicitacao = async function(event, id, acao, valorAtualEstimado) {
+            let valorFinal = valorAtualEstimado;
+
+            if (acao === 'aceitar') {
+                const inputValor = prompt("Qual o valor FINAL em R$ acordado para este aluguel?\n(Se não houve alteração, basta clicar em OK)", valorAtualEstimado);
+                
+                if (inputValor === null) return; // O dono cancelou a ação de aceitar
+                
+                // Converte a string para número (aceitando vírgula ou ponto)
+                valorFinal = parseFloat(inputValor.replace(',', '.'));
+                
+                if (isNaN(valorFinal) || valorFinal <= 0) {
+                    return alert("⚠️ Valor inválido. A aprovação foi cancelada.");
+                }
+            } else {
+                if (!confirm(`Deseja realmente recusar esta solicitação?`)) return;
+            }
+
+            // Efeito de Carregamento no Botão
+            const btn = event.currentTarget;
+            const textoOriginal = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<i data-lucide="loader-2" class="w-3 h-3 animate-spin"></i> PROCESSANDO...';
+            lucide.createIcons();
+
+            const novoStatus = acao === 'aceitar' ? 'awaiting_payment' : 'cancelled';
+            
+            // Atualiza o status e o novo preço negociado
+            const { error } = await supabaseClient.from('rentals').update({ 
+                status: novoStatus,
+                total_price: valorFinal 
+            }).eq('id', id);
+            
+            if (!error) {
+                alert(`Solicitação ${acao === 'aceitar' ? 'ACEITA' : 'RECUSADA'} com sucesso!`);
+                loadDashboard();
+            } else {
+                alert("Erro ao responder: " + error.message);
+                btn.disabled = false;
+                btn.innerHTML = textoOriginal;
+                lucide.createIcons();
+            }
+        };
+
+        // SISTEMA DE PAGAMENTO DO LOCATÁRIO
+        window.abrirModalPagamento = function(id, valor) {
+            pixRentalId = id;
+            document.getElementById('pixModalValor').innerText = `R$ ${valor.toFixed(2)}`;
+            document.getElementById('modalPix').classList.remove('hidden');
+        };
+        
+        window.fecharModalPix = function() {
+            document.getElementById('modalPix').classList.add('hidden');
+            pixRentalId = null;
+        };
+        
+        window.confirmarPagamentoPix = async function() {
+            if(!pixRentalId) return;
+            const btn = document.querySelector('#modalPix button.bg-teal-500');
+            btn.innerHTML = '<i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i> PROCESSANDO...';
+            
+            // No MVP mudamos direto para 'confirmed' após o botão para dar fluidez
+            const { error } = await supabaseClient.from('rentals').update({ status: 'confirmed' }).eq('id', pixRentalId);
+            if(!error) {
+                alert("Pagamento confirmado! O chat agora está disponível para combinar a retirada.");
+                fecharModalPix();
+                loadDashboard();
+            } else {
+                alert("Erro ao confirmar pagamento: " + error.message);
+            }
+            btn.innerHTML = '<i data-lucide="check-circle" class="w-5 h-5"></i> JÁ REALIZEI O PAGAMENTO';
+            lucide.createIcons();
+        };
+
+        function renderRentalsGrouped(rentalsArray, isRenterView) {
+            const grouped = { 'pending_approval': [], 'awaiting_payment': [], 'in_use': [], 'confirmed': [], 'completed': [], 'cancelled': [], 'issue_reported': [] };
+            rentalsArray.forEach(r => { if(grouped[r.status]) grouped[r.status].push(r); });
+
+            let htmlOutput = '';
+            Object.keys(statusConfig).sort((a,b) => statusConfig[a].order - statusConfig[b].order).forEach(status => {
+                const groupItems = grouped[status];
+                if (groupItems.length === 0) return;
+                const conf = statusConfig[status];
+                const isOpen = conf.open ? 'open' : '';
+
+                htmlOutput += `
+                <details class="group mb-4" ${isOpen}>
+                    <summary class="flex justify-between items-center font-bold cursor-pointer p-4 bg-slate-50 dark:bg-slate-800/80 rounded-2xl border border-slate-200 dark:border-slate-700 select-none hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                        <div class="flex items-center gap-3">
+                            <span class="w-2.5 h-2.5 rounded-full ${conf.color} ${conf.open ? 'animate-pulse' : ''}"></span>
+                            <span class="text-sm text-slate-800 dark:text-white uppercase tracking-wide">${conf.label} (${groupItems.length})</span>
+                        </div>
+                        <span class="text-slate-400 group-open:rotate-180 transition-transform duration-300"><i data-lucide="chevron-down" class="w-5 h-5"></i></span>
+                    </summary>
+                    <div class="mt-4 space-y-4">
+                `;
+
+                groupItems.forEach(r => {
+                    let actionHtml = '';
+                    
+                    if (isRenterView) { // O QUE O LOCATÁRIO (CLIENTE) VÊ
+                        if (r.status === 'pending_approval') {
+                            actionHtml = `<span class="w-full block bg-purple-50 text-purple-600 border border-purple-200 py-3 rounded-xl text-[10px] font-black uppercase text-center flex items-center justify-center gap-1.5"><i data-lucide="clock" class="w-3 h-3"></i> AGUARDANDO APROVAÇÃO DO DONO</span>`;
+                        } else if (r.status === 'awaiting_payment') {
+                            actionHtml = `
+                                <button onclick="abrirModalPagamento('${r.id}', ${r.total_price})" class="flex-1 bg-teal-500 text-white py-3 rounded-xl text-[10px] font-black hover:bg-teal-600 transition-colors text-center uppercase shadow-sm flex items-center justify-center gap-1.5"><i data-lucide="qr-code" class="w-3 h-3"></i> PAGAR AGORA (PIX)</button>
+                                <button onclick="cancelarAluguel('${r.id}', '${r.items?.owner_id}', '${r.item_id}')" class="shrink-0 px-4 py-3 bg-red-50 text-red-500 border border-red-200 rounded-xl hover:bg-red-100 transition-colors flex justify-center items-center"><i data-lucide="x" class="w-4 h-4"></i></button>`;
+                        } else if (r.status === 'confirmed') {
+                            actionHtml = `
+                                <button onclick="abrirModalEvidencia('${r.id}', 'checkin')" class="flex-1 bg-emerald-500 text-white py-3 px-3 rounded-xl text-[10px] font-black hover:bg-emerald-600 transition-colors text-center uppercase shadow-sm">CHECK-IN</button>
+                                <a href="voucher.html?id=${r.id}" class="flex-1 bg-slate-800 text-white py-3 px-3 rounded-xl text-[10px] font-black text-center hover:bg-slate-900 transition-colors uppercase shadow-sm flex items-center justify-center gap-1.5"><i data-lucide="ticket" class="w-3 h-3 shrink-0"></i> VOUCHER</a>
+                                <button onclick="cancelarAluguel('${r.id}', '${r.items?.owner_id}', '${r.item_id}')" class="shrink-0 px-4 py-3 bg-red-50 text-red-500 border border-red-200 rounded-xl hover:bg-red-100 transition-colors flex justify-center items-center"><i data-lucide="x" class="w-4 h-4"></i></button>`;
+                        } else if (r.status === 'in_use') {
+                            actionHtml = `<button onclick="abrirModalDevolucao('${r.id}')" class="w-full bg-blue-600 text-white py-3 rounded-xl text-[10px] font-black shadow-sm text-center uppercase hover:bg-blue-700 transition-colors">DEVOLVER EQUIPAMENTO</button>`;
+                        } else if (r.status === 'completed') {
+                            actionHtml = `<a href="detalhes.html?id=${r.item_id}" class="w-full block text-center bg-emerald-50 text-emerald-600 border border-emerald-200 py-3 rounded-xl text-[10px] font-black uppercase hover:bg-emerald-100 transition-colors">AVALIAR EXPERIÊNCIA</a>`;
+                        } else if (r.status === 'issue_reported') {
+                            actionHtml = `<a href="admin_relatorio.html?id=${r.id}" class="w-full block text-center bg-red-50 text-red-600 py-3 rounded-xl text-[10px] font-black border border-red-200 uppercase flex items-center justify-center gap-1.5 hover:bg-red-100 transition-colors"><i data-lucide="alert-circle" class="w-3 h-3"></i> ACOMPANHAR DISPUTA</a>`;
+                        } else if (r.status === 'cancelled') {
+                            actionHtml = `<span class="w-full block bg-slate-100 text-slate-500 py-3 rounded-xl text-[10px] font-black uppercase text-center border border-slate-200">CANCELADO</span>`;
+                        }
+                    } else { // O QUE O LOCADOR (DONO) VÊ
+                        if (r.status === 'pending_approval') {
+                            actionHtml = `
+                                <button onclick="responderSolicitacao(event, '${r.id}', 'aceitar', ${r.total_price})" class="flex-1 bg-emerald-500 text-white py-3 px-3 rounded-xl text-[10px] font-black hover:bg-emerald-600 transition-colors text-center uppercase shadow-sm flex items-center justify-center gap-1"><i data-lucide="check" class="w-3 h-3"></i> ACEITAR</button>
+                                <button onclick="responderSolicitacao(event, '${r.id}', 'recusar', ${r.total_price})" class="flex-1 bg-red-50 text-red-600 border border-red-200 py-3 px-3 rounded-xl text-[10px] font-black hover:bg-red-100 transition-colors text-center uppercase shadow-sm flex items-center justify-center gap-1"><i data-lucide="x" class="w-3 h-3"></i> RECUSAR</button>
+                            `;
+                        } else if (r.status === 'awaiting_payment') {
+                            actionHtml = `<span class="w-full block bg-orange-50 text-orange-600 border border-orange-200 py-3 rounded-xl text-[10px] font-black uppercase text-center flex items-center justify-center gap-1.5"><i data-lucide="clock" class="w-3 h-3"></i> AGUARDANDO PAGAMENTO (LOCATÁRIO)</span>`;
+                        } else if (r.status === 'issue_reported') {
+                            actionHtml = `<a href="admin_relatorio.html?id=${r.id}" class="w-full block text-center bg-red-600 text-white py-3 rounded-xl text-[10px] font-black shadow-sm uppercase hover:bg-red-700 transition-colors flex items-center justify-center gap-2"><i data-lucide="file-text" class="w-3 h-3"></i> VER RELATÓRIO / RESOLVER</a>`;
+                        } else if (r.status === 'confirmed') {
+                            actionHtml = `<span class="w-full block bg-blue-50 text-blue-600 py-3 rounded-xl text-[10px] font-black uppercase text-center border border-blue-200">AGUARDANDO RETIRADA</span>`;
+                        } else if (r.status === 'in_use') {
+                            actionHtml = `<span class="w-full block bg-amber-50 text-amber-600 py-3 rounded-xl text-[10px] font-black uppercase text-center border border-amber-200">EM USO PELO LOCATÁRIO</span>`;
+                        } else if (r.status === 'completed') {
+                            actionHtml = `<span class="w-full block bg-emerald-50 text-emerald-600 py-3 rounded-xl text-[10px] font-black uppercase text-center border border-emerald-200 flex items-center justify-center gap-1.5"><i data-lucide="check-circle" class="w-3 h-3"></i> DEVOLVIDO (LIVRE)</span>`;
+                        } else if (r.status === 'cancelled') {
+                            actionHtml = `<span class="w-full block bg-slate-100 text-slate-500 py-3 rounded-xl text-[10px] font-black uppercase text-center border border-slate-200">CANCELADO</span>`;
+                        }
+                    }
+
+                    let pessoaInfoHtml = '';
+                    if(isRenterView) {
+                        pessoaInfoHtml = `<p class="text-[10px] text-slate-500 font-bold flex items-center gap-1.5 truncate mt-1.5"><i data-lucide="user" class="w-3.5 h-3.5 text-blue-500 shrink-0"></i> Locador: <span class="text-slate-800 dark:text-slate-300 truncate">${r.owner_name || 'Usuário'}</span></p>`;
+                    } else {
+                        pessoaInfoHtml = `<p class="text-[10px] text-slate-500 font-bold flex items-center gap-1.5 truncate mt-1.5"><img src="${r.renter_avatar}" class="w-4 h-4 rounded-full object-cover border border-slate-200 shrink-0"> Locatário: <span class="text-slate-800 dark:text-slate-300 truncate">${r.renter_name}</span></p>`;
+                    }
+
+                    htmlOutput += `
+                    <div class="bg-white dark:bg-slate-800/80 rounded-2xl p-4 border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-all flex flex-col gap-4">
+                        <div class="flex gap-4 items-center">
+                            <img src="${r.items?.image_url}" class="w-16 h-16 rounded-xl object-cover border border-slate-100 dark:border-slate-700 shrink-0">
+                            <div class="flex-1 min-w-0">
+                                <h4 class="font-black text-sm text-slate-800 dark:text-white truncate">${r.items?.title}</h4>
+                                <p class="text-[10px] text-slate-500 font-medium flex items-center gap-1.5 truncate mt-1.5">
+                                    <i data-lucide="calendar" class="w-3.5 h-3.5 text-teal-500 shrink-0"></i>
+                                    ${formatDataSimples(r.start_date)} até ${formatDataSimples(r.end_date)}
+                                </p>
+                                ${pessoaInfoHtml}
+                            </div>
+                        </div>
+                        <div class="pt-3 border-t border-slate-100 dark:border-slate-700/50 flex flex-wrap gap-2 w-full">
+                            ${actionHtml}
+                        </div>
+                    </div>`;
+                });
+                htmlOutput += `</div></details>`;
+            });
+            return htmlOutput;
+        }
+
+        // Funções de Devolução e Evidência
+        function abrirModalDevolucao(id) { idLocacaoParaDevolver = id; document.getElementById('textoProblema').value = ''; document.getElementById('devolucaoNormalView').classList.remove('hidden'); document.getElementById('devolucaoDisputaView').classList.add('hidden'); const btnRapida = document.getElementById('btnDevolucaoRapida'); btnRapida.disabled = false; btnRapida.innerHTML = '<i data-lucide="thumbs-up" class="w-5 h-5"></i> SIM, TUDO PERFEITO'; const btnDisputa = document.getElementById('btnDevolucaoDisputa'); btnDisputa.disabled = false; btnDisputa.innerHTML = '<i data-lucide="alert-triangle" class="w-5 h-5"></i> ENVIAR PARA ANÁLISE'; document.getElementById('modalDevolucao').classList.remove('hidden'); lucide.createIcons(); }
+        function fecharModalDevolucao() { document.getElementById('modalDevolucao').classList.add('hidden'); idLocacaoParaDevolver = null; }
+        function abrirTelaDisputa() { document.getElementById('devolucaoNormalView').classList.add('hidden'); document.getElementById('devolucaoDisputaView').classList.remove('hidden'); }
+        function voltarDevolucaoNormal() { document.getElementById('devolucaoDisputaView').classList.add('hidden'); document.getElementById('devolucaoNormalView').classList.remove('hidden'); document.getElementById('textoProblema').value = ''; }
+        async function processarDevolucaoRapida() { const btn = document.getElementById('btnDevolucaoRapida'); btn.disabled = true; btn.innerHTML = '<i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i> FINALIZANDO...'; lucide.createIcons(); const { error } = await supabaseClient.from('rentals').update({ status: 'completed', return_condition: 'ok', return_notes: null }).eq('id', idLocacaoParaDevolver); if (error) { alert("Erro ao processar: " + error.message); fecharModalDevolucao(); } else { fecharModalDevolucao(); alert("Devolução confirmada com sucesso!"); loadDashboard(); } }
+        async function processarDevolucaoComDisputa() { const notas = document.getElementById('textoProblema').value.trim(); if (notas === '') return alert("Por favor, descreva detalhadamente o que aconteceu."); const btn = document.getElementById('btnDevolucaoDisputa'); btn.disabled = true; btn.innerHTML = '<i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i> ENVIANDO...'; lucide.createIcons(); const { error } = await supabaseClient.from('rentals').update({ status: 'issue_reported', return_condition: 'damaged', return_notes: notas }).eq('id', idLocacaoParaDevolver); if (error) { alert("Erro ao processar: " + error.message); fecharModalDevolucao(); } else { fecharModalDevolucao(); alert("Problema registrado."); loadDashboard(); } }
+        function abrirModalEvidencia(id, tipo) { evidenceRentalId = id; evidenceType = tipo; selectedEvidenceFiles = []; document.getElementById('evidenceTitle').innerText = 'Check-in (Retirada)'; document.getElementById('evidenceCount').innerText = `0/3 Fotos`; document.getElementById('evidencePreviewGrid').classList.add('hidden'); document.getElementById('evidencePreviewGrid').innerHTML = ''; document.getElementById('evidencePhotosInput').value = ''; document.getElementById('evidenceModal').classList.remove('hidden'); }
+        function fecharEvidenceModal() { document.getElementById('evidenceModal').classList.add('hidden'); }
+        document.getElementById('evidencePhotosInput').addEventListener('change', function(e) { const files = Array.from(e.target.files); selectedEvidenceFiles = [...selectedEvidenceFiles, ...files].slice(0, 3); document.getElementById('evidenceCount').innerText = `${selectedEvidenceFiles.length}/3 Fotos`; const grid = document.getElementById('evidencePreviewGrid'); if(selectedEvidenceFiles.length > 0) { grid.classList.remove('hidden'); grid.innerHTML = selectedEvidenceFiles.map(file => `<img src="${URL.createObjectURL(file)}" class="w-full h-20 object-cover rounded-xl shadow-sm border border-slate-200">`).join(''); } });
+        async function enviarEvidence() { if(selectedEvidenceFiles.length < 1) return alert("⚠️ Tire pelo menos 1 foto."); const btn = document.getElementById('btnSubmitEvidence'); btn.disabled = true; btn.innerHTML = '<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> ENVIANDO...'; lucide.createIcons(); try { const uploadedUrls = []; for (let i = 0; i < selectedEvidenceFiles.length; i++) { const file = selectedEvidenceFiles[i]; const fileName = `${currentUserId}/${evidenceRentalId}/evidence_${Date.now()}_${i}.jpg`; await supabaseClient.storage.from('rental-photos').upload(fileName, file); uploadedUrls.push(supabaseClient.storage.from('rental-photos').getPublicUrl(fileName).data.publicUrl); } await supabaseClient.from('rentals').update({ status: 'in_use', checkin_photos: uploadedUrls }).eq('id', evidenceRentalId); alert("✅ Check-in realizado!"); fecharEvidenceModal(); loadDashboard(); } catch (err) { alert("Erro: " + err.message); } finally { btn.disabled = false; btn.innerHTML = '<i data-lucide="shield-check" class="w-4 h-4"></i> CONFIRMAR'; lucide.createIcons(); } }
+        async function cancelarAluguel(id, ownerId, itemId) { if (!confirm("Cancelar esta reserva?")) return; const { error } = await supabaseClient.from('rentals').update({ status: 'cancelled' }).eq('id', id); if (!error) { alert("✅ Cancelada com sucesso."); await supabaseClient.from('messages').insert([{ sender_id: currentUserId, recipient_id: ownerId, item_id: itemId, content: "⚠️ Locatário cancelou a reserva.", is_read: false }]); loadDashboard(); } }
+
+        // SISTEMA DE CHAT UNIFICADO
+        async function loadConversations(userId) { 
+            const { data: msgs } = await supabaseClient.from('messages').select('*, items(title)').or(`sender_id.eq.${userId},recipient_id.eq.${userId}`).order('created_at', { ascending: false }); 
+            const convContainer = document.getElementById('conversationsList'); 
+            const drawerConvContainer = document.getElementById('drawerConversationsList'); 
+            
+            if (!msgs || msgs.length === 0) { 
+                convContainer.innerHTML = `<p class="text-center text-xs text-slate-500 py-8">Sem mensagens.</p>`; 
+                if(drawerConvContainer) drawerConvContainer.innerHTML = '';
+                return; 
+            } 
+            
+            const hasUnread = msgs.some(m => m.recipient_id === userId && !m.is_read); 
+            if (hasUnread) document.getElementById('unreadBadge').classList.remove('hidden'); 
+            else document.getElementById('unreadBadge').classList.add('hidden'); 
+            
+            const chats = {}; 
+            msgs.forEach(m => { 
+                const outroId = m.sender_id === userId ? m.recipient_id : m.sender_id; 
+                const chatKey = outroId + '_' + m.item_id; 
+                if (!chats[chatKey]) chats[chatKey] = { userId: outroId, itemId: m.item_id, itemTitle: m.items?.title||'Item', lastMsg: m.content, time: m.created_at, unread: (m.recipient_id === userId && !m.is_read) }; 
+            }); 
+            
+            const userIds = [...new Set(Object.values(chats).map(c => c.userId))]; 
+            const { data: profiles } = await supabaseClient.from('profiles').select('id, full_name, avatar_url').in('id', userIds); 
+            const profileMap = {}; if(profiles) profiles.forEach(p => profileMap[p.id] = p); 
+            const sortedChats = Object.values(chats).sort((a, b) => new Date(b.time) - new Date(a.time)); 
+            
+            const htmlChats = sortedChats.map(c => { 
+                const p = profileMap[c.userId] || { full_name: 'Usuário', avatar_url: 'https://via.placeholder.com/100' }; 
+                const safeTitle = c.itemTitle.replace(/'/g, "\\'"); 
+                return `<div onclick="abrirChat('${c.userId}', '${p.full_name}', '${c.itemId}', '${safeTitle}', '${p.avatar_url}')" class="p-3 bg-slate-50 dark:bg-slate-800/50 rounded-2xl flex items-center gap-3 border border-slate-100 dark:border-slate-700/50 hover:shadow-md cursor-pointer relative mt-2">${c.unread ? '<div class="absolute top-3 right-3 w-2 h-2 bg-red-500 rounded-full"></div>' : ''}<img src="${p.avatar_url}" class="w-10 h-10 rounded-full object-cover shrink-0"><div class="flex-1 min-w-0"><div class="flex justify-between items-end mb-0.5"><p class="font-bold text-xs text-slate-900 dark:text-white truncate ${c.unread ? 'text-teal-600' : ''}">${p.full_name}</p><span class="text-[9px] text-slate-400">${formatDate(c.time)}</span></div><p class="text-[9px] font-bold text-teal-600 dark:text-teal-400 truncate mb-0.5">Ref: ${safeTitle}</p><p class="text-[10px] text-slate-500 truncate ${c.unread ? 'font-black text-slate-800 dark:text-slate-200' : ''}">${c.lastMsg}</p></div></div>` 
+            }).join('');
+            
+            convContainer.innerHTML = htmlChats;
+            if(drawerConvContainer) drawerConvContainer.innerHTML = htmlChats; 
+        }
+
+        async function abrirChat(id, nome, itemId, itemTitle, avatarUrl) { 
+            currentRecipientId = id; currentItemId = itemId; 
+            document.getElementById('unreadBadge')?.classList.add('hidden'); 
+            
+            document.getElementById('chatListView').classList.add('hidden');
+            document.getElementById('chatThreadView').classList.remove('hidden');
+            document.getElementById('chatThreadView').classList.add('flex');
+            document.getElementById('btnBackChat').classList.remove('hidden');
+            
+            document.getElementById('chatHeaderName').innerText = nome; 
+            const headerItem = document.getElementById('chatHeaderItem');
+            if(headerItem) {
+                headerItem.innerText = `Sobre: ${itemTitle}`; 
+                headerItem.classList.remove('hidden');
+            }
+            if(avatarUrl) document.getElementById('chatHeaderAvatar').innerHTML = `<img src="${avatarUrl}" class="w-full h-full rounded-full object-cover">`; 
+            
+            const drawer = document.getElementById('chatDrawer'); 
+            if (drawer.classList.contains('hidden')) {
+                drawer.classList.remove('hidden'); drawer.classList.add('flex'); 
+                setTimeout(() => drawer.classList.remove('translate-y-full'), 10); 
+            }
+            
+            document.getElementById('quickReplies').innerHTML = `<button onclick="enviarMensagemRapida('Olá! Ainda está disponível?')" class="bg-teal-50 dark:bg-teal-900/30 text-teal-700 dark:text-teal-300 px-3 py-1.5 rounded-full text-[10px] font-black whitespace-nowrap border border-teal-200 dark:border-teal-800 hover:bg-teal-100 transition-colors">Ainda disponível?</button><button onclick="enviarMensagemRapida('Olá! Para quais datas precisa?')" class="bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 px-3 py-1.5 rounded-full text-[10px] font-black whitespace-nowrap border border-blue-200 dark:border-blue-800 hover:bg-blue-100 transition-colors">Quais datas?</button>`; 
+            
+            atualizarMensagens(); 
+            await supabaseClient.from('messages').update({ is_read: true }).eq('sender_id', id).eq('recipient_id', currentUserId).eq('item_id', itemId); 
+            loadConversations(currentUserId); 
+        }
+
+        function mostrarListaChats() {
+            currentRecipientId = null; currentItemId = null;
+            document.getElementById('chatListView').classList.remove('hidden');
+            document.getElementById('chatThreadView').classList.add('hidden');
+            document.getElementById('chatThreadView').classList.remove('flex');
+            document.getElementById('btnBackChat').classList.add('hidden');
+            document.getElementById('chatHeaderName').innerText = "Mensagens";
+            document.getElementById('chatHeaderItem').classList.add('hidden');
+            document.getElementById('chatHeaderAvatar').innerHTML = "RYT";
+        }
+
+        function abrirChatBot() {
+            currentRecipientId = 'ryt-bot'; currentItemId = 'support';
+            
+            document.getElementById('chatListView').classList.add('hidden');
+            document.getElementById('chatThreadView').classList.remove('hidden');
+            document.getElementById('chatThreadView').classList.add('flex');
+            document.getElementById('btnBackChat').classList.remove('hidden');
+            
+            document.getElementById('chatHeaderName').innerText = "Suporte RYT"; 
+            document.getElementById('chatHeaderItem').classList.add('hidden');
+            document.getElementById('chatHeaderAvatar').innerHTML = `<i data-lucide="bot" class="w-5 h-5"></i>`; lucide.createIcons();
+
+            document.getElementById('quickReplies').innerHTML = `
+                <button onclick="enviarMensagemRapida('Como alugar?')" class="bg-slate-100 dark:bg-slate-800 px-3 py-1.5 rounded-full text-[10px] font-black whitespace-nowrap">Como alugar?</button>
+                <button onclick="enviarMensagemRapida('Problemas com PIX')" class="bg-slate-100 dark:bg-slate-800 px-3 py-1.5 rounded-full text-[10px] font-black whitespace-nowrap">Erro no PIX</button>
+                <button onclick="enviarMensagemRapida('Falar com Humano')" class="bg-slate-100 dark:bg-slate-800 px-3 py-1.5 rounded-full text-[10px] font-black whitespace-nowrap">Humano</button>
+            `;
+            
+            document.getElementById('chatMessages').innerHTML = `<div class="p-3.5 rounded-[1.25rem] text-[12px] font-medium w-fit max-w-[85%] bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 text-slate-800 dark:text-slate-100 self-start rounded-bl-sm shadow-sm">Olá! Sou o assistente RYT. Escolha uma opção acima ou escreva sua dúvida.</div>`;
+        }
+
+        function toggleChat() { 
+            const d = document.getElementById('chatDrawer'); 
+            if (d.classList.contains('hidden')) { 
+                d.classList.remove('hidden'); d.classList.add('flex'); setTimeout(() => d.classList.remove('translate-y-full'), 10); 
+                if (currentRecipientId === null) mostrarListaChats();
+            } else { 
+                d.classList.add('translate-y-full'); setTimeout(() => { d.classList.add('hidden'); d.classList.remove('flex'); }, 500); 
+            } 
+        }
+        
+        function enviarMensagemRapida(texto) { document.getElementById('chatInput').value = texto; enviarMensagem(); }
+        document.getElementById('chatInput').addEventListener('keypress', function (e) { if (e.key === 'Enter') { e.preventDefault(); enviarMensagem(); } });
+        
+        async function enviarMensagem() { 
+            const input = document.getElementById('chatInput'); const content = input.value.trim(); 
+            if (!content || !currentRecipientId) return; 
+
+            if(currentRecipientId === 'ryt-bot') {
+                const chatArea = document.getElementById('chatMessages');
+                const horaAtual = formatTime(new Date().toISOString());
+                chatArea.innerHTML += `<div class="flex flex-col items-end"><div class="p-3.5 rounded-[1.25rem] text-[12px] font-medium w-fit max-w-[85%] bg-teal-500 text-white rounded-br-sm mt-2 shadow-sm">${content}</div><div class="flex items-center mt-1 px-1"><span class="text-[8px] text-slate-400">${horaAtual}</span><span class="text-[9px] text-teal-500 font-black ml-1 flex items-center gap-0.5"><i data-lucide="check-check" class="w-3 h-3"></i> Lida</span></div></div>`;
+                lucide.createIcons(); input.value = ''; chatArea.scrollTop = chatArea.scrollHeight;
+                
+                setTimeout(() => {
+                    let resposta = "Entendi. A equipa RYT entrará em contato assim que possível!";
+                    if(content.toLowerCase().includes('alugar')) resposta = "Vá na página do item, selecione as datas e clique em 'SOLICITAR ALUGUEL'. O seu dinheiro fica seguro.";
+                    if(content.toLowerCase().includes('pix')) resposta = "A opção PIX aparece no Painel apenas após o dono do item aceitar a sua solicitação de aluguer.";
+                    chatArea.innerHTML += `<div class="flex flex-col items-start"><div class="p-3.5 rounded-[1.25rem] text-[12px] font-medium w-fit max-w-[85%] bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 text-slate-800 dark:text-slate-100 rounded-bl-sm mt-2 shadow-sm">${resposta}</div></div>`;
+                    chatArea.scrollTop = chatArea.scrollHeight;
+                }, 800);
+                return;
+            }
+
+            input.disabled = true; 
+            await supabaseClient.from('messages').insert([{ sender_id: currentUserId, recipient_id: currentRecipientId, item_id: currentItemId, content: content, is_read: false }]); 
+            input.disabled = false; input.value = ''; atualizarMensagens(); loadConversations(currentUserId); 
+        }
+
+        async function atualizarMensagens() { 
+            if(currentRecipientId === 'ryt-bot') return;
+            if(!currentUserId || !currentRecipientId || !currentItemId) return; 
+            const { data: msgs } = await supabaseClient.from('messages').select('*').eq('item_id', currentItemId).or(`and(sender_id.eq.${currentUserId},recipient_id.eq.${currentRecipientId}),and(sender_id.eq.${currentRecipientId},recipient_id.eq.${currentUserId})`).order('created_at', { ascending: true }); 
+            const container = document.getElementById('chatMessages'); 
+            if (msgs && msgs.length > 0) { 
+                container.innerHTML = msgs.map(m => { 
+                    const isMe = m.sender_id === currentUserId; 
+                    let readStatus = isMe ? (m.is_read ? `<span class="text-[9px] text-teal-500 font-black ml-1"><i data-lucide="check-check" class="w-3 h-3"></i></span>` : `<span class="text-[9px] text-slate-400 font-bold ml-1"><i data-lucide="check" class="w-3 h-3"></i></span>`) : ''; 
+                    return `<div class="flex flex-col ${isMe ? 'items-end' : 'items-start'}"><div class="p-3.5 rounded-[1.25rem] text-[13px] font-medium max-w-[85%] shadow-sm ${isMe ? 'bg-teal-500 text-white rounded-br-sm' : 'bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 text-slate-800 dark:text-slate-100 rounded-bl-sm'}">${m.content}</div><div class="flex items-center mt-1 px-1"><span class="text-[8px] text-slate-400">${formatTime(m.created_at)}</span>${readStatus}</div></div>`; 
+                }).join(''); 
+                lucide.createIcons(); container.scrollTop = container.scrollHeight; 
+            } 
+        }
+        
+        async function logout() { await supabaseClient.auth.signOut(); window.location.href = 'login.html'; }
+        document.addEventListener('DOMContentLoaded', async () => { await loadDashboard(); });
+    </script>
+    <script>
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('sw.js').catch(err => console.log('Erro no PWA:', err));
+        });
+    }
+</script>
+</body>
+</html>

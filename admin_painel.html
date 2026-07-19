@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RYT - Centro de Comando (Admin)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <script>tailwind.config = { darkMode: 'class' }</script>
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; transition: background-color 0.4s ease, color 0.4s ease; }
+        .glass-panel { backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        details > summary { list-style: none; outline: none; }
+        details > summary::-webkit-details-marker { display: none; }
+        details[open] summary ~ * { animation: slideDown 0.3s ease-in-out; }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body class="bg-slate-50 dark:bg-slate-950 min-h-screen text-slate-900 dark:text-slate-100 pb-12">
+
+    <nav class="bg-slate-900 text-white shadow-lg sticky top-0 z-40">
+        <div class="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="bg-teal-500 p-2 rounded-lg"><i data-lucide="shield-half" class="w-5 h-5 text-slate-900"></i></div>
+                <h1 class="text-xl font-black tracking-tight">RYT <span class="text-teal-400 font-medium text-sm tracking-widest uppercase ml-1">Centro de Comando</span></h1>
+            </div>
+            <div class="flex items-center gap-4">
+                <p id="adminEmail" class="text-xs font-medium text-slate-400 hidden md:block"></p>
+                <button onclick="window.location.href='dashboard.html'" class="text-xs font-bold text-slate-300 hover:text-white transition-colors bg-slate-800 px-4 py-2 rounded-lg">Voltar ao App</button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-6xl mx-auto px-4 pt-10">
+        
+        <header class="mb-10">
+            <h2 class="text-3xl font-black text-slate-800 dark:text-white tracking-tight">Painel Administrativo</h2>
+            <p class="text-sm font-medium text-slate-500 mt-1">Aprove pagamentos PIX, resolva disputas e consulte logs de auditoria.</p>
+        </header>
+
+        <div id="dbErrorAlert" class="hidden bg-red-100 border border-red-400 text-red-700 px-6 py-4 rounded-xl mb-8 font-medium text-sm shadow-sm">
+            <p class="font-black flex items-center gap-2 mb-1"><i data-lucide="alert-triangle" class="w-5 h-5"></i> Erro de Banco de Dados</p>
+            <p id="dbErrorMessage"></p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+            <section class="flex flex-col gap-4">
+                <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-2">
+                    <h3 class="font-black text-lg text-slate-800 dark:text-white flex items-center gap-2">
+                        <i data-lucide="banknote" class="w-5 h-5 text-orange-500"></i> Validação de PIX
+                    </h3>
+                    <span id="countPix" class="bg-orange-100 text-orange-600 font-bold text-xs px-2 py-1 rounded-md">0</span>
+                </div>
+                <div id="listaPix" class="space-y-4 max-h-[600px] overflow-y-auto no-scrollbar pb-4">
+                    <div class="text-center py-10 text-slate-400"><i data-lucide="loader-2" class="w-6 h-6 animate-spin mx-auto"></i></div>
+                </div>
+            </section>
+
+            <section class="flex flex-col gap-4">
+                <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-2">
+                    <h3 class="font-black text-lg text-slate-800 dark:text-white flex items-center gap-2">
+                        <i data-lucide="alert-octagon" class="w-5 h-5 text-red-500"></i> Disputas em Análise
+                    </h3>
+                    <span id="countDisputas" class="bg-red-100 text-red-600 font-bold text-xs px-2 py-1 rounded-md">0</span>
+                </div>
+                <div id="listaDisputas" class="space-y-4 max-h-[600px] overflow-y-auto no-scrollbar pb-4">
+                    <div class="text-center py-10 text-slate-400"><i data-lucide="loader-2" class="w-6 h-6 animate-spin mx-auto"></i></div>
+                </div>
+            </section>
+        </div>
+
+        <section class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[2rem] p-6 sm:p-8 shadow-sm mt-10">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 border-b border-slate-100 dark:border-slate-800 pb-4">
+                <div>
+                    <h3 class="font-black text-xl text-slate-800 dark:text-white flex items-center gap-2">
+                        <i data-lucide="history" class="w-5 h-5 text-slate-500"></i> Histórico de Validações
+                    </h3>
+                    <p class="text-xs text-slate-500 mt-1">Clique num item para expandir todos os detalhes financeiros e de data.</p>
+                </div>
+            </div>
+            
+            <div id="listaLogs" class="space-y-3 max-h-[500px] overflow-y-auto no-scrollbar pr-2">
+                <div class="text-center py-6 text-slate-400 font-medium text-sm flex flex-col items-center gap-2">
+                    <i data-lucide="loader-2" class="w-6 h-6 animate-spin text-slate-300"></i> Buscando histórico...
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
+    <script>
+        lucide.createIcons();
+
+        function formatDataSimples(dataStr) { 
+            if (!dataStr) return ''; const partes = dataStr.split('-'); return `${partes[2]}/${partes[1]}/${partes[0]}`; 
+        }
+
+        async function verificarAdmin() {
+            const { data: { session }, error } = await supabaseClient.auth.getSession();
+            if (error || !session) { alert("Acesso restrito."); window.location.href = 'login.html'; return null; }
+            document.getElementById('adminEmail').innerText = session.user.email; return session.user;
+        }
+
+        async function carregarPainelAdmin() {
+            const user = await verificarAdmin(); if (!user) return;
+            
+            const { data: pagamentos, error: erroPix } = await supabaseClient.from('rentals').select('*, items(title, owner_id)').eq('status', 'awaiting_payment').order('created_at', { ascending: false });
+            if (erroPix) mostrarErroDB("Erro ao ler pagamentos: " + erroPix.message); else renderizarPagamentos(pagamentos);
+
+            const { data: disputas, error: erroDisp } = await supabaseClient.from('rentals').select('*, items(title)').eq('status', 'issue_reported').order('created_at', { ascending: false });
+            if (erroDisp) mostrarErroDB("Erro ao ler disputas: " + erroDisp.message); else renderizarDisputas(disputas);
+            
+            carregarLogs();
+        }
+
+        function mostrarErroDB(mensagem) {
+            const alerta = document.getElementById('dbErrorAlert'); alerta.classList.remove('hidden'); document.getElementById('dbErrorMessage').innerText = mensagem;
+        }
+
+        async function obterNomeUsuario(userId) {
+            const { data } = await supabaseClient.from('profiles').select('full_name').eq('id', userId).single();
+            return data ? data.full_name : 'Usuário';
+        }
+
+        async function renderizarPagamentos(pagamentos) {
+            const contPix = document.getElementById('listaPix'); document.getElementById('countPix').innerText = pagamentos ? pagamentos.length : 0;
+            if (!pagamentos || pagamentos.length === 0) {
+                contPix.innerHTML = `<div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-8 text-center text-slate-400"><i data-lucide="check-circle" class="w-8 h-8 mx-auto mb-2 text-slate-300"></i><p class="font-medium text-sm">Nenhum PIX pendente.</p></div>`;
+                lucide.createIcons(); return;
+            }
+            let html = '';
+            for (let p of pagamentos) {
+                const nomeLocatario = await obterNomeUsuario(p.renter_id);
+                const safeTitle = p.items?.title ? p.items.title.replace(/'/g, "\\'") : 'Item Desconhecido';
+                const ownerId = p.items?.owner_id || '';
+
+                let pixLocador = 'Não cadastrado';
+                if (ownerId) {
+                    const { data: ownerProfile } = await supabaseClient.from('profiles').select('pix_key').eq('id', ownerId).single();
+                    if (ownerProfile && ownerProfile.pix_key) pixLocador = ownerProfile.pix_key;
+                }
+
+                // MATEMÁTICA FINANCEIRA DO REPASSE RYT
+                const valorBase = p.total_price / 1.05; // Tira os 5% do locatário para achar a base
+                const repasseOwner = valorBase * 0.90;  // Tira os 10% do locador
+                const lucroRyt = p.total_price - repasseOwner; // O que fica na plataforma
+
+                html += `
+                    <div class="bg-white dark:bg-slate-900 border-2 border-orange-200 dark:border-orange-900/50 rounded-2xl p-5 shadow-sm relative overflow-hidden">
+                        <div class="absolute top-0 left-0 w-1 h-full bg-orange-500"></div>
+                        <div class="flex justify-between items-start mb-3 pl-2">
+                            <div><p class="text-[10px] font-black text-orange-500 uppercase tracking-widest mb-1">Aguardando Aprovação</p><h4 class="font-black text-sm text-slate-800 dark:text-white">${p.items?.title || 'Item Desconhecido'}</h4></div>
+                            <div class="text-right">
+                                <p class="font-black text-lg text-slate-800 dark:text-white">R$ ${p.total_price.toFixed(2)}</p>
+                                <p class="text-[9px] font-black text-slate-400 uppercase">Recebido via PIX</p>
+                            </div>
+                        </div>
+                        <div class="text-xs text-slate-500 dark:text-slate-400 mb-4 space-y-1.5 pl-2">
+                            <p><i data-lucide="user" class="w-3 h-3 inline mr-1 text-slate-400"></i> <b>Pagador (Locatário):</b> ${nomeLocatario}</p>
+                            <p><i data-lucide="calendar" class="w-3 h-3 inline mr-1 text-slate-400"></i> <b>Datas:</b> ${formatDataSimples(p.start_date)} a ${formatDataSimples(p.end_date)}</p>
+                            
+                            <div class="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-xl mt-4 border border-slate-200 dark:border-slate-700">
+                                <p class="text-[10px] font-black text-slate-800 dark:text-white uppercase tracking-widest mb-3 border-b border-slate-200 dark:border-slate-700 pb-2">Matemática da Transação</p>
+                                <div class="flex justify-between text-xs mb-1"><span class="text-slate-500">Total Recebido (PIX):</span> <span class="font-bold text-slate-800 dark:text-white">R$ ${p.total_price.toFixed(2)}</span></div>
+                                <div class="flex justify-between text-xs mb-3"><span class="text-slate-500">Taxa RYT Retida (15%):</span> <span class="font-bold text-teal-600">R$ ${lucroRyt.toFixed(2)}</span></div>
+                                
+                                <div class="bg-white dark:bg-slate-900 p-3 rounded-lg border border-slate-200 dark:border-slate-700 shadow-sm">
+                                    <div class="flex justify-between text-sm mb-1"><span class="font-black text-slate-800 dark:text-white">Repasse ao Locador:</span> <span class="font-black text-emerald-600">R$ ${repasseOwner.toFixed(2)}</span></div>
+                                    <p class="text-[10px] text-slate-500 mt-1 flex items-center gap-1.5"><i data-lucide="key" class="w-3 h-3 text-amber-500"></i> Chave PIX: <span class="font-mono font-bold text-slate-800 dark:text-slate-200 select-all">${pixLocador}</span></p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex gap-2 pt-3 mt-2 border-t border-slate-100 dark:border-slate-800 pl-2">
+                            <button onclick="aprovarPix(event, '${p.id}', '${ownerId}', '${safeTitle}', '${nomeLocatario}')" class="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white py-3 rounded-xl font-black text-[10px] uppercase tracking-widest transition-colors flex items-center justify-center gap-1.5 shadow-sm"><i data-lucide="check-circle" class="w-4 h-4"></i> CONFIRMAR PIX</button>
+                            <button onclick="reprovarPix(event, '${p.id}')" class="bg-red-50 hover:bg-red-100 text-red-500 px-4 py-3 rounded-xl font-bold transition-colors border border-red-100"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                        </div>
+                    </div>`;
+            }
+            contPix.innerHTML = html; lucide.createIcons();
+        }
+
+        async function renderizarDisputas(disputas) {
+            const contDisp = document.getElementById('listaDisputas'); document.getElementById('countDisputas').innerText = disputas ? disputas.length : 0;
+            if (!disputas || disputas.length === 0) { contDisp.innerHTML = `<div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-8 text-center text-slate-400"><i data-lucide="shield-check" class="w-8 h-8 mx-auto mb-2 text-slate-300"></i><p class="font-medium text-sm">Nenhuma disputa aberta.</p></div>`; lucide.createIcons(); return; }
+            let html = '';
+            for (let d of disputas) {
+                const nomeLocatario = await obterNomeUsuario(d.renter_id);
+                const valorLocatario = d.total_price ? d.total_price.toFixed(2) : '0.00';
+
+                html += `
+                    <div class="bg-white dark:bg-slate-900 border-2 border-red-200 dark:border-red-900/50 rounded-2xl p-5 shadow-sm relative overflow-hidden">
+                        <div class="absolute top-0 left-0 w-1 h-full bg-red-500"></div>
+                        <div class="mb-3 pl-2"><p class="text-[10px] font-black text-red-500 uppercase tracking-widest mb-1">Avaria Relatada</p><h4 class="font-black text-sm text-slate-800 dark:text-white">${d.items?.title || 'Item'}</h4></div>
+                        <div class="text-xs text-slate-500 dark:text-slate-400 mb-4 pl-2">
+                            <p class="mb-2"><i data-lucide="user" class="w-3 h-3 inline mr-1 text-slate-400"></i> <b>Locatário (Pagador):</b> ${nomeLocatario}</p>
+                            <div class="bg-red-50 dark:bg-red-900/10 p-4 rounded-xl border border-red-100 text-red-800 italic relative">"${d.return_notes || 'Nenhum detalhe.'}"</div>
+                            
+                            <div class="bg-slate-50 dark:bg-slate-800/50 p-3 rounded-xl mt-3 border border-slate-200 dark:border-slate-700">
+                                <p class="text-[10px] font-black text-slate-800 dark:text-white uppercase tracking-widest mb-1">Dados Financeiros para Estorno</p>
+                                <p class="text-xs text-slate-600 dark:text-slate-300 mb-1">Valor pago pelo Locatário: <b class="text-slate-800 dark:text-white">R$ ${valorLocatario}</b></p>
+                                <p class="text-[9px] text-slate-500">Em caso de cancelamento e devolução integral, este é o limite a ser transferido (estornado) para o Locatário.</p>
+                            </div>
+                        </div>
+                        <div class="pl-2 pt-2 border-t border-slate-100 dark:border-slate-800">
+                            <a href="admin_relatorio.html?id=${d.id}" target="_blank" class="w-full flex items-center justify-center gap-2 bg-slate-900 dark:bg-slate-800 text-white py-3 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-slate-800 transition-colors"><i data-lucide="external-link" class="w-4 h-4"></i> ABRIR DOSSIÊ</a>
+                        </div>
+                    </div>`;
+            }
+            contDisp.innerHTML = html; lucide.createIcons();
+        }
+
+        async function carregarLogs() {
+            const contLogs = document.getElementById('listaLogs');
+            const { data: logs, error } = await supabaseClient.from('rentals').select('id, admin_log, total_price, start_date, end_date, created_at, renter_id, items(title)').not('admin_log', 'is', null).order('created_at', { ascending: false }).limit(50);
+            if (error) { contLogs.innerHTML = `<div class="bg-red-50 border-2 border-red-200 text-red-600 p-6 rounded-2xl"><p class="font-black mb-2"><i data-lucide="alert-triangle" class="inline w-5 h-5"></i> Erro ao ler Logs</p><p class="text-sm font-mono">${error.message}</p></div>`; lucide.createIcons(); return; }
+            if (!logs || logs.length === 0) { contLogs.innerHTML = `<div class="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-8 text-center border border-slate-100 dark:border-slate-800"><i data-lucide="clipboard-list" class="w-8 h-8 text-slate-300 mx-auto mb-2"></i><p class="text-xs font-bold text-slate-400">Nenhum histórico.</p></div>`; lucide.createIcons(); return; }
+            
+            let html = '';
+            for (let L of logs) {
+                const isAprovado = L.admin_log.includes('[APROVADO]'); const corBadge = isAprovado ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'; const icone = isAprovado ? '<i data-lucide="check-circle" class="w-5 h-5"></i>' : '<i data-lucide="x-circle" class="w-5 h-5"></i>';
+                const nomeLocatario = await obterNomeUsuario(L.renter_id); const valorFormatado = L.total_price ? L.total_price.toFixed(2) : '0.00';
+                
+                const valorBase = L.total_price / 1.05;
+                const repasseOwner = valorBase * 0.90;
+                const lucroRyt = L.total_price - repasseOwner;
+
+                html += `<details class="group bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden transition-all shadow-sm"><summary class="p-4 flex items-center gap-4 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 select-none outline-none"><div class="${corBadge} p-2.5 rounded-xl shrink-0 shadow-inner">${icone}</div><div class="flex-1 min-w-0"><p class="text-sm font-black text-slate-800 dark:text-white truncate">${L.items?.title || 'Desconhecido'}</p><p class="text-[11px] font-bold text-slate-500 truncate mt-0.5">Locatário: ${nomeLocatario}</p></div><div class="shrink-0 text-slate-400 group-open:rotate-180 transition-transform duration-300 bg-white dark:bg-slate-900 p-2 rounded-full border border-slate-200 dark:border-slate-700"><i data-lucide="chevron-down" class="w-4 h-4"></i></div></summary>
+                <div class="px-5 pb-5 pt-2">
+                    <div class="grid grid-cols-2 gap-3 bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-700 shadow-inner mb-4">
+                        <div><span class="block text-[9px] font-black text-slate-400 uppercase mb-1">ID Locação</span><span class="font-mono text-xs text-slate-700 bg-slate-100 px-2 py-1 rounded">${L.id.split('-')[0]}...</span></div>
+                        <div><span class="block text-[9px] font-black text-slate-400 uppercase mb-1">Taxa RYT (15%)</span><span class="font-black text-sm text-teal-600">R$ ${lucroRyt.toFixed(2)}</span></div>
+                        <div><span class="block text-[9px] font-black text-slate-400 uppercase mb-1">Período</span><span class="text-xs font-bold text-slate-700">${formatDataSimples(L.start_date)} a ${formatDataSimples(L.end_date)}</span></div>
+                        <div><span class="block text-[9px] font-black text-slate-400 uppercase mb-1">Repassado ao Dono</span><span class="font-black text-sm text-emerald-600">R$ ${repasseOwner.toFixed(2)}</span></div>
+                    </div>
+                    <div><span class="flex items-center gap-1.5 text-[10px] font-black text-slate-400 uppercase mb-2 pl-1"><i data-lucide="terminal-square" class="w-3 h-3"></i> Registro no Servidor</span><p class="font-mono bg-slate-900 text-teal-400 p-4 rounded-xl text-[11px] leading-relaxed shadow-inner"> > ${L.admin_log}</p></div>
+                </div></details>`;
+            }
+            contLogs.innerHTML = html; lucide.createIcons();
+        }
+
+        window.aprovarPix = async function(event, id_locacao, dono_id, nome_item, nome_locatario) {
+            if(!confirm("Tem certeza que o PIX caiu na conta? Vamos liberar o aluguel e tentar abrir o WhatsApp do dono do item.")) return;
+            
+            const btn = event.currentTarget;
+            const textoOriginal = btn.innerHTML;
+            btn.innerHTML = '<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> APROVANDO...';
+            lucide.createIcons();
+
+            const abaWhatsApp = window.open('about:blank', '_blank');
+
+            let donoTelefone = null; let nomeDono = 'Locador';
+            if (dono_id) {
+                const { data: donoProfile } = await supabaseClient.from('profiles').select('phone, full_name').eq('id', dono_id).single();
+                if (donoProfile) { donoTelefone = donoProfile.phone; nomeDono = donoProfile.full_name; }
+            }
+
+            const dataHora = new Date().toLocaleString('pt-BR');
+            const carimboLog = `[APROVADO] PIX validado pela Administração. Retirada Liberada.\nData/Hora: ${dataHora}`;
+
+            const { error } = await supabaseClient.from('rentals').update({ status: 'confirmed', admin_log: carimboLog }).eq('id', id_locacao);
+            
+            if(error) { 
+                alert("Erro ao aprovar: " + error.message); btn.innerHTML = textoOriginal; abaWhatsApp.close(); 
+            } else { 
+                if (donoTelefone && donoTelefone.trim() !== '') {
+                    const msg = `Olá ${nomeDono}! Boas notícias da *RYT*. O seu item *"${nome_item}"* acabou de ser alugado por *${nome_locatario}*, e o pagamento PIX já foi confirmado e garantido por nós!\n\nAcesse o seu Painel no link abaixo para enviar uma mensagem ao cliente e combinar a retirada:\nhttps://ryt.com.br/dashboard.html`;
+                    const numeroLimpo = donoTelefone.replace(/\D/g, '');
+                    abaWhatsApp.location.href = `https://wa.me/55${numeroLimpo}?text=${encodeURIComponent(msg)}`;
+                } else {
+                    abaWhatsApp.close(); alert("✅ PIX Aprovado com sucesso!\n\nNota: O dono deste item não cadastrou um WhatsApp.");
+                }
+                carregarPainelAdmin(); 
+            }
+        };
+
+        window.reprovarPix = async function(event, id) {
+            if(!confirm("Tem certeza que deseja CANCELAR este pedido por falta de pagamento? O cliente perderá a reserva.")) return;
+            const btn = event.currentTarget; btn.innerHTML = '<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> ...'; lucide.createIcons();
+            const dataHora = new Date().toLocaleString('pt-BR'); const carimboLog = `[REPROVADO] Pagamento não identificado/recusado pela Administração.\nData/Hora: ${dataHora}`;
+            const { error } = await supabaseClient.from('rentals').update({ status: 'cancelled', admin_log: carimboLog }).eq('id', id);
+            if(error) alert("Erro ao cancelar: " + error.message); else carregarPainelAdmin();
+        };
+
+        document.addEventListener('DOMContentLoaded', carregarPainelAdmin);
+    </script>
+</body>
+</html>

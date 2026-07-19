@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RYT - Check-in de Segurança</title>
+    
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0f172a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="RYT">
+    <link rel="apple-touch-icon" href="icon-192.png">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <script>tailwind.config = { darkMode: 'class' }</script>
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; transition: all 0.4s ease; }
+        .glass-panel { backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+    </style>
+</head>
+<body class="bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-950 min-h-screen flex flex-col p-6 text-slate-900 dark:text-slate-100">
+
+    <header class="max-w-md mx-auto w-full mb-6 flex items-center justify-between mt-4">
+        <div class="flex items-center gap-4">
+            <button onclick="history.back()" class="p-3 bg-white/50 dark:bg-slate-800/50 rounded-full hover:scale-110 transition-transform shadow-sm border border-slate-200 dark:border-slate-800">
+                <i data-lucide="arrow-left" class="w-5 h-5"></i>
+            </button>
+            <h1 class="text-xl font-black tracking-tighter">Check-in <span class="bg-teal-100 dark:bg-teal-500/20 text-teal-700 dark:text-teal-400 px-3 py-1 rounded-full text-[10px] font-bold uppercase ml-2 tracking-widest">Segurança</span></h1>
+        </div>
+    </header>
+
+    <main class="max-w-md mx-auto w-full space-y-6 flex-1 flex flex-col">
+        <div class="bg-white/80 dark:bg-slate-900/80 glass-panel p-6 rounded-[3rem] shadow-2xl shadow-slate-200/50 dark:shadow-black/50 border border-slate-200/60 dark:border-slate-800/60 flex flex-col">
+            
+            <div class="text-center mb-4">
+                <p class="text-sm font-bold text-slate-500 dark:text-slate-400">1 foto obrigatória, até 3 permitidas.</p>
+                <p class="text-[10px] font-black uppercase tracking-widest mt-1 text-teal-600 dark:text-teal-400"><span id="contadorFotos">0</span> de 3 fotos</p>
+            </div>
+
+            <div class="relative w-full aspect-square bg-slate-100 dark:bg-slate-800 rounded-[2.5rem] overflow-hidden border-4 border-slate-50 dark:border-slate-700 mb-6 flex flex-col items-center justify-center shadow-inner">
+                
+                <div id="cameraPlaceholder" onclick="abrirCamera()" class="absolute inset-0 flex flex-col items-center justify-center cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors z-30">
+                    <div class="w-16 h-16 bg-white dark:bg-slate-600 rounded-full flex items-center justify-center mb-3 shadow-sm transition-transform duration-300 hover:scale-110">
+                        <i data-lucide="camera" class="w-8 h-8 text-teal-500"></i>
+                    </div>
+                    <p class="text-sm font-black text-slate-700 dark:text-slate-300">Toque para abrir a câmera</p>
+                </div>
+                
+                <video id="cameraVideo" autoplay playsinline class="hidden absolute inset-0 w-full h-full object-cover z-20"></video>
+                <canvas id="cameraCanvas" class="hidden"></canvas>
+            </div>
+
+            <button id="btnCapture" onclick="tirarFoto()" class="hidden w-full bg-slate-900 dark:bg-slate-800 text-white py-4 rounded-[1.5rem] font-black text-sm uppercase tracking-widest shadow-xl transition-all active:scale-95 mb-6 items-center justify-center gap-2">
+                <i data-lucide="aperture" class="w-5 h-5"></i> BATER FOTO
+            </button>
+
+            <div id="galeriaContainer" class="hidden mb-6">
+                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 ml-2">Lote de Fotos</p>
+                <div id="listaFotos" class="flex gap-3 overflow-x-auto no-scrollbar pb-2 px-1">
+                    </div>
+            </div>
+
+            <button id="btnConfirmar" disabled onclick="confirmarEntrega()" class="w-full bg-gradient-to-r from-teal-600 to-teal-500 text-white py-5 rounded-[1.5rem] font-black text-sm uppercase tracking-widest shadow-xl transition-all hover:-translate-y-1 active:translate-y-0 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-auto">
+                <i data-lucide="check-circle" class="w-5 h-5"></i> CONFIRMAR ENTREGA
+            </button>
+        </div>
+
+        <div class="bg-teal-50/80 dark:bg-teal-500/10 glass-panel p-6 rounded-[2rem] border border-teal-100 dark:border-teal-500/20 shadow-sm flex gap-4 items-start mb-8">
+            <i data-lucide="brain-circuit" class="w-6 h-6 text-teal-600 dark:text-teal-400 shrink-0 mt-0.5"></i>
+            <div>
+                <p class="text-[10px] font-black text-teal-700 dark:text-teal-400 uppercase tracking-widest mb-1.5">Versa AI Analytics</p>
+                <p class="text-xs text-teal-800 dark:text-teal-200 leading-relaxed font-medium">
+                    As fotos protegem a sua transação. Capture o estado geral e também detalhes importantes.
+                </p>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
+    <script>
+        lucide.createIcons();
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const rentalId = urlParams.get('id');
+
+        window.onload = () => {
+            if (!rentalId || rentalId === 'null') {
+                alert("⚠️ Erro: ID do aluguel não encontrado.");
+                window.location.href = 'dashboard.html';
+            }
+        };
+
+        // Lógica das 3 fotos
+        let arrayDeBlobs = [];
+        const MAX_FOTOS = 3;
+
+        const video = document.getElementById('cameraVideo');
+        const canvas = document.getElementById('cameraCanvas');
+        const btnCapture = document.getElementById('btnCapture');
+        const btnConfirmar = document.getElementById('btnConfirmar');
+        const cameraPlaceholder = document.getElementById('cameraPlaceholder');
+        const contadorTexto = document.getElementById('contadorFotos');
+        const galeriaContainer = document.getElementById('galeriaContainer');
+        const listaFotos = document.getElementById('listaFotos');
+        
+        let streamOriginal = null;
+
+        async function abrirCamera() {
+            if (arrayDeBlobs.length >= MAX_FOTOS) return alert("Limite de 3 fotos atingido.");
+            
+            try {
+                streamOriginal = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
+                video.srcObject = streamOriginal;
+                cameraPlaceholder.classList.add('hidden');
+                video.classList.remove('hidden');
+                btnCapture.classList.remove('hidden');
+                btnCapture.classList.add('flex');
+            } catch (err) {
+                alert("Erro ao aceder à câmara. Permita o uso da câmara no navegador.");
+            }
+        }
+
+        function tirarFoto() {
+            if (arrayDeBlobs.length >= MAX_FOTOS) return;
+
+            const context = canvas.getContext('2d');
+            canvas.width = video.videoWidth || 640;
+            canvas.height = video.videoHeight || 640;
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            
+            const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
+            
+            canvas.toBlob((blob) => { 
+                arrayDeBlobs.push({ blob: blob, id: Date.now() });
+                atualizarInterfaceFoto(dataUrl, arrayDeBlobs[arrayDeBlobs.length - 1].id);
+            }, 'image/jpeg', 0.8);
+        }
+
+        function atualizarInterfaceFoto(dataUrl, idBlob) {
+            const qtd = arrayDeBlobs.length;
+            contadorTexto.innerText = qtd;
+
+            if (qtd >= 1) {
+                btnConfirmar.disabled = false;
+                galeriaContainer.classList.remove('hidden');
+            }
+
+            const miniaturaHtml = `
+                <div id="foto_${idBlob}" class="relative w-20 h-20 shrink-0 rounded-2xl overflow-hidden shadow-sm border-2 border-slate-200 dark:border-slate-700 animate-in zoom-in duration-300">
+                    <img src="${dataUrl}" class="w-full h-full object-cover">
+                    <button onclick="removerFoto(${idBlob})" class="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 shadow-md hover:bg-red-600 transition-colors">
+                        <i data-lucide="x" class="w-3 h-3"></i>
+                    </button>
+                </div>
+            `;
+            listaFotos.insertAdjacentHTML('beforeend', miniaturaHtml);
+            lucide.createIcons();
+
+            if (qtd >= MAX_FOTOS) {
+                desligarCamera();
+                cameraPlaceholder.classList.remove('hidden');
+                cameraPlaceholder.innerHTML = `<div class="w-16 h-16 bg-slate-200 dark:bg-slate-700 rounded-full flex items-center justify-center mb-3"><i data-lucide="check-check" class="w-8 h-8 text-teal-500"></i></div><p class="text-sm font-black text-slate-500">Limite de 3 fotos atingido</p>`;
+                lucide.createIcons();
+            }
+        }
+
+        window.removerFoto = function(idBlob) {
+            document.getElementById(`foto_${idBlob}`).remove();
+            arrayDeBlobs = arrayDeBlobs.filter(item => item.id !== idBlob);
+            
+            const qtd = arrayDeBlobs.length;
+            contadorTexto.innerText = qtd;
+            
+            if (qtd === 0) {
+                btnConfirmar.disabled = true;
+                galeriaContainer.classList.add('hidden');
+            }
+
+            if (qtd < MAX_FOTOS) {
+                cameraPlaceholder.innerHTML = `<div class="w-16 h-16 bg-white dark:bg-slate-600 rounded-full flex items-center justify-center mb-3 shadow-sm transition-transform duration-300 hover:scale-110"><i data-lucide="camera" class="w-8 h-8 text-teal-500"></i></div><p class="text-sm font-black text-slate-700 dark:text-slate-300">Toque para abrir a câmera</p>`;
+                lucide.createIcons();
+            }
+        }
+
+        function desligarCamera() {
+            if (streamOriginal) {
+                streamOriginal.getTracks().forEach(track => track.stop());
+                video.classList.add('hidden');
+                btnCapture.classList.add('hidden');
+                btnCapture.classList.remove('flex');
+            }
+        }
+
+        // Upload das fotos em Lote
+        async function confirmarEntrega() {
+            if (arrayDeBlobs.length === 0) return alert("⚠️ Tire pelo menos uma foto de segurança.");
+
+            btnConfirmar.disabled = true;
+            btnConfirmar.innerHTML = '<i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i> ENVIANDO FOTOS...';
+            lucide.createIcons();
+            desligarCamera();
+
+            try {
+                let urlsFinais = [];
+
+                for (let i = 0; i < arrayDeBlobs.length; i++) {
+                    const blobInfo = arrayDeBlobs[i];
+                    const fileName = `checkin_${rentalId}_${blobInfo.id}_img${i+1}.jpg`;
+                    
+                    const { error: uploadError } = await supabaseClient.storage.from('item-photos').upload(fileName, blobInfo.blob);
+                    if (uploadError) throw uploadError;
+
+                    const { data: { publicUrl } } = supabaseClient.storage.from('item-photos').getPublicUrl(fileName);
+                    urlsFinais.push(publicUrl);
+                }
+
+                // Une as URLs por vírgula para gravar no banco
+                const stringDeUrls = urlsFinais.join(', ');
+
+                const { error: updateError } = await supabaseClient.from('rentals').update({ 
+                    status: 'in_use', 
+                    checkin_photo_url: stringDeUrls, 
+                    checkin_at: new Date().toISOString() 
+                }).eq('id', rentalId);
+                
+                if (updateError) throw updateError;
+
+                window.location.href = 'dashboard.html';
+            } catch (err) {
+                alert("Erro ao enviar: " + err.message);
+                btnConfirmar.disabled = false;
+                btnConfirmar.innerHTML = '<i data-lucide="check-circle" class="w-5 h-5"></i> CONFIRMAR ENTREGA';
+                lucide.createIcons();
+            }
+        }
+
+        // Service Worker do PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js').catch(err => console.log('Erro no PWA:', err));
+            });
+        }
+    </script>
+</body>
+</html>

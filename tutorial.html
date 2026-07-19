@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Como funciona - RYT</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0f172a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="RYT">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <script>tailwind.config = { darkMode: 'class' }</script>
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .glass { backdrop-filter: blur(16px); background: rgba(255, 255, 255, 0.8); }
+        .dark .glass { background: rgba(15, 23, 42, 0.8); }
+        .step-card { transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+        .step-card:hover { transform: translateY(-10px); }
+    </style>
+</head>
+<body class="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 min-h-screen">
+    
+    <nav class="p-6 flex justify-between items-center max-w-7xl mx-auto">
+        <a href="index.html" class="text-2xl font-black tracking-tighter">RYT<span class="text-teal-500">.</span></a>
+        <a href="index.html" class="bg-slate-900 dark:bg-teal-500 text-white px-6 py-2 rounded-full font-bold text-sm">Voltar ao Início</a>
+    </nav>
+
+    <main class="max-w-5xl mx-auto px-6 py-12">
+        <header class="text-center mb-20">
+            <h1 class="text-5xl font-black mb-6 tracking-tight">Alugar algo nunca foi <br><span class="text-teal-500">tão simples e seguro.</span></h1>
+            <p class="text-slate-500 dark:text-slate-400 text-lg max-w-2xl mx-auto">Siga o processo passo a passo para garantir uma experiência perfeita na nossa comunidade.</p>
+        </header>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div class="step-card bg-white dark:bg-slate-900 p-10 rounded-[3rem] shadow-xl border border-slate-100 dark:border-slate-800">
+                <div class="w-16 h-16 bg-blue-50 dark:bg-blue-900/30 text-blue-600 rounded-2xl flex items-center justify-center mb-6">
+                    <i data-lucide="search" class="w-8 h-8"></i>
+                </div>
+                <h3 class="text-2xl font-black mb-4">1. Encontre o que precisa</h3>
+                <p class="text-slate-500 dark:text-slate-400 leading-relaxed font-medium">Use a nossa busca inteligente para localizar ferramentas ou equipamentos na sua cidade (Minaçu, Goiânia, etc). Filtre por categoria e preço.</p>
+            </div>
+
+            <div class="step-card bg-white dark:bg-slate-900 p-10 rounded-[3rem] shadow-xl border border-slate-100 dark:border-slate-800">
+                <div class="w-16 h-16 bg-teal-50 dark:bg-teal-900/30 text-teal-600 rounded-2xl flex items-center justify-center mb-6">
+                    <i data-lucide="credit-card" class="w-8 h-8"></i>
+                </div>
+                <h3 class="text-2xl font-black mb-4">2. Reserve e Pague</h3>
+                <p class="text-slate-500 dark:text-slate-400 leading-relaxed font-medium">Escolha as datas e realize o pagamento via PIX. O dinheiro fica guardado com a RYT com total segurança até que você receba o item.</p>
+            </div>
+
+            <div class="step-card bg-white dark:bg-slate-900 p-10 rounded-[3rem] shadow-xl border border-slate-100 dark:border-slate-800">
+                <div class="w-16 h-16 bg-amber-50 dark:bg-amber-900/30 text-amber-600 rounded-2xl flex items-center justify-center mb-6">
+                    <i data-lucide="handshake" class="w-8 h-8"></i>
+                </div>
+                <h3 class="text-2xl font-black mb-4">3. Check-in (Retirada)</h3>
+                <p class="text-slate-500 dark:text-slate-400 leading-relaxed font-medium">Encontre o locador no ponto combinado. Após verificar o item, clique em <b>CHECK-IN</b> no seu painel para oficializar que recebeu.</p>
+            </div>
+
+            <div class="step-card bg-white dark:bg-slate-900 p-10 rounded-[3rem] shadow-xl border border-slate-100 dark:border-slate-800">
+                <div class="w-16 h-16 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 rounded-2xl flex items-center justify-center mb-6">
+                    <i data-lucide="refresh-cw" class="w-8 h-8"></i>
+                </div>
+                <h3 class="text-2xl font-black mb-4">4. Uso e Devolução</h3>
+                <p class="text-slate-500 dark:text-slate-400 leading-relaxed font-medium">Use o item pelo tempo contratado. Ao final, devolva ao dono e finalize o processo no sistema para liberar o repasse financeiro.</p>
+            </div>
+        </div>
+    </main>
+
+    <script>lucide.createIcons();</script>
+    <script>
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('sw.js').catch(err => console.log('Erro no PWA:', err));
+        });
+    }
+</script>
+</body>
+</html>

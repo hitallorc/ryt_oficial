@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RYT - Analytics & IA</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0f172a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="RYT">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <script>tailwind.config = { darkMode: 'class' }</script>
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; transition: background-color 0.4s ease, color 0.4s ease; }
+        .glass-panel { backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
+        .bg-grid-pattern { background-image: radial-gradient(rgba(15, 118, 110, 0.1) 1px, transparent 1px); background-size: 24px 24px; }
+        .dark .bg-grid-pattern { background-image: radial-gradient(rgba(20, 184, 166, 0.1) 1px, transparent 1px); }
+    </style>
+</head>
+<body class="bg-slate-50 dark:bg-slate-950 min-h-screen text-slate-900 dark:text-slate-100 relative">
+
+    <div class="fixed inset-0 bg-grid-pattern pointer-events-none z-0"></div>
+    <div class="fixed top-0 inset-x-0 h-[500px] bg-gradient-to-b from-teal-50/50 to-transparent dark:from-teal-900/10 pointer-events-none z-0"></div>
+
+    <nav class="bg-white/70 dark:bg-slate-900/70 glass-panel border-b border-slate-200/50 dark:border-slate-800/50 sticky top-0 z-40 transition-all">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-4">
+                <button onclick="window.location.href='dashboard.html'" class="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors">
+                    <i data-lucide="arrow-left" class="w-5 h-5 text-slate-500"></i>
+                </button>
+                <h1 class="text-2xl font-black tracking-tighter">RYT<span class="text-teal-500">.</span> Analytics</h1>
+            </div>
+            <div class="flex items-center gap-4">
+                <button onclick="carregarDadosAnalytics()" class="flex items-center gap-2 text-xs font-bold text-teal-600 dark:text-teal-400 hover:opacity-80 transition-opacity uppercase tracking-widest bg-teal-50 dark:bg-teal-500/10 px-4 py-2 rounded-full border border-teal-100 dark:border-teal-800">
+                    <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> Atualizar
+                </button>
+                <button onclick="toggleTheme()" class="p-2.5 bg-slate-100/80 dark:bg-slate-800/80 rounded-full hover:scale-110 transition-all"><i data-lucide="moon" id="themeIcon" class="w-5 h-5 text-teal-600 dark:text-teal-400"></i></button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-6 py-12 relative z-10">
+        
+        <header class="mb-10">
+            <h2 class="text-3xl font-black text-slate-800 dark:text-white tracking-tight">Inteligência do Negócio</h2>
+            <p class="text-sm font-medium text-slate-500 dark:text-slate-400 mt-1">Métricas de desempenho baseadas no seu histórico de locações.</p>
+        </header>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+            <div class="bg-white dark:bg-slate-900 rounded-[2rem] p-6 shadow-sm border border-slate-200/60 dark:border-slate-800 relative overflow-hidden group">
+                <div class="absolute -right-4 -top-4 w-24 h-24 bg-teal-50 dark:bg-teal-900/20 rounded-full group-hover:scale-150 transition-transform duration-500 ease-out z-0"></div>
+                <div class="relative z-10">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="w-12 h-12 rounded-xl bg-teal-100 dark:bg-teal-500/20 text-teal-600 dark:text-teal-400 flex items-center justify-center"><i data-lucide="dollar-sign"></i></div>
+                    </div>
+                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Receita Total Gerada</p>
+                    <h3 class="text-3xl font-black text-slate-800 dark:text-white" id="kpiReceita">R$ 0,00</h3>
+                </div>
+            </div>
+
+            <div class="bg-white dark:bg-slate-900 rounded-[2rem] p-6 shadow-sm border border-slate-200/60 dark:border-slate-800 relative overflow-hidden group">
+                <div class="absolute -right-4 -top-4 w-24 h-24 bg-blue-50 dark:bg-blue-900/20 rounded-full group-hover:scale-150 transition-transform duration-500 ease-out z-0"></div>
+                <div class="relative z-10">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="w-12 h-12 rounded-xl bg-blue-100 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400 flex items-center justify-center"><i data-lucide="ticket"></i></div>
+                    </div>
+                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Aluguéis Concluídos</p>
+                    <h3 class="text-3xl font-black text-slate-800 dark:text-white" id="kpiAlugueis">0</h3>
+                </div>
+            </div>
+
+            <div class="bg-white dark:bg-slate-900 rounded-[2rem] p-6 shadow-sm border border-slate-200/60 dark:border-slate-800 relative overflow-hidden group">
+                <div class="absolute -right-4 -top-4 w-24 h-24 bg-purple-50 dark:bg-purple-900/20 rounded-full group-hover:scale-150 transition-transform duration-500 ease-out z-0"></div>
+                <div class="relative z-10">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="w-12 h-12 rounded-xl bg-purple-100 dark:bg-purple-500/20 text-purple-600 dark:text-purple-400 flex items-center justify-center"><i data-lucide="package"></i></div>
+                    </div>
+                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Seus Itens Ativos</p>
+                    <h3 class="text-3xl font-black text-slate-800 dark:text-white" id="kpiItens">0</h3>
+                </div>
+            </div>
+
+            <div class="bg-white dark:bg-slate-900 rounded-[2rem] p-6 shadow-sm border border-slate-200/60 dark:border-slate-800 relative overflow-hidden group">
+                <div class="absolute -right-4 -top-4 w-24 h-24 bg-amber-50 dark:bg-amber-900/20 rounded-full group-hover:scale-150 transition-transform duration-500 ease-out z-0"></div>
+                <div class="relative z-10">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="w-12 h-12 rounded-xl bg-amber-100 dark:bg-amber-500/20 text-amber-600 dark:text-amber-400 flex items-center justify-center"><i data-lucide="bar-chart-3"></i></div>
+                    </div>
+                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Ticket Médio p/ Aluguel</p>
+                    <h3 class="text-3xl font-black text-slate-800 dark:text-white" id="kpiTicket">R$ 0,00</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
+            <div class="lg:col-span-2 bg-white dark:bg-slate-900 rounded-[2.5rem] p-8 shadow-sm border border-slate-200/60 dark:border-slate-800">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="font-black text-lg text-slate-800 dark:text-white">Receita por Item</h3>
+                    <span class="bg-slate-100 dark:bg-slate-800 text-slate-500 text-[10px] font-black px-3 py-1 rounded-md uppercase tracking-wider">Top Performance</span>
+                </div>
+                <div class="w-full h-[300px]">
+                    <canvas id="receitaChart"></canvas>
+                </div>
+            </div>
+
+            <div class="bg-gradient-to-br from-slate-900 to-slate-800 dark:from-teal-900/40 dark:to-slate-900 rounded-[2.5rem] p-8 shadow-xl text-white relative overflow-hidden border border-slate-800 dark:border-teal-900/50 flex flex-col">
+                <div class="absolute top-0 right-0 p-6 opacity-20"><i data-lucide="sparkles" class="w-24 h-24"></i></div>
+                
+                <div class="flex items-center gap-3 mb-6 relative z-10">
+                    <div class="w-10 h-10 rounded-full bg-teal-500 flex items-center justify-center shadow-lg shadow-teal-500/30"><i data-lucide="brain-circuit" class="w-5 h-5 text-white"></i></div>
+                    <h3 class="font-black text-lg">Versa AI Insights</h3>
+                </div>
+                
+                <div class="space-y-5 relative z-10 flex-1 flex flex-col justify-center" id="aiInsightsContainer">
+                    <div class="animate-pulse flex space-x-4"><div class="flex-1 space-y-4 py-1"><div class="h-2 bg-slate-600 rounded w-3/4"></div><div class="h-2 bg-slate-600 rounded"></div><div class="h-2 bg-slate-600 rounded w-5/6"></div></div></div>
+                </div>
+
+                <div class="mt-8 pt-6 border-t border-slate-700/50 relative z-10">
+                    <p class="text-[10px] text-slate-400 uppercase tracking-widest font-black flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-teal-400 animate-pulse"></span> Análise Preditiva Ativa</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
+    <script>
+        lucide.createIcons();
+        let chartInstance = null;
+        let currentUserId = null;
+
+        function toggleTheme() { document.documentElement.classList.toggle('dark'); const isDark = document.documentElement.classList.contains('dark'); document.getElementById('themeIcon').setAttribute('data-lucide', isDark ? 'sun' : 'moon'); lucide.createIcons(); Chart.defaults.color = isDark ? '#94a3b8' : '#64748b'; if(chartInstance) chartInstance.update(); }
+
+        async function checkAuth() {
+            const { data: { session }, error } = await supabaseClient.auth.getSession();
+            if (error || !session) { window.location.href = 'login.html'; return null; }
+            currentUserId = session.user.id;
+            return currentUserId;
+        }
+
+        async function carregarDadosAnalytics() {
+            const userId = await checkAuth();
+            if (!userId) return;
+
+            // 1. Buscar Itens do utilizador
+            const { data: meusItens } = await supabaseClient.from('items').select('id, title, daily_price, is_active').eq('owner_id', userId);
+            const itemsMap = {};
+            let itensAtivosCount = 0;
+            
+            if (meusItens) {
+                meusItens.forEach(i => {
+                    itemsMap[i.id] = { title: i.title, price: i.daily_price, revenue: 0, rentals: 0 };
+                    if(i.is_active) itensAtivosCount++;
+                });
+            }
+
+            // 2. Buscar Aluguéis onde os itens pertencem ao utilizador
+            const meusItemIds = Object.keys(itemsMap);
+            let receitaTotal = 0;
+            let alugueisCount = 0;
+
+            if (meusItemIds.length > 0) {
+                const { data: alugueis } = await supabaseClient.from('rentals').select('item_id, total_price, status').in('item_id', meusItemIds).in('status', ['confirmed', 'in_use', 'completed']);
+                
+                if (alugueis) {
+                    alugueis.forEach(a => {
+                        receitaTotal += a.total_price;
+                        alugueisCount++;
+                        if(itemsMap[a.item_id]) {
+                            itemsMap[a.item_id].revenue += a.total_price;
+                            itemsMap[a.item_id].rentals += 1;
+                        }
+                    });
+                }
+            }
+
+            // --- ATUALIZAR KPIs ---
+            document.getElementById('kpiReceita').innerText = `R$ ${receitaTotal.toFixed(2).replace('.',',')}`;
+            document.getElementById('kpiAlugueis').innerText = alugueisCount;
+            document.getElementById('kpiItens').innerText = itensAtivosCount;
+            
+            const ticketMedio = alugueisCount > 0 ? (receitaTotal / alugueisCount) : 0;
+            document.getElementById('kpiTicket').innerText = `R$ ${ticketMedio.toFixed(2).replace('.',',')}`;
+
+            // --- PREPARAR DADOS PARA O GRÁFICO (Top Itens por Receita) ---
+            const itensOrdenados = Object.values(itemsMap)
+                .filter(i => i.revenue > 0)
+                .sort((a, b) => b.revenue - a.revenue)
+                .slice(0, 5); // Pega os top 5
+
+            const labels = itensOrdenados.length > 0 ? itensOrdenados.map(i => i.title.substring(0, 15) + '...') : ['Sem dados'];
+            const dataReceita = itensOrdenados.length > 0 ? itensOrdenados.map(i => i.revenue) : [0];
+
+            renderizarGrafico(labels, dataReceita);
+            gerarInsightsIA(receitaTotal, alugueisCount, itensOrdenados);
+        }
+
+        function renderizarGrafico(labels, data) {
+            const ctx = document.getElementById('receitaChart').getContext('2d');
+            const isDark = document.documentElement.classList.contains('dark');
+            Chart.defaults.color = isDark ? '#94a3b8' : '#64748b';
+            Chart.defaults.font.family = "'Plus Jakarta Sans', sans-serif";
+
+            if (chartInstance) chartInstance.destroy();
+
+            chartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Receita (R$)',
+                        data: data,
+                        backgroundColor: '#14b8a6', // Teal 500
+                        borderRadius: 8,
+                        barThickness: 'flex',
+                        maxBarThickness: 40
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { backgroundColor: '#0f172a', padding: 12, cornerRadius: 8, titleFont: { size: 13, weight: 'bold' }, bodyFont: { size: 14 } }
+                    },
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)', drawBorder: false }, border: { display: false } },
+                        x: { grid: { display: false }, border: { display: false } }
+                    }
+                }
+            });
+        }
+
+        function gerarInsightsIA(receita, alugueis, topItens) {
+            const container = document.getElementById('aiInsightsContainer');
+            
+            if (alugueis === 0) {
+                container.innerHTML = `
+                    <div class="bg-slate-800/50 dark:bg-teal-950/50 p-4 rounded-2xl border border-slate-700/50 dark:border-teal-800/30">
+                        <p class="text-sm text-slate-300 dark:text-teal-100 leading-relaxed font-medium"><strong class="text-white">Ainda sem histórico.</strong> Para a inteligência artificial gerar métricas de conversão, precisamos do seu primeiro aluguel concluído. Sugestão: adicione fotos mais iluminadas aos seus itens ativos!</p>
+                    </div>`;
+                return;
+            }
+
+            const itemPrincipal = topItens[0]?.title || 'seu item principal';
+            const repItem = topItens.length > 0 ? ((topItens[0].revenue / receita) * 100).toFixed(0) : 0;
+
+            container.innerHTML = `
+                <div class="bg-slate-800/50 dark:bg-teal-950/50 p-4 rounded-2xl border border-slate-700/50 dark:border-teal-800/30 flex gap-4 items-start">
+                    <i data-lucide="trending-up" class="w-5 h-5 text-teal-400 mt-0.5 shrink-0"></i>
+                    <p class="text-sm text-slate-300 dark:text-teal-100 leading-relaxed font-medium">O seu item <strong class="text-white">${itemPrincipal}</strong> é o campeão de performance, representando <strong class="text-teal-400">${repItem}%</strong> da sua receita total de R$ ${receita.toFixed(2)}.</p>
+                </div>
+                
+                <div class="bg-slate-800/50 dark:bg-teal-950/50 p-4 rounded-2xl border border-slate-700/50 dark:border-teal-800/30 flex gap-4 items-start">
+                    <i data-lucide="lightbulb" class="w-5 h-5 text-amber-400 mt-0.5 shrink-0"></i>
+                    <p class="text-sm text-slate-300 dark:text-teal-100 leading-relaxed font-medium">Você completou <strong class="text-white">${alugueis} locações</strong>. Itens da mesma categoria costumam ter pico de demanda nos finais de semana. Experimente ajustar os preços às sextas-feiras!</p>
+                </div>
+            `;
+            lucide.createIcons();
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const isDark = document.documentElement.classList.contains('dark');
+            document.getElementById('themeIcon').setAttribute('data-lucide', isDark ? 'sun' : 'moon');
+            carregarDadosAnalytics();
+        });
+    </script>
+    <script>
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('sw.js').catch(err => console.log('Erro no PWA:', err));
+        });
+    }
+</script>
+</body>
+</html>

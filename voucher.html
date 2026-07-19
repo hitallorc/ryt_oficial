@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RYT - Voucher de Segurança</title>
+    
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0f172a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="RYT">
+    <link rel="apple-touch-icon" href="icon-192.png">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <script>tailwind.config = { darkMode: 'class' }</script>
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; transition: background-color 0.4s ease, color 0.4s ease; }
+        .ticket-cutout-left { position: absolute; left: -1rem; top: 50%; transform: translateY(-50%); width: 2rem; height: 2rem; background-color: #f8fafc; border-radius: 50%; }
+        .ticket-cutout-right { position: absolute; right: -1rem; top: 50%; transform: translateY(-50%); width: 2rem; height: 2rem; background-color: #f8fafc; border-radius: 50%; }
+        .dark .ticket-cutout-left, .dark .ticket-cutout-right { background-color: #0f172a; } 
+    </style>
+</head>
+<body class="bg-slate-50 dark:bg-slate-950 min-h-screen flex flex-col items-center justify-center p-6 text-slate-900 dark:text-slate-100 relative">
+
+    <button onclick="toggleTheme()" class="absolute top-6 right-6 p-3 bg-white/80 dark:bg-slate-800/80 rounded-full hover:scale-110 transition-transform shadow-sm border border-slate-200 dark:border-slate-700">
+        <i data-lucide="moon" id="themeIcon" class="w-5 h-5 text-teal-600 dark:text-teal-400"></i>
+    </button>
+
+    <button onclick="window.location.href='dashboard.html'" class="absolute top-6 left-6 p-3 bg-white/80 dark:bg-slate-800/80 rounded-full hover:scale-110 transition-transform shadow-sm border border-slate-200 dark:border-slate-700">
+        <i data-lucide="arrow-left" class="w-5 h-5 text-slate-800 dark:text-white"></i>
+    </button>
+
+    <div id="loader" class="flex flex-col items-center justify-center space-y-4 animate-in fade-in duration-300 w-full max-w-sm">
+        <i data-lucide="loader-2" id="loaderIcon" class="w-10 h-10 animate-spin text-teal-500"></i>
+        <p class="text-sm font-bold text-slate-500 uppercase tracking-widest text-center" id="loaderText">A Gerar Voucher...</p>
+        <button id="btnVoltarErro" onclick="window.location.href='dashboard.html'" class="hidden mt-4 bg-slate-900 text-white px-6 py-2 rounded-full text-xs font-bold uppercase tracking-widest hover:scale-105 transition-transform">Voltar ao Painel</button>
+    </div>
+
+    <div id="ticketContent" class="max-w-md w-full bg-white dark:bg-slate-800 rounded-[3rem] shadow-2xl shadow-slate-200/50 dark:shadow-black/80 overflow-hidden relative border border-slate-200/60 dark:border-slate-700 hidden">
+        
+        <header class="bg-slate-900 dark:bg-slate-950 p-10 text-center text-white relative"> 
+            <a href="index.html" class="text-3xl font-black tracking-tighter hover:opacity-80 transition-opacity block cursor-pointer">
+                RYT<span class="text-teal-500">.</span>com.br
+            </a>
+            <div id="statusBadge" class="mt-5 inline-flex items-center gap-2 bg-teal-500/20 text-teal-400 px-5 py-2 rounded-full border border-teal-500/30">
+                <i data-lucide="shield-check" class="w-4 h-4"></i>
+                <span class="text-[10px] font-black uppercase tracking-widest">Reserva: #<span id="rentalId">...</span></span>
+            </div>
+        </header>
+
+        <div class="p-10 space-y-8 relative">
+            
+            <div class="flex items-center gap-6">
+                <img id="itemImg" src="https://via.placeholder.com/150" class="w-24 h-24 rounded-3xl object-cover bg-slate-100 dark:bg-slate-700 shadow-md">
+                <div class="flex-1">
+                    <h2 id="itemTitle" class="font-black text-slate-800 dark:text-white text-xl leading-tight">...</h2>
+                    <p id="itemLoc" class="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest mt-2 flex items-center gap-1"><i data-lucide="map-pin" class="w-3 h-3"></i> ...</p>
+                </div>
+            </div>
+
+            <div class="relative py-4">
+                <div class="ticket-cutout-left"></div>
+                <div class="border-t-2 border-dashed border-slate-200 dark:border-slate-600"></div>
+                <div class="ticket-cutout-right"></div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-8">
+                <div class="text-center space-y-3">
+                    <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Locador</p>
+                    <img id="ownerImg" src="https://via.placeholder.com/100" class="w-16 h-16 rounded-full mx-auto object-cover border-4 border-slate-50 dark:border-slate-700 shadow-sm">
+                    <p id="ownerName" class="font-bold text-slate-800 dark:text-white text-sm truncate">...</p>
+                </div>
+                <div class="text-center space-y-3">
+                    <p class="text-[9px] font-black text-teal-600 dark:text-teal-400 uppercase tracking-widest">Locatário</p>
+                    <img id="renterImg" src="https://via.placeholder.com/100" class="w-16 h-16 rounded-full mx-auto object-cover border-4 border-teal-50 dark:border-teal-900/50 shadow-sm">
+                    <p id="renterName" class="font-bold text-slate-800 dark:text-white text-sm truncate">...</p>
+                </div>
+            </div>
+
+            <div class="bg-slate-50 dark:bg-slate-900/50 p-8 rounded-[2rem] border border-slate-100 dark:border-slate-700/50 mt-4">
+                <div class="flex justify-between items-center mb-4">
+                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Pagamento</p>
+                    <p id="payMethod" class="font-black text-slate-800 dark:text-white text-xs uppercase bg-white dark:bg-slate-800 px-3 py-1 rounded-md shadow-sm border border-slate-100 dark:border-slate-700">...</p>
+                </div>
+                <div class="flex justify-between items-center pt-5 border-t border-slate-200 dark:border-slate-700">
+                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Total Pago</p>
+                    <p id="totalFinal" class="text-4xl font-black text-slate-900 dark:text-white tracking-tight">R$ 0,00</p>
+                </div>
+            </div>
+
+            <div class="flex flex-col gap-4 pt-4">
+                <div id="actionContainer" class="w-full">
+                    </div>
+                <button onclick="compartilharVoucher()" class="w-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 py-3 rounded-[1rem] font-bold text-xs uppercase hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors flex items-center justify-center gap-2">
+                    <i data-lucide="share-2" class="w-4 h-4"></i> COMPARTILHAR VOUCHER
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
+    <script>
+        lucide.createIcons();
+        function toggleTheme() { document.documentElement.classList.toggle('dark'); const isDark = document.documentElement.classList.contains('dark'); document.getElementById('themeIcon').setAttribute('data-lucide', isDark ? 'sun' : 'moon'); lucide.createIcons(); }
+
+        let currentRentalId = null;
+
+        // Ação Exata de Compartilhamento Nativo
+        function compartilharVoucher() {
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Comprovante RYT',
+                    text: 'Acesse o comprovante seguro da nossa locação na RYT:',
+                    url: window.location.href
+                }).catch(err => console.log('Erro no share:', err));
+            } else {
+                navigator.clipboard.writeText(window.location.href);
+                alert("Link do voucher copiado! Pode enviar no WhatsApp.");
+            }
+        }
+
+        function mostrarErro(mensagem) {
+            const icon = document.getElementById('loaderIcon');
+            const text = document.getElementById('loaderText');
+            const btn = document.getElementById('btnVoltarErro');
+            
+            icon.setAttribute('data-lucide', 'alert-triangle');
+            icon.classList.remove('animate-spin', 'text-teal-500');
+            icon.classList.add('text-red-500');
+            
+            text.classList.remove('animate-pulse', 'text-slate-500');
+            text.classList.add('text-red-500');
+            text.innerHTML = `<strong>Erro de Banco de Dados:</strong><br><span class="text-xs lowercase normal-case mt-2 block opacity-80">${mensagem}</span>`;
+            
+            btn.classList.remove('hidden');
+            lucide.createIcons();
+        }
+
+        function renderizarStatus(status) {
+            const statusBadge = document.getElementById('statusBadge');
+            const actionContainer = document.getElementById('actionContainer');
+            const btnCheckinHTML = `<button onclick="iniciarCheckin()" class="w-full bg-gradient-to-r from-teal-600 to-teal-500 text-white py-4 rounded-[1.5rem] font-black text-xs uppercase tracking-widest shadow-lg hover:-translate-y-1 transition-all flex items-center justify-center gap-2"><i data-lucide="camera" class="w-4 h-4"></i> INICIAR CHECK-IN</button>`;
+
+            if (status === 'confirmed') {
+                statusBadge.className = "mt-5 inline-flex items-center gap-2 bg-blue-500/20 text-blue-400 px-5 py-2 rounded-full border border-blue-500/30";
+                statusBadge.innerHTML = `<i data-lucide="clock" class="w-4 h-4"></i><span class="text-[10px] font-black uppercase tracking-widest">Aguardando Retirada</span>`;
+                actionContainer.innerHTML = btnCheckinHTML;
+            } 
+            else if (status === 'in_use') {
+                statusBadge.className = "mt-5 inline-flex items-center gap-2 bg-amber-500/20 text-amber-400 px-5 py-2 rounded-full border border-amber-500/30";
+                statusBadge.innerHTML = `<i data-lucide="package-open" class="w-4 h-4"></i><span class="text-[10px] font-black uppercase tracking-widest">Em Uso</span>`;
+                actionContainer.innerHTML = `<div class="bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400 p-3 rounded-xl text-center text-xs font-bold border border-amber-200 dark:border-amber-800">Check-in realizado. Use com cuidado!</div>`;
+            } 
+            else if (status === 'completed') {
+                statusBadge.className = "mt-5 inline-flex items-center gap-2 bg-emerald-500/20 text-emerald-400 px-5 py-2 rounded-full border border-emerald-500/30";
+                statusBadge.innerHTML = `<i data-lucide="check-circle" class="w-4 h-4"></i><span class="text-[10px] font-black uppercase tracking-widest">Devolvido</span>`;
+                actionContainer.innerHTML = `<div class="bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400 p-3 rounded-xl text-center text-xs font-bold border border-emerald-200 dark:border-emerald-800">Aluguel finalizado com sucesso!</div>`;
+            }
+            else if (status === 'cancelled') {
+                statusBadge.className = "mt-5 inline-flex items-center gap-2 bg-red-500/20 text-red-400 px-5 py-2 rounded-full border border-red-500/30";
+                statusBadge.innerHTML = `<i data-lucide="x-circle" class="w-4 h-4"></i><span class="text-[10px] font-black uppercase tracking-widest">Cancelado</span>`;
+                actionContainer.innerHTML = `<div class="bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 p-3 rounded-xl text-center text-xs font-bold border border-red-200 dark:border-red-800">Esta reserva foi cancelada.</div>`;
+            }
+            lucide.createIcons();
+        }
+
+        async function carregarVoucher() {
+            const id = new URLSearchParams(window.location.search).get('id');
+            if(!id) return window.location.href = 'dashboard.html';
+            currentRentalId = id;
+
+            try {
+                const { data: rental, error: rentalErr } = await supabaseClient.from('rentals').select('*').eq('id', id).single();
+                if (rentalErr) throw new Error("Erro ao buscar a reserva.");
+                if (!rental) throw new Error("A reserva não existe.");
+
+                const { data: item } = await supabaseClient.from('items').select('*').eq('id', rental.item_id).single();
+                const { data: renter } = await supabaseClient.from('profiles').select('*').eq('id', rental.renter_id).single();
+                
+                let owner = null;
+                if (item && item.owner_id) {
+                    const { data: ownerData } = await supabaseClient.from('profiles').select('*').eq('id', item.owner_id).single();
+                    owner = ownerData;
+                }
+
+                document.getElementById('rentalId').innerText = rental.id.substring(0,8).toUpperCase();
+                document.getElementById('itemImg').src = item?.image_url || 'https://via.placeholder.com/150';
+                document.getElementById('itemTitle').innerText = item?.title || 'Item Indisponível';
+                document.getElementById('itemLoc').innerText = item ? `${item.city || 'Localidade'}, ${item.state_code || ''}` : 'Local não informado';
+                
+                document.getElementById('ownerName').innerText = owner?.full_name || 'Locador';
+                document.getElementById('ownerImg').src = owner?.avatar_url || 'https://via.placeholder.com/100';
+                
+                document.getElementById('renterName').innerText = renter?.full_name || 'Locatário';
+                document.getElementById('renterImg').src = renter?.avatar_url || 'https://via.placeholder.com/100';
+
+                document.getElementById('payMethod').innerText = rental.payment_method || 'PIX';
+                
+                if (rental.total_price) {
+                    document.getElementById('totalFinal').innerText = `R$ ${rental.total_price.toFixed(2)}`;
+                } else if (item?.daily_price) {
+                    const d1 = new Date(rental.start_date); const d2 = new Date(rental.end_date);
+                    const dias = Math.ceil((d2 - d1) / (1000 * 60 * 60 * 24)) + 1;
+                    document.getElementById('totalFinal').innerText = `R$ ${((dias * item.daily_price) * 1.05).toFixed(2)}`;
+                }
+
+                renderizarStatus(rental.status);
+
+                document.getElementById('loader').classList.add('hidden');
+                document.getElementById('ticketContent').classList.remove('hidden');
+                document.getElementById('ticketContent').classList.add('animate-in', 'zoom-in', 'duration-500');
+
+                supabaseClient
+                    .channel(`voucher_updates_${id}`)
+                    .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'rentals', filter: `id=eq.${id}` }, payload => {
+                        console.log('Status atualizado em tempo real!', payload.new.status);
+                        renderizarStatus(payload.new.status);
+                    })
+                    .subscribe();
+                
+            } catch (err) {
+                console.error(err);
+                mostrarErro(err.message);
+            }
+        }
+
+        function iniciarCheckin() {
+            if(currentRentalId) window.location.href = `checkin.html?id=${currentRentalId}`;
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            carregarVoucher();
+        });
+    </script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js').catch(err => console.log('Erro no PWA:', err));
+            });
+        }
+    </script>
+</body>
+</html>

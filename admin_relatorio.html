@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relatório de Incidente - RYT</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f8fafc; color: #0f172a; }
+        @media print {
+            body { background: white; }
+            .no-print { display: none !important; }
+            .print-break { page-break-before: always; }
+        }
+    </style>
+</head>
+<body class="p-8">
+
+    <div class="max-w-4xl mx-auto bg-white p-10 rounded-xl shadow-sm border border-slate-200">
+        <div class="flex justify-between items-center mb-8 no-print border-b pb-4">
+            <h1 class="text-xl font-black text-slate-800">Painel Administrativo</h1>
+            <button onclick="window.print()" class="bg-slate-900 text-white px-6 py-2 rounded-lg font-bold text-sm shadow-md hover:bg-slate-800 transition-colors">🖨️ Salvar como PDF / Imprimir</button>
+        </div>
+
+        <header class="text-center border-b-2 border-slate-900 pb-6 mb-8">
+            <h1 class="text-4xl font-black tracking-tighter mb-2">RYT<span class="text-teal-500">Alugue</span></h1>
+            <h2 class="text-xl font-bold uppercase tracking-widest text-slate-600">Dossiê de Locação e Resolução</h2>
+            <p class="text-sm text-slate-500 mt-2">Documento gerado para fins comprobatórios e legais da plataforma.</p>
+            <p class="text-xs text-slate-400 mt-1">ID da Locação: <span id="rentalIdDisplay" class="font-mono text-slate-800">Carregando...</span></p>
+        </header>
+
+        <div id="loading" class="text-center py-10 font-bold text-slate-500 flex flex-col items-center justify-center gap-3">
+            <svg class="animate-spin h-8 w-8 text-teal-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+            <span id="loadingText">Autenticando e buscando dados no banco...</span>
+        </div>
+        
+        <div id="relatorioContent" class="hidden space-y-8">
+            
+            <div id="painelDisputa" class="hidden bg-red-50 border-2 border-red-500 rounded-xl p-6 no-print">
+                <div class="flex items-start gap-4">
+                    <div class="text-3xl">⚠️</div>
+                    <div class="flex-1">
+                        <h3 class="font-black text-red-700 text-lg uppercase tracking-wide">Avaria Relatada - Ação Necessária</h3>
+                        <p class="text-red-900 font-medium mt-1">O locatário relatou o seguinte problema no momento da devolução:</p>
+                        <div class="bg-white p-4 rounded-lg border border-red-200 mt-3 mb-4 shadow-sm">
+                            <p id="relatoAvariaTexto" class="text-slate-800 italic font-medium">"Aguardando texto..."</p>
+                        </div>
+                        
+                        <div id="botoesResolucao" class="hidden">
+                            <p class="text-xs text-red-600 mb-4">Como administrador e dono do item, após entrar em acordo com o locatário, utilize os botões abaixo para encerrar o caso e liberar o painel.</p>
+                            <div class="flex gap-3">
+                                <button onclick="resolverDisputa('acordo_amigavel')" class="flex-1 bg-emerald-600 text-white py-3 rounded-lg font-black text-sm hover:bg-emerald-700 transition-colors shadow-sm">
+                                    RESOLVIDO (SEM CUSTOS / AMIGÁVEL)
+                                </button>
+                                <button onclick="resolverDisputa('cobrado')" class="flex-1 bg-slate-900 text-white py-3 rounded-lg font-black text-sm hover:bg-slate-800 transition-colors shadow-sm">
+                                    RESOLVIDO (VALOR COBRADO EXTERNAMENTE)
+                                </button>
+                            </div>
+                        </div>
+
+                        <div id="mensagemAguardando" class="hidden">
+                            <p class="text-sm font-bold text-red-600 bg-red-100 p-4 rounded-lg text-center border border-red-200">
+                                ⏳ Aguardando o proprietário do equipamento avaliar a situação e encerrar a disputa.
+                            </p>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <section class="bg-slate-50 p-6 rounded-xl border border-slate-200">
+                <h3 class="font-black text-lg mb-4 uppercase text-slate-800 border-b pb-2">1. Dados da Locação</h3>
+                <div class="grid grid-cols-2 gap-4 text-sm">
+                    <div><span class="font-bold text-slate-500">Equipamento:</span> <span id="itemTitle" class="font-bold text-slate-900">...</span></div>
+                    <div><span class="font-bold text-slate-500">Valor Total Pago:</span> <span id="itemPrice" class="font-bold text-slate-900">...</span></div>
+                    <div><span class="font-bold text-slate-500">Data de Início (Retirada):</span> <span id="dateStart" class="font-bold text-slate-900">...</span></div>
+                    <div><span class="font-bold text-slate-500">Data Fim (Devolução):</span> <span id="dateEnd" class="font-bold text-slate-900">...</span></div>
+                    <div><span class="font-bold text-slate-500">Status Atual no Sistema:</span> <span id="statusAtual" class="font-black uppercase text-slate-800 bg-slate-200 px-2 py-1 rounded">...</span></div>
+                </div>
+            </section>
+
+            <section class="border-l-4 border-blue-500 pl-6 py-2">
+                <h3 class="font-black text-lg mb-4 uppercase text-slate-800">2. Identificação do Locatário (Tomador)</h3>
+                <div class="flex items-start gap-6">
+                    <img id="renterAvatar" src="" class="w-24 h-24 rounded-lg object-cover border-2 border-slate-200 shadow-sm" alt="Foto do Locatário">
+                    <div class="space-y-2 text-sm">
+                        <p><span class="font-bold text-slate-500">Nome Completo:</span> <span id="renterName" class="font-bold text-lg text-slate-900">...</span></p>
+                        <p><span class="font-bold text-slate-500">ID de Usuário (UUID):</span> <span id="renterId" class="font-mono text-slate-700">...</span></p>
+                        <p><span class="font-bold text-slate-500">E-mail:</span> <span id="renterEmail" class="font-bold text-slate-900">Consulta via Painel Auth</span></p>
+                        <p><span class="font-bold text-slate-500">Membro desde:</span> <span id="renterCreated" class="font-bold text-slate-900">...</span></p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="border-l-4 border-teal-500 pl-6 py-2">
+                <h3 class="font-black text-lg mb-4 uppercase text-slate-800">3. Identificação do Proprietário (Locador)</h3>
+                <div class="space-y-2 text-sm">
+                    <p><span class="font-bold text-slate-500">Nome:</span> <span id="ownerName" class="font-bold text-slate-900">...</span></p>
+                    <p><span class="font-bold text-slate-500">ID de Usuário (UUID):</span> <span id="ownerId" class="font-mono text-slate-700">...</span></p>
+                </div>
+            </section>
+
+            <section class="print-break pt-8">
+                <h3 class="font-black text-lg mb-4 uppercase text-slate-800 border-b border-slate-900 pb-2">4. Registros Fotográficos (Check-in)</h3>
+                <p class="text-sm text-slate-600 mb-6">As imagens abaixo foram anexadas ao sistema no momento da retirada do equipamento, atestando o estado do bem entregue.</p>
+                
+                <div id="checkinPhotosGrid" class="grid grid-cols-2 gap-6"></div>
+            </section>
+            
+            <footer class="mt-16 pt-8 border-t border-slate-300 text-center text-xs text-slate-500">
+                <p>Documento gerado eletronicamente pelo painel administrativo da RYT.com.br.</p>
+                <p>O presente relatório atesta as interações digitais registradas na base de dados da plataforma.</p>
+            </footer>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const rentalId = urlParams.get('id');
+
+        function formatarData(iso) {
+            if(!iso) return 'N/A';
+            const d = new Date(iso);
+            return d.toLocaleDateString('pt-BR') + ' às ' + d.toLocaleTimeString('pt-BR');
+        }
+
+        async function checkAuth() {
+            const { data: { session }, error } = await supabaseClient.auth.getSession();
+            if (error || !session) {
+                document.getElementById('loadingText').innerText = "Acesso Negado: Você precisa fazer login.";
+                setTimeout(() => window.location.href = 'login.html', 2000);
+                return null;
+            }
+            return session.user;
+        }
+
+        async function gerarRelatorio() {
+            if (!rentalId) {
+                document.getElementById('loadingText').innerText = "Erro: Nenhum ID de locação fornecido na URL.";
+                document.querySelector('.animate-spin').classList.add('hidden');
+                return;
+            }
+
+            const user = await checkAuth();
+            if (!user) return; 
+
+            document.getElementById('rentalIdDisplay').innerText = rentalId;
+
+            // Busca os dados
+            const { data: rentalData, error: rentalError } = await supabaseClient
+                .from('rentals')
+                .select('*, items(*)')
+                .eq('id', rentalId)
+                .single();
+
+            if (rentalError || !rentalData) {
+                document.getElementById('loadingText').innerText = "Erro ao localizar os dados desta locação no banco.";
+                document.querySelector('.animate-spin').classList.add('hidden');
+                console.error(rentalError);
+                return;
+            }
+
+            const { data: renterData } = await supabaseClient.from('profiles').select('*').eq('id', rentalData.renter_id).single();
+            const { data: ownerData } = await supabaseClient.from('profiles').select('*').eq('id', rentalData.items.owner_id).single();
+
+            // Preenche o HTML Básico
+            document.getElementById('itemTitle').innerText = rentalData.items.title;
+            document.getElementById('itemPrice').innerText = `R$ ${rentalData.total_price || 'N/A'}`;
+            document.getElementById('dateStart').innerText = formatarData(rentalData.start_date);
+            document.getElementById('dateEnd').innerText = formatarData(rentalData.end_date);
+            
+            const badgeStatus = document.getElementById('statusAtual');
+            badgeStatus.innerText = rentalData.status;
+            
+            // LÓGICA DA DISPUTA DE ACORDO COM O USUÁRIO LOGADO
+            if (rentalData.status === 'issue_reported') {
+                badgeStatus.className = "font-black uppercase text-white bg-red-600 px-3 py-1 rounded shadow-sm";
+                document.getElementById('painelDisputa').classList.remove('hidden');
+                document.getElementById('relatoAvariaTexto').innerText = rentalData.return_notes || "Nenhum texto adicional fornecido pelo usuário.";
+
+                // Validação: Só o dono do item vê os botões de resolver
+                if (user.id === rentalData.items.owner_id) {
+                    document.getElementById('botoesResolucao').classList.remove('hidden');
+                } else {
+                    document.getElementById('mensagemAguardando').classList.remove('hidden');
+                }
+            }
+
+            // Preenche Usuários
+            if (renterData) {
+                document.getElementById('renterName').innerText = renterData.full_name || 'Usuário RYT';
+                document.getElementById('renterId').innerText = renterData.id;
+                document.getElementById('renterAvatar').src = renterData.avatar_url || 'https://via.placeholder.com/150';
+                document.getElementById('renterCreated').innerText = formatarData(renterData.created_at);
+            }
+            if (ownerData) {
+                document.getElementById('ownerName').innerText = ownerData.full_name || 'Locador';
+                document.getElementById('ownerId').innerText = ownerData.id;
+            }
+
+            // LÓGICA BLINDADA DE LEITURA DAS FOTOS
+            let fotosArray = [];
+            if (rentalData.checkin_photos) {
+                if (Array.isArray(rentalData.checkin_photos)) {
+                    fotosArray = rentalData.checkin_photos;
+                } else if (typeof rentalData.checkin_photos === 'string') {
+                    try {
+                        // Trata o caso de ter retornado como string de array do Postgres
+                        if(rentalData.checkin_photos.startsWith('{')) {
+                            fotosArray = rentalData.checkin_photos.slice(1, -1).split(',').map(s => s.replace(/^"|"$/g, '').trim());
+                        } else {
+                            fotosArray = JSON.parse(rentalData.checkin_photos);
+                        }
+                    } catch(e) {
+                        fotosArray = [rentalData.checkin_photos];
+                    }
+                }
+            }
+
+            const photosContainer = document.getElementById('checkinPhotosGrid');
+            if (fotosArray.length > 0) {
+                photosContainer.innerHTML = fotosArray.map(url => `
+                    <div class="border border-slate-200 p-2 rounded-lg bg-white shadow-sm">
+                        <img src="${url}" class="w-full h-48 object-cover rounded">
+                        <p class="text-[10px] text-center mt-2 text-slate-400 font-mono">Registro: Check-in</p>
+                    </div>
+                `).join('');
+            } else {
+                photosContainer.innerHTML = `<p class="col-span-2 text-slate-400 text-sm italic border-2 border-dashed border-slate-200 p-8 text-center rounded-xl">Nenhuma foto de check-in registrada no sistema para esta locação. O Check-in pode ter sido feito sem anexo.</p>`;
+            }
+
+            // Exibe o painel
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('relatorioContent').classList.remove('hidden');
+        }
+
+        async function resolverDisputa(tipoResolucao) {
+            if(!confirm("Tem certeza que deseja marcar este incidente como resolvido? O status do aluguel mudará para 'Concluído' e a avaliação será liberada para os usuários.")) return;
+
+            const notaAdmin = tipoResolucao === 'acordo_amigavel' ? 'Resolvido: Sem custos' : 'Resolvido: Cobrança externa realizada';
+            const { error } = await supabaseClient
+                .from('rentals')
+                .update({ 
+                    status: 'completed', 
+                    return_notes: document.getElementById('relatoAvariaTexto').innerText + ` | [Admin: ${notaAdmin}]` 
+                })
+                .eq('id', rentalId);
+
+            if (error) {
+                alert("Erro ao atualizar o banco de dados: " + error.message);
+            } else {
+                alert("✅ Incidente resolvido com sucesso! O painel dos usuários foi normalizado.");
+                window.location.reload(); 
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', gerarRelatorio);
+    </script>
+</body>
+</html>

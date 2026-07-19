@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RYT - Entrar</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0f172a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="RYT">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <script>tailwind.config = { darkMode: 'class' }</script>
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; transition: background-color 0.4s ease, color 0.4s ease; }
+        .glass-panel { backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
+    </style>
+</head>
+<body class="bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-950 min-h-screen flex flex-col items-center justify-center p-6 text-slate-900 dark:text-slate-100 relative">
+
+    <button onclick="toggleTheme()" class="absolute top-6 right-6 p-3 bg-white/50 dark:bg-slate-800/50 rounded-full hover:scale-110 transition-transform shadow-sm">
+        <i data-lucide="moon" id="themeIcon" class="w-5 h-5 text-teal-600 dark:text-teal-400"></i>
+    </button>
+
+    <div class="max-w-md w-full bg-white/80 dark:bg-slate-900/80 glass-panel rounded-[3rem] shadow-2xl shadow-slate-200/50 dark:shadow-black/50 border border-slate-200/60 dark:border-slate-800/60 p-10 text-center animate-in fade-in slide-in-from-bottom-4 duration-500">
+        
+        <div class="w-20 h-20 bg-gradient-to-tr from-teal-500 to-emerald-400 rounded-[2rem] flex items-center justify-center mx-auto mb-6 shadow-lg shadow-teal-500/30">
+            <i data-lucide="shield-check" class="w-10 h-10 text-white"></i>
+        </div>
+
+        <h1 class="text-4xl font-black tracking-tighter mb-2">RYT<span class="text-teal-500">.</span>com.br</h1>
+        <p class="text-slate-500 dark:text-slate-400 font-bold text-sm mb-10">Acesso rápido e seguro à plataforma.</p>
+
+        <div class="space-y-4">
+            <button onclick="loginOAuth('google')" class="w-full flex items-center justify-center gap-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white py-4 rounded-2xl font-black text-sm hover:border-teal-500 hover:bg-teal-50 dark:hover:bg-teal-900/20 transition-all hover:-translate-y-1 shadow-sm">
+                <img src="https://www.svgrepo.com/show/475656/google-color.svg" class="w-5 h-5" alt="Google">
+                Continuar com Google
+            </button>
+
+            <button onclick="loginOAuth('azure')" class="w-full flex items-center justify-center gap-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white py-4 rounded-2xl font-black text-sm hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all hover:-translate-y-1 shadow-sm">
+                <svg class="w-5 h-5" viewBox="0 0 21 21" xmlns="http://www.w3.org/2000/svg">
+                    <title>Microsoft</title>
+                    <path d="m10.156.469h-9.687v9.687h9.687zm0 10.313h-9.687v9.688h9.687zm10.313-10.313h-9.688v9.687h9.688zm0 10.313h-9.688v9.688h9.688z" fill="#f25022"/>
+                    <path d="m10.156.469h-9.687v9.687h9.687zm0 10.313h-9.687v9.688h9.687zm10.313-10.313h-9.688v9.687h9.688zm0 10.313h-9.688v9.688h9.688z" fill="#7fba00" transform="translate(10.313)"/>
+                    <path d="m10.156.469h-9.687v9.687h9.687zm0 10.313h-9.687v9.688h9.687zm10.313-10.313h-9.688v9.687h9.688zm0 10.313h-9.688v9.688h9.688z" fill="#00a4ef" transform="translate(0 10.313)"/>
+                    <path d="m10.156.469h-9.687v9.687h9.687zm0 10.313h-9.687v9.688h9.687zm10.313-10.313h-9.688v9.687h9.688zm0 10.313h-9.688v9.688h9.688z" fill="#ffb900" transform="translate(10.313 10.313)"/>
+                </svg>
+                Continuar com Microsoft
+            </button>
+
+            <button onclick="loginOAuth('facebook')" class="w-full flex items-center justify-center gap-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white py-4 rounded-2xl font-black text-sm hover:border-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all hover:-translate-y-1 shadow-sm">
+                <img src="https://www.svgrepo.com/show/475647/facebook-color.svg" class="w-5 h-5" alt="Facebook">
+                Continuar com Meta
+            </button>
+        </div>
+
+        <div class="mt-10 pt-6 border-t border-slate-200/60 dark:border-slate-800/60">
+            <p class="text-xs font-bold text-slate-400 leading-relaxed">
+                Ao continuar, você concorda com nossos <br>
+                <a href="termos.html" class="text-teal-600 dark:text-teal-400 hover:underline">Termos de Serviço e Políticas de Privacidade</a>.
+            </p>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
+    <script>
+        lucide.createIcons();
+        function toggleTheme() { document.documentElement.classList.toggle('dark'); const isDark = document.documentElement.classList.contains('dark'); document.getElementById('themeIcon').setAttribute('data-lucide', isDark ? 'sun' : 'moon'); lucide.createIcons(); }
+
+        // LÓGICA DE LOGIN OAUTH (SOCIAL)
+        async function loginOAuth(providerName) {
+            const { data, error } = await supabaseClient.auth.signInWithOAuth({
+                provider: providerName,
+                options: {
+                    redirectTo: window.location.origin + '/dashboard.html'
+                }
+            });
+            if (error) alert("Erro ao conectar com " + providerName + ": " + error.message);
+        }
+    </script>
+    <script>
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('sw.js').catch(err => console.log('Erro no PWA:', err));
+        });
+    }
+</script>
+</body>
+</html>
