@@ -97,7 +97,7 @@
                         <i data-lucide="copy" class="w-4 h-4"></i>
                     </button>
                 </div>
-                <button onclick="confirmarPagamentoPix()" class="w-full bg-teal-500 hover:bg-teal-600 text-white py-4 rounded-xl font-black text-sm transition-all flex items-center justify-center gap-2 shadow-lg shadow-teal-500/30 mt-4">
+                <button onclick="confirmarPagamentoPix(event)" class="w-full bg-teal-500 hover:bg-teal-600 text-white py-4 rounded-xl font-black text-sm transition-all flex items-center justify-center gap-2 shadow-lg shadow-teal-500/30 mt-4">
                     <i data-lucide="check-circle" class="w-5 h-5"></i> JÁ REALIZEI O PAGAMENTO
                 </button>
             </div>
@@ -200,19 +200,18 @@
         function formatDate(iso) { const d = new Date(iso); const hoje = new Date(); if(d.toDateString() === hoje.toDateString()) return formatTime(iso); hoje.setDate(hoje.getDate() - 1); if(d.toDateString() === hoje.toDateString()) return "Ontem"; return d.toLocaleDateString('pt-BR', {day:'2-digit', month:'2-digit'}); }
         function formatDataSimples(dataStr) { if (!dataStr) return ''; const partes = dataStr.split('-'); return `${partes[2]}/${partes[1]}`; }
 
+        // NOVA CONFIGURAÇÃO DE STATUS COM A ROTA DE ANÁLISE DE PAGAMENTO
         const statusConfig = {
             'pending_approval': { label: 'Solicitações Pendentes', color: 'bg-purple-500', open: true, order: 0 },
             'awaiting_payment': { label: 'Aguardando Pagamento', color: 'bg-orange-500', open: true, order: 1 },
-            'in_use': { label: 'Equipamento em Uso', color: 'bg-amber-500', open: true, order: 2 },
+            'payment_under_review': { label: 'Pagamento em Análise (RYT)', color: 'bg-yellow-500', open: true, order: 2 },
             'confirmed': { label: 'Aguardando Retirada', color: 'bg-blue-500', open: true, order: 3 },
-            'issue_reported': { label: 'Em Análise (Avaria)', color: 'bg-red-500', open: true, order: 4 },
-            'completed': { label: 'Concluídos', color: 'bg-emerald-500', open: false, order: 5 },
-            'cancelled': { label: 'Cancelados', color: 'bg-slate-500', open: false, order: 6 }
+            'in_use': { label: 'Equipamento em Uso', color: 'bg-amber-500', open: true, order: 4 },
+            'issue_reported': { label: 'Em Análise (Avaria)', color: 'bg-red-500', open: true, order: 5 },
+            'completed': { label: 'Concluídos', color: 'bg-emerald-500', open: false, order: 6 },
+            'cancelled': { label: 'Cancelados', color: 'bg-slate-500', open: false, order: 7 }
         };
 
-        // ==========================================
-        // FUNÇÃO DE VISUALIZAÇÃO DE CONTRATO (NOVA)
-        // ==========================================
         window.visualizarContrato = async function(rentalId) {
             try {
                 const { data: contract, error } = await supabaseClient
@@ -314,7 +313,7 @@
         }
 
         window.alternarStatusItem = async function(event, id, statusAtual) { event.preventDefault(); event.stopPropagation(); const btn = event.currentTarget; const iconeOriginal = btn.innerHTML; btn.innerHTML = '<i data-lucide="loader-2" class="w-3.5 h-3.5 animate-spin text-slate-500"></i>'; lucide.createIcons(); const novoStatus = !statusAtual; const { error } = await supabaseClient.from('items').update({ is_active: novoStatus }).eq('id', id); if (error) { alert("Erro: " + error.message); btn.innerHTML = iconeOriginal; lucide.createIcons(); } else { loadDashboard(); } };
-        window.excluirItem = async function(event, id) { event.preventDefault(); event.stopPropagation(); const btn = event.currentTarget; const iconeOriginal = btn.innerHTML; const { data: rent } = await supabaseClient.from('rentals').select('id').eq('item_id', id).in('status', ['confirmed', 'in_use', 'issue_reported', 'awaiting_payment', 'pending_approval']); if (rent && rent.length > 0) return alert("⚠️ Item possui aluguéis pendentes. Aguarde ou pause o anúncio."); if (!confirm("Excluir este anúncio definitivamente?")) return; btn.innerHTML = '<i data-lucide="loader-2" class="w-3.5 h-3.5 animate-spin text-red-500"></i>'; lucide.createIcons(); const { error } = await supabaseClient.from('items').delete().eq('id', id); if (error) { if (error.code === '23503') { alert("ℹ️ Item possui histórico financeiro. Ele foi PAUSADO."); await supabaseClient.from('items').update({ is_active: false }).eq('id', id); loadDashboard(); } else { alert("Erro: " + error.message); btn.innerHTML = iconeOriginal; lucide.createIcons(); } } else { loadDashboard(); } };
+        window.excluirItem = async function(event, id) { event.preventDefault(); event.stopPropagation(); const btn = event.currentTarget; const iconeOriginal = btn.innerHTML; const { data: rent } = await supabaseClient.from('rentals').select('id').eq('item_id', id).in('status', ['confirmed', 'in_use', 'issue_reported', 'awaiting_payment', 'pending_approval', 'payment_under_review']); if (rent && rent.length > 0) return alert("⚠️ Item possui aluguéis pendentes. Aguarde ou pause o anúncio."); if (!confirm("Excluir este anúncio definitivamente?")) return; btn.innerHTML = '<i data-lucide="loader-2" class="w-3.5 h-3.5 animate-spin text-red-500"></i>'; lucide.createIcons(); const { error } = await supabaseClient.from('items').delete().eq('id', id); if (error) { if (error.code === '23503') { alert("ℹ️ Item possui histórico financeiro. Ele foi PAUSADO."); await supabaseClient.from('items').update({ is_active: false }).eq('id', id); loadDashboard(); } else { alert("Erro: " + error.message); btn.innerHTML = iconeOriginal; lucide.createIcons(); } } else { loadDashboard(); } };
 
         // SISTEMA DE ACEITE DO LOCADOR COM NEGOCIAÇÃO
         window.responderSolicitacao = async function(event, id, acao, valorAtualEstimado) {
@@ -358,7 +357,7 @@
             }
         };
 
-        // SISTEMA DE PAGAMENTO DO LOCATÁRIO
+        // SISTEMA DE PAGAMENTO DO LOCATÁRIO (ALTERADO PARA ANÁLISE)
         window.abrirModalPagamento = function(id, valor) {
             pixRentalId = id;
             document.getElementById('pixModalValor').innerText = `R$ ${valor.toFixed(2)}`;
@@ -370,25 +369,28 @@
             pixRentalId = null;
         };
         
-        window.confirmarPagamentoPix = async function() {
+        window.confirmarPagamentoPix = async function(event) {
             if(!pixRentalId) return;
-            const btn = document.querySelector('#modalPix button.bg-teal-500');
+            const btn = event.currentTarget;
+            const originalHTML = btn.innerHTML;
             btn.innerHTML = '<i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i> PROCESSANDO...';
+            lucide.createIcons();
             
-            const { error } = await supabaseClient.from('rentals').update({ status: 'confirmed' }).eq('id', pixRentalId);
+            // O Status agora vai para Análise ao invés de Confirmed
+            const { error } = await supabaseClient.from('rentals').update({ status: 'payment_under_review' }).eq('id', pixRentalId);
             if(!error) {
-                alert("Pagamento confirmado! O chat agora está disponível para combinar a retirada.");
+                alert("Aviso enviado! A RYT está analisando o seu pagamento. O status será atualizado em breve.");
                 fecharModalPix();
                 loadDashboard();
             } else {
-                alert("Erro ao confirmar pagamento: " + error.message);
+                alert("Erro ao confirmar envio do pagamento: " + error.message);
             }
-            btn.innerHTML = '<i data-lucide="check-circle" class="w-5 h-5"></i> JÁ REALIZEI O PAGAMENTO';
+            btn.innerHTML = originalHTML;
             lucide.createIcons();
         };
 
         function renderRentalsGrouped(rentalsArray, isRenterView) {
-            const grouped = { 'pending_approval': [], 'awaiting_payment': [], 'in_use': [], 'confirmed': [], 'completed': [], 'cancelled': [], 'issue_reported': [] };
+            const grouped = { 'pending_approval': [], 'awaiting_payment': [], 'payment_under_review': [], 'in_use': [], 'confirmed': [], 'completed': [], 'cancelled': [], 'issue_reported': [] };
             rentalsArray.forEach(r => { if(grouped[r.status]) grouped[r.status].push(r); });
 
             let htmlOutput = '';
@@ -420,6 +422,8 @@
                             actionHtml = `
                                 <button onclick="abrirModalPagamento('${r.id}', ${r.total_price})" class="flex-1 bg-teal-500 text-white py-3 rounded-xl text-[10px] font-black hover:bg-teal-600 transition-colors text-center uppercase shadow-sm flex items-center justify-center gap-1.5"><i data-lucide="qr-code" class="w-3 h-3"></i> PAGAR AGORA (PIX)</button>
                                 <button onclick="cancelarAluguel('${r.id}', '${r.items?.owner_id}', '${r.item_id}')" class="shrink-0 px-4 py-3 bg-red-50 text-red-500 border border-red-200 rounded-xl hover:bg-red-100 transition-colors flex justify-center items-center"><i data-lucide="x" class="w-4 h-4"></i></button>`;
+                        } else if (r.status === 'payment_under_review') {
+                            actionHtml = `<span class="flex-1 block bg-yellow-50 text-yellow-600 border border-yellow-200 py-3 rounded-xl text-[10px] font-black uppercase text-center flex items-center justify-center gap-1.5"><i data-lucide="shield-alert" class="w-3 h-3"></i> AGUARDANDO CONFIRMAÇÃO DA RYT</span>`;
                         } else if (r.status === 'confirmed') {
                             actionHtml = `
                                 <button onclick="abrirModalEvidencia('${r.id}', 'checkin')" class="flex-1 bg-emerald-500 text-white py-3 px-3 rounded-xl text-[10px] font-black hover:bg-emerald-600 transition-colors text-center uppercase shadow-sm">CHECK-IN</button>
@@ -442,6 +446,8 @@
                             `;
                         } else if (r.status === 'awaiting_payment') {
                             actionHtml = `<span class="flex-1 block bg-orange-50 text-orange-600 border border-orange-200 py-3 rounded-xl text-[10px] font-black uppercase text-center flex items-center justify-center gap-1.5"><i data-lucide="clock" class="w-3 h-3"></i> AGUARDANDO PAGAMENTO (LOCATÁRIO)</span>`;
+                        } else if (r.status === 'payment_under_review') {
+                            actionHtml = `<span class="flex-1 block bg-yellow-50 text-yellow-600 border border-yellow-200 py-3 rounded-xl text-[10px] font-black uppercase text-center flex items-center justify-center gap-1.5"><i data-lucide="shield-alert" class="w-3 h-3"></i> RYT ANALISANDO PAGAMENTO</span>`;
                         } else if (r.status === 'issue_reported') {
                             actionHtml = `<a href="admin_relatorio.html?id=${r.id}" class="flex-1 block text-center bg-red-600 text-white py-3 rounded-xl text-[10px] font-black shadow-sm uppercase hover:bg-red-700 transition-colors flex items-center justify-center gap-2"><i data-lucide="file-text" class="w-3 h-3"></i> VER RELATÓRIO / RESOLVER</a>`;
                         } else if (r.status === 'confirmed') {

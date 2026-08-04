@@ -145,7 +145,7 @@
                     <label class="flex items-start gap-3 p-3 mt-2 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl cursor-pointer group relative z-10">
                         <input type="checkbox" id="acceptTermsClientIndex" class="mt-0.5 w-5 h-5 rounded border-slate-300 text-teal-600 focus:ring-teal-500 cursor-pointer" required>
                         <span class="text-[10px] leading-relaxed font-medium text-slate-600 dark:text-slate-300 group-hover:text-slate-800 dark:group-hover:text-white transition-colors">
-                            Li e aceito os <a href="termos.html" target="_blank" onclick="event.stopPropagation()" class="text-teal-600 underline font-bold hover:text-teal-500 relative z-20">Termos de Uso</a> e a <a href="#" onclick="previewContrato(event)" class="text-teal-600 underline font-bold hover:text-teal-500 relative z-20">Prévia do Contrato</a>, declarando ciência de que a RYT atua apenas como intermediadora.
+                            Li e aceito os <a href="termos.html" target="_blank" onclick="event.stopPropagation()" class="text-teal-600 underline font-bold hover:text-teal-500 relative z-20">Termos de Uso</a> e a <button type="button" onclick="previewContrato(event)" class="text-teal-600 underline font-bold hover:text-teal-500 relative z-20">Prévia do Contrato</button>, declarando ciência de que a RYT atua apenas como intermediadora.
                         </span>
                     </label>
 
@@ -177,6 +177,20 @@
                     <button type="button" onclick="fecharCheckout()" class="mt-4 text-xs font-bold text-slate-400 hover:text-slate-600 transition-colors uppercase">Voltar ao início</button>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <div id="previewModal" class="fixed inset-0 bg-slate-900/80 z-[110] flex items-center justify-center hidden modal-blur p-4">
+        <div class="bg-white w-full max-w-2xl h-[90vh] rounded-[2rem] shadow-2xl flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom-8 duration-300">
+            <header class="bg-slate-50 p-4 border-b border-slate-200 flex justify-between items-center shrink-0">
+                <h3 class="font-black text-slate-800 text-sm"><i data-lucide="file-text" class="inline w-4 h-4 text-teal-600 mr-1"></i> Prévia do Contrato</h3>
+                <button type="button" onclick="fecharPreview()" class="p-2 bg-slate-200 hover:bg-slate-300 rounded-full text-slate-600 transition-colors"><i data-lucide="x" class="w-4 h-4"></i></button>
+            </header>
+            <div id="previewContent" class="flex-1 overflow-y-auto p-4 relative bg-white">
+                </div>
+            <footer class="bg-slate-50 p-4 border-t border-slate-200 shrink-0">
+                <button type="button" onclick="fecharPreview()" class="w-full bg-slate-900 text-white py-3 rounded-xl font-black text-xs hover:bg-slate-800 transition-colors">FECHAR PRÉVIA E VOLTAR</button>
+            </footer>
         </div>
     </div>
 
@@ -306,52 +320,41 @@
 
         function gerarMinutaContrato(item, locatario, locador, datas, valorTotal) {
             return `
-            <!DOCTYPE html>
-            <html lang="pt-br">
-            <head>
-                <meta charset="UTF-8">
-                <title>Prévia do Contrato - RYT</title>
-                <style>
-                    body { font-family: Arial, sans-serif; padding: 30px; line-height: 1.6; color: #333; max-width: 800px; margin: 0 auto; position: relative; overflow-x: hidden; }
-                    .watermark { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-35deg); font-size: 80px; font-weight: 900; color: rgba(220, 38, 38, 0.08); white-space: nowrap; pointer-events: none; z-index: -1; text-transform: uppercase; letter-spacing: 8px; user-select: none; }
-                    .header-banner { background-color: #fef2f2; border: 1px solid #fecaca; color: #991b1b; padding: 12px 16px; border-radius: 8px; text-align: center; font-size: 13px; font-weight: bold; margin-bottom: 24px; }
-                    h4 { margin-bottom: 6px; color: #0f172a; margin-top: 24px; }
-                </style>
-            </head>
-            <body>
-                <div class="watermark">MINUTA - PRÉVIA</div>
+            <div style="position: relative; font-family: Arial, sans-serif; padding: 10px; line-height: 1.6; color: #333;">
+                <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-35deg); font-size: 60px; font-weight: 900; color: rgba(220, 38, 38, 0.08); white-space: nowrap; pointer-events: none; z-index: 0; text-transform: uppercase; letter-spacing: 6px; user-select: none;">MINUTA - PRÉVIA</div>
                 
-                <div class="header-banner">
-                    ⚠️ MINUTA DEMONSTRATIVA: Esta é apenas uma prévia das cláusulas. A versão oficial com IP, data/hora e carimbo digital será gerada e salva na plataforma após a confirmação.
+                <div style="position: relative; z-index: 10;">
+                    <div style="background-color: #fef2f2; border: 1px solid #fecaca; color: #991b1b; padding: 12px 16px; border-radius: 8px; text-align: center; font-size: 12px; font-weight: bold; margin-bottom: 24px;">
+                        ⚠️ MINUTA DEMONSTRATIVA: Esta é apenas uma prévia das cláusulas. A versão oficial com IP, data/hora e carimbo digital será gerada e salva na plataforma após a confirmação.
+                    </div>
+
+                    <h2 style="text-align: center; color: #0f172a; margin-bottom: 4px; font-size: 18px;">CONTRATO PARTICULAR DE LOCAÇÃO</h2>
+                    <p style="text-align: center; font-size: 11px; color: #64748b; margin-top: 0;">Modelo Padrão - Plataforma RYT</p>
+                    <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 15px 0;">
+
+                    <h4 style="margin-top: 20px; margin-bottom: 5px; color: #0f172a; font-size: 14px;">1. DAS PARTES</h4>
+                    <p style="font-size: 13px;"><strong>LOCADOR(A):</strong> ${locador.full_name}</p>
+                    <p style="font-size: 13px;"><strong>LOCATÁRIO(A):</strong> ${locatario.full_name}</p>
+
+                    <h4 style="margin-top: 20px; margin-bottom: 5px; color: #0f172a; font-size: 14px;">2. DO OBJETO</h4>
+                    <p style="font-size: 13px;">O presente contrato tem por objeto a locação do item <strong>"${item.title}"</strong>, sob a categoria <strong>${item.category || 'Geral'}</strong>.</p>
+
+                    <h4 style="margin-top: 20px; margin-bottom: 5px; color: #0f172a; font-size: 14px;">3. DO PERÍODO E VALORES ESTIMADOS</h4>
+                    <p style="font-size: 13px;">Período de locação estimado: de <strong>${datas.inicio}</strong> a <strong>${datas.fim}</strong>.</p>
+                    <p style="font-size: 13px;">Valor total estimado: <strong>R$ ${valorTotal.toFixed(2)}</strong>.</p>
+
+                    <h4 style="margin-top: 20px; margin-bottom: 5px; color: #0f172a; font-size: 14px;">4. DA ISENÇÃO DE RESPONSABILIDADE</h4>
+                    <p style="background-color: #f8fafc; padding: 10px; border-left: 4px solid #0d9488; font-size: 12px; color: #334155;">
+                        A plataforma <strong>RYT (ryt.com.br)</strong> atua exclusivamente como intermediadora tecnológica. A negociação, entrega e uso do equipamento são de responsabilidade direta e exclusiva das partes.
+                    </p>
+
+                    <h4 style="margin-top: 20px; margin-bottom: 5px; color: #0f172a; font-size: 14px;">5. DAS OBRIGAÇÕES</h4>
+                    <p style="font-size: 13px;">O LOCATÁRIO declara receber o bem em perfeitas condições de funcionamento e se compromete a devolvê-lo nas mesmas condições ao término do período acordado.</p>
+
+                    <h4 style="margin-top: 20px; margin-bottom: 5px; color: #0f172a; font-size: 14px;">6. DA VALIDADE JURÍDICA</h4>
+                    <p style="font-size: 13px;">A assinatura eletrônica vinculando endereço IP, dispositivo e geolocalização do LOCATÁRIO será efetuada no momento do envio da solicitação, passando a ter validade jurídica após o aceite formal do LOCADOR.</p>
                 </div>
-
-                <h2 style="text-align: center; color: #0f172a; margin-bottom: 4px;">CONTRATO PARTICULAR DE LOCAÇÃO DE BENS MÓVEIS</h2>
-                <p style="text-align: center; font-size: 12px; color: #64748b; margin-top: 0;">Modelo Padrão - Plataforma RYT</p>
-                <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 20px 0;">
-
-                <h4>1. DAS PARTES</h4>
-                <p><strong>LOCADOR(A):</strong> ${locador.full_name}</p>
-                <p><strong>LOCATÁRIO(A):</strong> ${locatario.full_name}</p>
-
-                <h4>2. DO OBJETO</h4>
-                <p>O presente contrato tem por objeto a locação do item <strong>"${item.title}"</strong>, sob a categoria <strong>${item.category || 'Geral'}</strong>.</p>
-
-                <h4>3. DO PERÍODO E VALORES ESTIMADOS</h4>
-                <p>Período de locação estimado: de <strong>${datas.inicio}</strong> a <strong>${datas.fim}</strong>.</p>
-                <p>Valor total estimado: <strong>R$ ${valorTotal.toFixed(2)}</strong>.</p>
-
-                <h4>4. DA ISENÇÃO DE RESPONSABILIDADE DA PLATAFORMA</h4>
-                <p style="background-color: #f8fafc; padding: 12px; border-left: 4px solid #0d9488; font-size: 13px; color: #334155;">
-                    A plataforma <strong>RYT (ryt.com.br)</strong> atua exclusivamente como intermediadora tecnológica de anúncios e comunicação. A negociação, entrega, vistoria e uso do equipamento são de responsabilidade direta e exclusiva do LOCADOR e do LOCATÁRIO. A RYT fica isenta de qualquer responsabilidade por eventuais danos, avarias, extravios ou inadimplementos ocorridos entre as partes.
-                </p>
-
-                <h4>5. DAS OBRIGAÇÕES</h4>
-                <p>O LOCATÁRIO declara receber o bem em perfeitas condições de funcionamento (conforme vistoria de check-in) e se compromete a devolvê-lo nas mesmas condições ao término do período acordado.</p>
-
-                <h4>6. DA EFETIVAÇÃO E VALIDADE JURÍDICA</h4>
-                <p>A assinatura eletrônica vinculando o endereço IP, dispositivo, geolocalização e carimbo de data/hora do LOCATÁRIO será efetuada no momento do envio da solicitação, passando a ter <strong>plena validade jurídica após o aceite formal do LOCADOR</strong> no painel RYT.</p>
-            </body>
-            </html>
+            </div>
             `;
         }
 
@@ -420,15 +423,20 @@
                     valorTotalComTaxa
                 );
                 
-                const win = window.open('', '_blank');
-                win.document.write(html);
-                win.document.close();
+                document.getElementById('previewContent').innerHTML = html;
+                document.getElementById('previewModal').classList.remove('hidden');
+                lucide.createIcons();
+                
             } catch (err) {
                 console.error(err);
                 alert("Erro ao gerar prévia do contrato.");
             } finally {
                 btn.innerText = textOrig;
             }
+        }
+
+        function fecharPreview() {
+            document.getElementById('previewModal').classList.add('hidden');
         }
 
         // ==========================================
