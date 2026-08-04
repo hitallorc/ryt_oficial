@@ -283,7 +283,15 @@
             if(d.toDateString() === hoje.toDateString()) return "Ontem";
             return d.toLocaleDateString('pt-BR', {day:'2-digit', month:'2-digit'});
         }
-
+        // FUNÇÃO PARA FECHAR O MODAL PWA
+        window.dispensarInstalacaoIOS = function() {
+            const iosModal = document.getElementById('iosInstallModal');
+            if (iosModal) {
+                iosModal.classList.add('hidden');
+                iosModal.classList.remove('flex');
+            }
+            localStorage.setItem('ryt_pwa_dispensado', 'true');
+        };
         // ==========================================
         // FORMATAÇÃO INTELIGENTE DE HORA (MENSAGENS)
         // ==========================================
