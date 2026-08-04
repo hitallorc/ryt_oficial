@@ -312,11 +312,13 @@
                 </p>
                 <h4>5. DAS OBRIGAÇÕES</h4>
                 <p>O LOCATÁRIO declara receber o bem em perfeitas condições de funcionamento (conforme vistoria de check-in) e se compromete a devolvê-lo nas mesmas condições ao término do período acordado.</p>
+                <h4>6. DA VALIDADE JURÍDICA</h4>
+                <p>Este instrumento foi gerado a partir da solicitação do LOCATÁRIO e passa a ter <strong>plena validade jurídica exclusivamente após o aceite eletrônico do LOCADOR</strong> na plataforma RYT.</p>
                 <hr style="margin-top: 30px;">
                 <div style="background-color: #f1f5f9; padding: 15px; border-radius: 8px; font-size: 11px; font-family: monospace;">
-                    <strong>TRILHA DE AUDITORIA E ASSINATURA DIGITAL:</strong><br>
-                    • Status: Assinado e Aceito Eletronicamente<br>
-                    • Data/Hora: ${new Date(auditoria.accepted_at).toLocaleString('pt-BR')}<br>
+                    <strong>TRILHA DE AUDITORIA E ASSINATURA DIGITAL (LOCATÁRIO):</strong><br>
+                    • Status: Aceito Eletronicamente pelo Locatário<br>
+                    • Data/Hora da Solicitação: ${new Date(auditoria.accepted_at).toLocaleString('pt-BR')}<br>
                     • Endereço IP: ${auditoria.ip_address}<br>
                     • Dispositivo/Navegador: ${auditoria.user_agent}<br>
                     • Localização informada: ${auditoria.location_data.cidade}/${auditoria.location_data.uf}
