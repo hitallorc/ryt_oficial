@@ -145,7 +145,7 @@
                     <label class="flex items-start gap-3 p-3 mt-2 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl cursor-pointer group relative z-10">
                         <input type="checkbox" id="acceptTermsClientIndex" class="mt-0.5 w-5 h-5 rounded border-slate-300 text-teal-600 focus:ring-teal-500 cursor-pointer" required>
                         <span class="text-[10px] leading-relaxed font-medium text-slate-600 dark:text-slate-300 group-hover:text-slate-800 dark:group-hover:text-white transition-colors">
-                            Li e aceito os <a href="termos.html" target="_blank" onclick="event.stopPropagation()" class="text-teal-600 underline font-bold hover:text-teal-500 relative z-20">Termos de Uso</a> e o <a href="#" onclick="previewContrato(event)" class="text-teal-600 underline font-bold hover:text-teal-500 relative z-20">Contrato de Locação</a>, declarando ciência de que a RYT atua apenas como intermediadora.
+                            Li e aceito os <a href="termos.html" target="_blank" onclick="event.stopPropagation()" class="text-teal-600 underline font-bold hover:text-teal-500 relative z-20">Termos de Uso</a> e a <a href="#" onclick="previewContrato(event)" class="text-teal-600 underline font-bold hover:text-teal-500 relative z-20">Prévia do Contrato</a>, declarando ciência de que a RYT atua apenas como intermediadora.
                         </span>
                     </label>
 
@@ -183,14 +183,14 @@
     <div id="chatDrawer" class="fixed bottom-6 right-6 w-[340px] md:w-[400px] h-[500px] bg-white dark:bg-slate-900 shadow-2xl shadow-slate-900/20 rounded-[2rem] border border-slate-100 dark:border-slate-800 flex-col z-50 overflow-hidden hidden translate-y-full chat-drawer">
         <header class="bg-white/80 dark:bg-slate-900/80 glass-nav p-4 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center relative z-10 shrink-0">
             <div class="flex items-center gap-3 min-w-0">
-                <button id="btnBackChat" onclick="mostrarListaChats()" class="hidden p-2 hover:bg-slate-100 dark:bg-slate-800 rounded-full transition-colors shrink-0"><i data-lucide="arrow-left" class="w-4 h-4 text-slate-500"></i></button>
+                <button type="button" id="btnBackChat" onclick="mostrarListaChats()" class="hidden p-2 hover:bg-slate-100 dark:bg-slate-800 rounded-full transition-colors shrink-0"><i data-lucide="arrow-left" class="w-4 h-4 text-slate-500"></i></button>
                 <div id="chatHeaderAvatar" class="w-10 h-10 rounded-full bg-gradient-to-tr from-teal-500 to-emerald-400 flex items-center justify-center text-white font-black text-xs shadow-md shrink-0">RYT</div>
                 <div class="flex flex-col min-w-0">
                     <h4 id="chatHeaderName" class="text-sm font-black text-slate-800 dark:text-white truncate">Mensagens</h4>
                     <p id="chatHeaderItem" class="text-[9px] font-bold text-teal-600 dark:text-teal-400 truncate w-full hidden"></p>
                 </div>
             </div>
-            <button onclick="toggleChat()" class="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-full transition-colors shrink-0"><i data-lucide="x" class="w-5 h-5 text-slate-500"></i></button>
+            <button type="button" onclick="toggleChat()" class="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-full transition-colors shrink-0"><i data-lucide="x" class="w-5 h-5 text-slate-500"></i></button>
         </header>
 
         <div id="chatListView" class="flex-1 overflow-y-auto p-3 bg-slate-50/50 dark:bg-slate-950/50 flex flex-col gap-2 no-scrollbar">
@@ -206,13 +206,13 @@
             <div id="quickReplies" class="hidden flex gap-2 p-3 overflow-x-auto no-scrollbar bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800 shrink-0"></div>
             <div class="p-3 bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800 flex gap-2 relative z-10 shrink-0">
                 <input type="text" id="chatInput" placeholder="Mensagem..." class="flex-1 bg-slate-100 dark:bg-slate-800 border-none rounded-full px-4 py-2 text-sm font-medium focus:ring-2 focus:ring-teal-500 dark:text-white placeholder:text-slate-400">
-                <button onclick="enviarMensagem()" class="bg-teal-500 hover:bg-teal-600 text-white p-2.5 rounded-full shadow-md transition-all hover:scale-105 active:scale-95"><i data-lucide="send" class="w-4 h-4 ml-0.5"></i></button>
+                <button type="button" onclick="enviarMensagem()" class="bg-teal-500 hover:bg-teal-600 text-white p-2.5 rounded-full shadow-md transition-all hover:scale-105 active:scale-95"><i data-lucide="send" class="w-4 h-4 ml-0.5"></i></button>
             </div>
         </div>
     </div>
 
     <div id="chatBtnWrapper" class="fixed bottom-6 right-6 z-40 transition-opacity duration-300">
-        <button id="chatBtn" onclick="toggleChat()" class="relative bg-slate-900 dark:bg-teal-500 text-white p-4 rounded-full shadow-2xl hover:scale-110 transition-transform flex items-center justify-center">
+        <button type="button" id="chatBtn" onclick="toggleChat()" class="relative bg-slate-900 dark:bg-teal-500 text-white p-4 rounded-full shadow-2xl hover:scale-110 transition-transform flex items-center justify-center">
             <i data-lucide="message-circle" class="w-6 h-6"></i>
             <span id="globalUnreadBadge" class="hidden absolute -top-1 -right-1 flex h-3.5 w-3.5">
                 <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
@@ -222,14 +222,14 @@
     </div>
 
     <div id="pwaInstallContainer" class="hidden fixed bottom-24 left-1/2 -translate-x-1/2 z-50 animate-in slide-in-from-bottom-10 fade-in duration-500">
-        <button id="btnInstallApp" class="bg-teal-600 hover:bg-teal-700 text-white px-6 py-3 rounded-full font-black text-xs uppercase tracking-widest shadow-xl flex items-center gap-2 border border-teal-500/50">
+        <button type="button" id="btnInstallApp" class="bg-teal-600 hover:bg-teal-700 text-white px-6 py-3 rounded-full font-black text-xs uppercase tracking-widest shadow-xl flex items-center gap-2 border border-teal-500/50">
             <i data-lucide="download" class="w-4 h-4"></i> Instalar App RYT
         </button>
     </div>
 
     <div id="iosInstallModal" class="fixed inset-0 bg-slate-900/80 z-[100] hidden items-end justify-center sm:items-center p-4 modal-blur transition-opacity">
         <div class="bg-white dark:bg-slate-900 w-full max-w-sm rounded-[2rem] p-8 relative shadow-2xl animate-in slide-in-from-bottom-8 sm:zoom-in-95 duration-300 mb-8 sm:mb-0">
-            <button onclick="dispensarInstalacaoIOS()" class="absolute top-5 right-5 p-2 bg-slate-100 dark:bg-slate-800 rounded-full text-slate-500 hover:text-slate-800 dark:hover:text-white"><i data-lucide="x" class="w-4 h-4"></i></button>
+            <button type="button" onclick="dispensarInstalacaoIOS()" class="absolute top-5 right-5 p-2 bg-slate-100 dark:bg-slate-800 rounded-full text-slate-500 hover:text-slate-800 dark:hover:text-white"><i data-lucide="x" class="w-4 h-4"></i></button>
             <div class="text-center mb-6">
                 <div class="w-16 h-16 bg-slate-100 dark:bg-slate-800 rounded-3xl mx-auto flex items-center justify-center mb-4"><img src="icon-192.png" class="w-10 h-10 rounded-xl"></div>
                 <h3 class="text-xl font-black text-slate-800 dark:text-white mb-2">Instalar RYT</h3>
@@ -260,7 +260,19 @@
         const formatText = (str) => str ? str.toLowerCase().replace(/(^\w{1})|(\s+\w{1})/g, l => l.toUpperCase()) : "";
         const isOnline = (lastSeen) => lastSeen && (new Date() - new Date(lastSeen)) / 1000 / 60 < 5;
 
-        // NOVO FORMATADOR DE DATA E HORA PARA O CHAT
+        function formatTime(iso) { return new Date(iso).toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'}); }
+        
+        function formatDate(iso) {
+            const d = new Date(iso); const hoje = new Date();
+            if(d.toDateString() === hoje.toDateString()) return formatTime(iso);
+            hoje.setDate(hoje.getDate() - 1);
+            if(d.toDateString() === hoje.toDateString()) return "Ontem";
+            return d.toLocaleDateString('pt-BR', {day:'2-digit', month:'2-digit'});
+        }
+
+        // ==========================================
+        // FORMATAÇÃO INTELIGENTE DE HORA (MENSAGENS)
+        // ==========================================
         function formatMessageTime(iso) {
             const d = new Date(iso); const hoje = new Date();
             const time = d.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'});
@@ -271,7 +283,7 @@
         }
 
         // ==========================================
-        // FUNÇÕES DE AUDITORIA E CONTRATO
+        // AUDITORIA E GERAÇÃO DE CONTRATOS
         // ==========================================
         async function obterIpPublico() {
             try { const res = await fetch('https://api.ipify.org?format=json'); const data = await res.json(); return data.ip; }
@@ -290,6 +302,57 @@
                     language: navigator.language 
                 }
             };
+        }
+
+        function gerarMinutaContrato(item, locatario, locador, datas, valorTotal) {
+            return `
+            <!DOCTYPE html>
+            <html lang="pt-br">
+            <head>
+                <meta charset="UTF-8">
+                <title>Prévia do Contrato - RYT</title>
+                <style>
+                    body { font-family: Arial, sans-serif; padding: 30px; line-height: 1.6; color: #333; max-width: 800px; margin: 0 auto; position: relative; overflow-x: hidden; }
+                    .watermark { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-35deg); font-size: 80px; font-weight: 900; color: rgba(220, 38, 38, 0.08); white-space: nowrap; pointer-events: none; z-index: -1; text-transform: uppercase; letter-spacing: 8px; user-select: none; }
+                    .header-banner { background-color: #fef2f2; border: 1px solid #fecaca; color: #991b1b; padding: 12px 16px; border-radius: 8px; text-align: center; font-size: 13px; font-weight: bold; margin-bottom: 24px; }
+                    h4 { margin-bottom: 6px; color: #0f172a; margin-top: 24px; }
+                </style>
+            </head>
+            <body>
+                <div class="watermark">MINUTA - PRÉVIA</div>
+                
+                <div class="header-banner">
+                    ⚠️ MINUTA DEMONSTRATIVA: Esta é apenas uma prévia das cláusulas. A versão oficial com IP, data/hora e carimbo digital será gerada e salva na plataforma após a confirmação.
+                </div>
+
+                <h2 style="text-align: center; color: #0f172a; margin-bottom: 4px;">CONTRATO PARTICULAR DE LOCAÇÃO DE BENS MÓVEIS</h2>
+                <p style="text-align: center; font-size: 12px; color: #64748b; margin-top: 0;">Modelo Padrão - Plataforma RYT</p>
+                <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 20px 0;">
+
+                <h4>1. DAS PARTES</h4>
+                <p><strong>LOCADOR(A):</strong> ${locador.full_name}</p>
+                <p><strong>LOCATÁRIO(A):</strong> ${locatario.full_name}</p>
+
+                <h4>2. DO OBJETO</h4>
+                <p>O presente contrato tem por objeto a locação do item <strong>"${item.title}"</strong>, sob a categoria <strong>${item.category || 'Geral'}</strong>.</p>
+
+                <h4>3. DO PERÍODO E VALORES ESTIMADOS</h4>
+                <p>Período de locação estimado: de <strong>${datas.inicio}</strong> a <strong>${datas.fim}</strong>.</p>
+                <p>Valor total estimado: <strong>R$ ${valorTotal.toFixed(2)}</strong>.</p>
+
+                <h4>4. DA ISENÇÃO DE RESPONSABILIDADE DA PLATAFORMA</h4>
+                <p style="background-color: #f8fafc; padding: 12px; border-left: 4px solid #0d9488; font-size: 13px; color: #334155;">
+                    A plataforma <strong>RYT (ryt.com.br)</strong> atua exclusivamente como intermediadora tecnológica de anúncios e comunicação. A negociação, entrega, vistoria e uso do equipamento são de responsabilidade direta e exclusiva do LOCADOR e do LOCATÁRIO. A RYT fica isenta de qualquer responsabilidade por eventuais danos, avarias, extravios ou inadimplementos ocorridos entre as partes.
+                </p>
+
+                <h4>5. DAS OBRIGAÇÕES</h4>
+                <p>O LOCATÁRIO declara receber o bem em perfeitas condições de funcionamento (conforme vistoria de check-in) e se compromete a devolvê-lo nas mesmas condições ao término do período acordado.</p>
+
+                <h4>6. DA EFETIVAÇÃO E VALIDADE JURÍDICA</h4>
+                <p>A assinatura eletrônica vinculando o endereço IP, dispositivo, geolocalização e carimbo de data/hora do LOCATÁRIO será efetuada no momento do envio da solicitação, passando a ter <strong>plena validade jurídica após o aceite formal do LOCADOR</strong> no painel RYT.</p>
+            </body>
+            </html>
+            `;
         }
 
         function gerarTextoContrato(item, locatario, locador, datas, valorTotal, auditoria) {
@@ -317,7 +380,7 @@
                 <hr style="margin-top: 30px;">
                 <div style="background-color: #f1f5f9; padding: 15px; border-radius: 8px; font-size: 11px; font-family: monospace;">
                     <strong>TRILHA DE AUDITORIA E ASSINATURA DIGITAL (LOCATÁRIO):</strong><br>
-                    • Status: Aceito Eletronicamente pelo Locatário<br>
+                    • Status: Aceito Eletronicamente pelo Locatário (Aguardando Aceite do Locador)<br>
                     • Data/Hora da Solicitação: ${new Date(auditoria.accepted_at).toLocaleString('pt-BR')}<br>
                     • Endereço IP: ${auditoria.ip_address}<br>
                     • Dispositivo/Navegador: ${auditoria.user_agent}<br>
@@ -326,21 +389,21 @@
             </div>
             `;
         }
-        
+
         async function previewContrato(e) {
             if(e) { e.preventDefault(); e.stopPropagation(); }
             if (!currentItemData) return;
             const start = document.getElementById('startDate').value; 
             const end = document.getElementById('endDate').value;
             
-            if(!start || !end) return alert("Selecione as datas de Retirada e Devolução para visualizar o contrato gerado.");
+            if(!start || !end) return alert("Selecione as datas de Retirada e Devolução para visualizar a minuta do contrato.");
             
             const { data: { session } } = await supabaseClient.auth.getSession();
-            if(!session) return alert("Faça login para visualizar o contrato.");
+            if(!session) return alert("Faça login para visualizar a minuta do contrato.");
 
             const btn = e.target;
             const textOrig = btn.innerText;
-            btn.innerText = "Gerando...";
+            btn.innerText = "Gerando prévia...";
             
             try {
                 const { data: locador } = await supabaseClient.from('profiles').select('id, full_name').eq('id', currentItemData.owner_id).single();
@@ -349,13 +412,12 @@
                 const inicioBr = start.split('-').reverse().join('/');
                 const fimBr = end.split('-').reverse().join('/');
                 
-                const html = gerarTextoContrato(
+                const html = gerarMinutaContrato(
                     currentItemData,
-                    locatario || { id: session.user.id, full_name: 'Você (Locatário)' },
-                    locador || { id: currentItemData.owner_id, full_name: 'Locador' },
+                    locatario || { full_name: 'Você (Locatário)' },
+                    locador || { full_name: 'Locador' },
                     { inicio: inicioBr, fim: fimBr },
-                    valorTotalComTaxa,
-                    { ip_address: 'Capturado no aceite oficial', user_agent: navigator.userAgent, accepted_at: new Date().toISOString(), location_data: { cidade: 'Sua localização local', uf: '' } }
+                    valorTotalComTaxa
                 );
                 
                 const win = window.open('', '_blank');
@@ -363,13 +425,15 @@
                 win.document.close();
             } catch (err) {
                 console.error(err);
-                alert("Erro ao gerar pré-visualização do contrato.");
+                alert("Erro ao gerar prévia do contrato.");
             } finally {
                 btn.innerText = textOrig;
             }
         }
-        // ==========================================
 
+        // ==========================================
+        // FUNÇÕES EXISTENTES DA PLATAFORMA
+        // ==========================================
         function toggleTheme() { 
             document.documentElement.classList.toggle('dark'); 
             const isDark = document.documentElement.classList.contains('dark'); 
@@ -504,8 +568,8 @@
                         </span>
                     </div>
                     <div class="flex gap-2 mt-auto relative z-10">
-                        <button onclick="abrirCheckout(${itemString})" class="flex-1 bg-slate-900 dark:bg-teal-500 text-white py-3 rounded-xl font-black text-[11px] hover:opacity-90 flex items-center justify-center active:scale-95 transition-transform">ALUGAR AGORA</button>
-                        <button onclick="iniciarChatDaVitrine(${itemString})" class="bg-slate-100 dark:bg-slate-800 p-3 rounded-xl hover:bg-teal-50 dark:hover:bg-teal-500/20 text-slate-600 dark:text-slate-400 transition-colors"><i data-lucide="message-circle" class="w-4 h-4"></i></button>
+                        <button type="button" onclick="abrirCheckout(${itemString})" class="flex-1 bg-slate-900 dark:bg-teal-500 text-white py-3 rounded-xl font-black text-[11px] hover:opacity-90 flex items-center justify-center active:scale-95 transition-transform">ALUGAR AGORA</button>
+                        <button type="button" onclick="iniciarChatDaVitrine(${itemString})" class="bg-slate-100 dark:bg-slate-800 p-3 rounded-xl hover:bg-teal-50 dark:hover:bg-teal-500/20 text-slate-600 dark:text-slate-400 transition-colors"><i data-lucide="message-circle" class="w-4 h-4"></i></button>
                     </div>
                 </div>`
             }).join('');
@@ -557,7 +621,7 @@
             const d = document.getElementById('chatDrawer'); 
             const floatBtn = document.getElementById('chatBtnWrapper');
             
-            if (d.classList.contains('hidden')) { 
+            if (d.classList.contains('hidden') || d.classList.contains('translate-y-full')) { 
                 d.classList.remove('hidden'); 
                 d.classList.add('flex'); 
                 setTimeout(() => d.classList.remove('translate-y-full'), 10); 
@@ -574,8 +638,6 @@
             if (!currentUserId) { alert("Faça login para conversar."); return window.location.href = 'login.html'; }
             const nome = item.profiles?.full_name || 'Locador';
             abrirChat(item.owner_id, nome, item.id, item.title, item.profiles?.avatar_url);
-            const drawer = document.getElementById('chatDrawer');
-            if (drawer.classList.contains('hidden')) { toggleChat(); }
         };
 
         async function abrirChat(id, nome, itemId, itemTitle, avatarUrl = '') { 
@@ -602,6 +664,15 @@
             
             document.getElementById('quickReplies').innerHTML = `<button onclick="enviarMensagemRapida('Olá! Ainda está disponível?')" class="bg-teal-50 dark:bg-teal-900/30 text-teal-700 dark:text-teal-300 px-3 py-1.5 rounded-full text-[10px] font-black whitespace-nowrap border border-teal-200 dark:border-teal-800 hover:bg-teal-100 transition-colors">Ainda disponível?</button><button onclick="enviarMensagemRapida('Olá! Para quais datas precisa?')" class="bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 px-3 py-1.5 rounded-full text-[10px] font-black whitespace-nowrap border border-blue-200 dark:border-blue-800 hover:bg-blue-100 transition-colors">Quais datas?</button>`; 
             document.getElementById('quickReplies').classList.remove('hidden');
+
+            const drawer = document.getElementById('chatDrawer'); 
+            if (drawer.classList.contains('hidden') || drawer.classList.contains('translate-y-full')) {
+                drawer.classList.remove('hidden'); 
+                drawer.classList.add('flex'); 
+                setTimeout(() => drawer.classList.remove('translate-y-full'), 10); 
+                const floatBtn = document.getElementById('chatBtnWrapper');
+                if (floatBtn) floatBtn.classList.add('hidden');
+            }
 
             atualizarMensagens(); 
             if(currentUserId) {
@@ -940,9 +1011,14 @@
             const nomeDono = currentItemData.profiles?.full_name || 'Locador';
             abrirChat(currentItemData.owner_id, nomeDono, currentItemData.id, currentItemData.title, currentItemData.profiles?.avatar_url);
             
-            // FORÇA A ABERTURA VISUAL DA GAVETA DE CHAT
             const drawer = document.getElementById('chatDrawer');
-            if (drawer.classList.contains('hidden')) { toggleChat(); }
+            if (drawer.classList.contains('hidden') || drawer.classList.contains('translate-y-full')) { 
+                drawer.classList.remove('hidden'); 
+                drawer.classList.add('flex'); 
+                setTimeout(() => drawer.classList.remove('translate-y-full'), 10); 
+                const floatBtn = document.getElementById('chatBtnWrapper');
+                if (floatBtn) floatBtn.classList.add('hidden');
+            }
             
             setTimeout(() => {
                 const inputChat = document.getElementById('chatInput');
@@ -958,7 +1034,7 @@
             if(!start || !end) return alert("Selecione as datas!");
             
             if(!document.getElementById('acceptTermsClientIndex').checked) {
-                return alert("⚠️ É obrigatório aceitar os Termos de Uso e o Contrato da RYT para prosseguir com a locação.");
+                return alert("⚠️ É obrigatório aceitar os Termos de Uso e a Prévia do Contrato para prosseguir com a locação.");
             }
 
             const btn = document.getElementById('btnSolicitar'); 
@@ -970,10 +1046,8 @@
             if(!session) return window.location.href = 'login.html'; 
 
             try {
-                // 1. Coleta metadados
                 const auditoria = await coletarMetadadosAuditoria();
                 
-                // 2. Cria a locação
                 const { data: rentalData, error: rentalError } = await supabaseClient.from('rentals').insert([{ 
                     item_id: currentItemData.id, 
                     renter_id: session.user.id, 
@@ -987,14 +1061,12 @@
                 
                 if (rentalError) throw rentalError;
 
-                // 3. Busca os nomes reais do banco para o contrato
                 const { data: locador } = await supabaseClient.from('profiles').select('id, full_name').eq('id', currentItemData.owner_id).single();
                 const { data: locatario } = await supabaseClient.from('profiles').select('id, full_name').eq('id', session.user.id).single();
 
                 const inicioBr = start.split('-').reverse().join('/');
                 const fimBr = end.split('-').reverse().join('/');
 
-                // 4. Gera HTML e Salva na Tabela Contracts
                 const contratoHtml = gerarTextoContrato(
                     currentItemData,
                     locatario || { id: session.user.id, full_name: 'Locatário' },
@@ -1014,7 +1086,6 @@
                     location_data: auditoria.location_data
                 }]);
 
-                // Conclui UI
                 document.getElementById('step1Checkout').classList.add('hidden');
                 document.getElementById('step2Success').classList.remove('hidden');
 
