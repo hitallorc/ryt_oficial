@@ -210,6 +210,29 @@
             'cancelled': { label: 'Cancelados', color: 'bg-slate-500', open: false, order: 6 }
         };
 
+        // ==========================================
+        // FUNÇÃO DE VISUALIZAÇÃO DE CONTRATO (NOVA)
+        // ==========================================
+        window.visualizarContrato = async function(rentalId) {
+            try {
+                const { data: contract, error } = await supabaseClient
+                    .from('contracts')
+                    .select('contract_html')
+                    .eq('rental_id', rentalId)
+                    .single();
+                    
+                if (error || !contract) {
+                    return alert("⚠️ Contrato ainda não gerado ou não localizado para esta reserva.");
+                }
+
+                const win = window.open('', '_blank');
+                win.document.write(contract.contract_html);
+                win.document.close();
+            } catch (err) {
+                alert("Erro ao abrir contrato: " + err.message);
+            }
+        };
+
         async function checkAuth() {
             const { data: { session }, error } = await supabaseClient.auth.getSession();
             if (error || !session) { window.location.href = 'login.html'; return null; }
@@ -300,9 +323,8 @@
             if (acao === 'aceitar') {
                 const inputValor = prompt("Qual o valor FINAL em R$ acordado para este aluguel?\n(Se não houve alteração, basta clicar em OK)", valorAtualEstimado);
                 
-                if (inputValor === null) return; // O dono cancelou a ação de aceitar
+                if (inputValor === null) return;
                 
-                // Converte a string para número (aceitando vírgula ou ponto)
                 valorFinal = parseFloat(inputValor.replace(',', '.'));
                 
                 if (isNaN(valorFinal) || valorFinal <= 0) {
@@ -312,7 +334,6 @@
                 if (!confirm(`Deseja realmente recusar esta solicitação?`)) return;
             }
 
-            // Efeito de Carregamento no Botão
             const btn = event.currentTarget;
             const textoOriginal = btn.innerHTML;
             btn.disabled = true;
@@ -321,7 +342,6 @@
 
             const novoStatus = acao === 'aceitar' ? 'awaiting_payment' : 'cancelled';
             
-            // Atualiza o status e o novo preço negociado
             const { error } = await supabaseClient.from('rentals').update({ 
                 status: novoStatus,
                 total_price: valorFinal 
@@ -355,7 +375,6 @@
             const btn = document.querySelector('#modalPix button.bg-teal-500');
             btn.innerHTML = '<i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i> PROCESSANDO...';
             
-            // No MVP mudamos direto para 'confirmed' após o botão para dar fluidez
             const { error } = await supabaseClient.from('rentals').update({ status: 'confirmed' }).eq('id', pixRentalId);
             if(!error) {
                 alert("Pagamento confirmado! O chat agora está disponível para combinar a retirada.");
@@ -396,7 +415,7 @@
                     
                     if (isRenterView) { // O QUE O LOCATÁRIO (CLIENTE) VÊ
                         if (r.status === 'pending_approval') {
-                            actionHtml = `<span class="w-full block bg-purple-50 text-purple-600 border border-purple-200 py-3 rounded-xl text-[10px] font-black uppercase text-center flex items-center justify-center gap-1.5"><i data-lucide="clock" class="w-3 h-3"></i> AGUARDANDO APROVAÇÃO DO DONO</span>`;
+                            actionHtml = `<span class="flex-1 block bg-purple-50 text-purple-600 border border-purple-200 py-3 rounded-xl text-[10px] font-black uppercase text-center flex items-center justify-center gap-1.5"><i data-lucide="clock" class="w-3 h-3"></i> AGUARDANDO APROVAÇÃO DO DONO</span>`;
                         } else if (r.status === 'awaiting_payment') {
                             actionHtml = `
                                 <button onclick="abrirModalPagamento('${r.id}', ${r.total_price})" class="flex-1 bg-teal-500 text-white py-3 rounded-xl text-[10px] font-black hover:bg-teal-600 transition-colors text-center uppercase shadow-sm flex items-center justify-center gap-1.5"><i data-lucide="qr-code" class="w-3 h-3"></i> PAGAR AGORA (PIX)</button>
@@ -407,13 +426,13 @@
                                 <a href="voucher.html?id=${r.id}" class="flex-1 bg-slate-800 text-white py-3 px-3 rounded-xl text-[10px] font-black text-center hover:bg-slate-900 transition-colors uppercase shadow-sm flex items-center justify-center gap-1.5"><i data-lucide="ticket" class="w-3 h-3 shrink-0"></i> VOUCHER</a>
                                 <button onclick="cancelarAluguel('${r.id}', '${r.items?.owner_id}', '${r.item_id}')" class="shrink-0 px-4 py-3 bg-red-50 text-red-500 border border-red-200 rounded-xl hover:bg-red-100 transition-colors flex justify-center items-center"><i data-lucide="x" class="w-4 h-4"></i></button>`;
                         } else if (r.status === 'in_use') {
-                            actionHtml = `<button onclick="abrirModalDevolucao('${r.id}')" class="w-full bg-blue-600 text-white py-3 rounded-xl text-[10px] font-black shadow-sm text-center uppercase hover:bg-blue-700 transition-colors">DEVOLVER EQUIPAMENTO</button>`;
+                            actionHtml = `<button onclick="abrirModalDevolucao('${r.id}')" class="flex-1 bg-blue-600 text-white py-3 rounded-xl text-[10px] font-black shadow-sm text-center uppercase hover:bg-blue-700 transition-colors">DEVOLVER EQUIPAMENTO</button>`;
                         } else if (r.status === 'completed') {
-                            actionHtml = `<a href="detalhes.html?id=${r.item_id}" class="w-full block text-center bg-emerald-50 text-emerald-600 border border-emerald-200 py-3 rounded-xl text-[10px] font-black uppercase hover:bg-emerald-100 transition-colors">AVALIAR EXPERIÊNCIA</a>`;
+                            actionHtml = `<a href="detalhes.html?id=${r.item_id}" class="flex-1 block text-center bg-emerald-50 text-emerald-600 border border-emerald-200 py-3 rounded-xl text-[10px] font-black uppercase hover:bg-emerald-100 transition-colors">AVALIAR EXPERIÊNCIA</a>`;
                         } else if (r.status === 'issue_reported') {
-                            actionHtml = `<a href="admin_relatorio.html?id=${r.id}" class="w-full block text-center bg-red-50 text-red-600 py-3 rounded-xl text-[10px] font-black border border-red-200 uppercase flex items-center justify-center gap-1.5 hover:bg-red-100 transition-colors"><i data-lucide="alert-circle" class="w-3 h-3"></i> ACOMPANHAR DISPUTA</a>`;
+                            actionHtml = `<a href="admin_relatorio.html?id=${r.id}" class="flex-1 block text-center bg-red-50 text-red-600 py-3 rounded-xl text-[10px] font-black border border-red-200 uppercase flex items-center justify-center gap-1.5 hover:bg-red-100 transition-colors"><i data-lucide="alert-circle" class="w-3 h-3"></i> ACOMPANHAR DISPUTA</a>`;
                         } else if (r.status === 'cancelled') {
-                            actionHtml = `<span class="w-full block bg-slate-100 text-slate-500 py-3 rounded-xl text-[10px] font-black uppercase text-center border border-slate-200">CANCELADO</span>`;
+                            actionHtml = `<span class="flex-1 block bg-slate-100 text-slate-500 py-3 rounded-xl text-[10px] font-black uppercase text-center border border-slate-200">CANCELADO</span>`;
                         }
                     } else { // O QUE O LOCADOR (DONO) VÊ
                         if (r.status === 'pending_approval') {
@@ -422,18 +441,24 @@
                                 <button onclick="responderSolicitacao(event, '${r.id}', 'recusar', ${r.total_price})" class="flex-1 bg-red-50 text-red-600 border border-red-200 py-3 px-3 rounded-xl text-[10px] font-black hover:bg-red-100 transition-colors text-center uppercase shadow-sm flex items-center justify-center gap-1"><i data-lucide="x" class="w-3 h-3"></i> RECUSAR</button>
                             `;
                         } else if (r.status === 'awaiting_payment') {
-                            actionHtml = `<span class="w-full block bg-orange-50 text-orange-600 border border-orange-200 py-3 rounded-xl text-[10px] font-black uppercase text-center flex items-center justify-center gap-1.5"><i data-lucide="clock" class="w-3 h-3"></i> AGUARDANDO PAGAMENTO (LOCATÁRIO)</span>`;
+                            actionHtml = `<span class="flex-1 block bg-orange-50 text-orange-600 border border-orange-200 py-3 rounded-xl text-[10px] font-black uppercase text-center flex items-center justify-center gap-1.5"><i data-lucide="clock" class="w-3 h-3"></i> AGUARDANDO PAGAMENTO (LOCATÁRIO)</span>`;
                         } else if (r.status === 'issue_reported') {
-                            actionHtml = `<a href="admin_relatorio.html?id=${r.id}" class="w-full block text-center bg-red-600 text-white py-3 rounded-xl text-[10px] font-black shadow-sm uppercase hover:bg-red-700 transition-colors flex items-center justify-center gap-2"><i data-lucide="file-text" class="w-3 h-3"></i> VER RELATÓRIO / RESOLVER</a>`;
+                            actionHtml = `<a href="admin_relatorio.html?id=${r.id}" class="flex-1 block text-center bg-red-600 text-white py-3 rounded-xl text-[10px] font-black shadow-sm uppercase hover:bg-red-700 transition-colors flex items-center justify-center gap-2"><i data-lucide="file-text" class="w-3 h-3"></i> VER RELATÓRIO / RESOLVER</a>`;
                         } else if (r.status === 'confirmed') {
-                            actionHtml = `<span class="w-full block bg-blue-50 text-blue-600 py-3 rounded-xl text-[10px] font-black uppercase text-center border border-blue-200">AGUARDANDO RETIRADA</span>`;
+                            actionHtml = `<span class="flex-1 block bg-blue-50 text-blue-600 py-3 rounded-xl text-[10px] font-black uppercase text-center border border-blue-200">AGUARDANDO RETIRADA</span>`;
                         } else if (r.status === 'in_use') {
-                            actionHtml = `<span class="w-full block bg-amber-50 text-amber-600 py-3 rounded-xl text-[10px] font-black uppercase text-center border border-amber-200">EM USO PELO LOCATÁRIO</span>`;
+                            actionHtml = `<span class="flex-1 block bg-amber-50 text-amber-600 py-3 rounded-xl text-[10px] font-black uppercase text-center border border-amber-200">EM USO PELO LOCATÁRIO</span>`;
                         } else if (r.status === 'completed') {
-                            actionHtml = `<span class="w-full block bg-emerald-50 text-emerald-600 py-3 rounded-xl text-[10px] font-black uppercase text-center border border-emerald-200 flex items-center justify-center gap-1.5"><i data-lucide="check-circle" class="w-3 h-3"></i> DEVOLVIDO (LIVRE)</span>`;
+                            actionHtml = `<span class="flex-1 block bg-emerald-50 text-emerald-600 py-3 rounded-xl text-[10px] font-black uppercase text-center border border-emerald-200 flex items-center justify-center gap-1.5"><i data-lucide="check-circle" class="w-3 h-3"></i> DEVOLVIDO (LIVRE)</span>`;
                         } else if (r.status === 'cancelled') {
-                            actionHtml = `<span class="w-full block bg-slate-100 text-slate-500 py-3 rounded-xl text-[10px] font-black uppercase text-center border border-slate-200">CANCELADO</span>`;
+                            actionHtml = `<span class="flex-1 block bg-slate-100 text-slate-500 py-3 rounded-xl text-[10px] font-black uppercase text-center border border-slate-200">CANCELADO</span>`;
                         }
+                    }
+
+                    // Botão de Contrato incluído para aluguéis ativos/pendentes
+                    let contractBtnHtml = '';
+                    if (r.status !== 'cancelled') {
+                        contractBtnHtml = `<button onclick="visualizarContrato('${r.id}')" class="shrink-0 px-3 py-3 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-600 rounded-xl text-[10px] font-black uppercase hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors flex items-center justify-center gap-1.5" title="Ver Contrato Digital"><i data-lucide="file-text" class="w-3.5 h-3.5 text-teal-600 dark:text-teal-400"></i> CONTRATO</button>`;
                     }
 
                     let pessoaInfoHtml = '';
@@ -458,6 +483,7 @@
                         </div>
                         <div class="pt-3 border-t border-slate-100 dark:border-slate-700/50 flex flex-wrap gap-2 w-full">
                             ${actionHtml}
+                            ${contractBtnHtml}
                         </div>
                     </div>`;
                 });
@@ -626,7 +652,7 @@
                 container.innerHTML = msgs.map(m => { 
                     const isMe = m.sender_id === currentUserId; 
                     let readStatus = isMe ? (m.is_read ? `<span class="text-[9px] text-teal-500 font-black ml-1"><i data-lucide="check-check" class="w-3 h-3"></i></span>` : `<span class="text-[9px] text-slate-400 font-bold ml-1"><i data-lucide="check" class="w-3 h-3"></i></span>`) : ''; 
-                    return `<div class="flex flex-col ${isMe ? 'items-end' : 'items-start'}"><div class="p-3.5 rounded-[1.25rem] text-[13px] font-medium max-w-[85%] shadow-sm ${isMe ? 'bg-teal-500 text-white rounded-br-sm' : 'bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 text-slate-800 dark:text-slate-100 rounded-bl-sm'}">${m.content}</div><div class="flex items-center mt-1 px-1"><span class="text-[8px] text-slate-400">${formatTime(m.created_at)}</span>${readStatus}</div></div>`; 
+                    return `<div class="flex flex-col ${isMe ? 'items-end' : 'items-start'}"><div class="p-3.5 rounded-[1.25rem] text-[13px] font-medium max-w-[85%] shadow-sm ${isMe ? 'bg-teal-500 text-white rounded-br-sm' : 'bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 text-slate-800 dark:text-slate-100 rounded-bl-sm'}">${m.content}</div><div class="flex items-center mt-1 px-1"><span class="text-[8px] text-slate-400">${formatDate(m.created_at)}</span>${readStatus}</div></div>`; 
                 }).join(''); 
                 lucide.createIcons(); container.scrollTop = container.scrollHeight; 
             } 
@@ -643,5 +669,4 @@
     }
 </script>
 </body>
-</html>
 </html>
