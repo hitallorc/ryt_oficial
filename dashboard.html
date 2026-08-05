@@ -33,7 +33,6 @@
             <a href="index.html" class="text-2xl font-black tracking-tighter hover:opacity-80 transition-opacity">RYT<span class="text-teal-500">.</span>com.br</a>
             <div class="flex items-center gap-4 md:gap-6">
                 <a href="admin_painel.html" id="adminNavBtn" class="hidden items-center gap-1.5 text-[10px] font-black text-white bg-red-600 hover:bg-red-700 px-3 py-2 rounded-lg transition-colors uppercase tracking-widest shadow-md border border-red-500"><i data-lucide="shield-alert" class="w-3.5 h-3.5"></i> Admin</a>
-                
                 <a href="tutorial.html" class="hidden md:flex items-center gap-2 text-xs font-bold text-slate-500 hover:text-teal-500 transition-colors"><i data-lucide="help-circle" class="w-4 h-4"></i> Como Funciona</a>
                 <a href="analytics.html" class="hidden md:flex items-center gap-2 text-xs font-bold text-slate-500 hover:text-teal-500 transition-colors uppercase tracking-widest"><i data-lucide="bar-chart-2" class="w-4 h-4"></i> Analytics</a>
                 <a href="simulador.html" class="hidden md:flex items-center gap-2 text-xs font-bold text-slate-500 hover:text-teal-500 transition-colors uppercase tracking-widest"><i data-lucide="calculator" class="w-4 h-4"></i> Simulador</a>
@@ -91,7 +90,7 @@
                 <button onclick="fecharContrato()" class="p-2 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 rounded-full text-slate-600 dark:text-slate-300 transition-colors"><i data-lucide="x" class="w-4 h-4"></i></button>
             </header>
             <div id="contractContent" class="flex-1 overflow-y-auto p-6 relative bg-white text-slate-800">
-                </div>
+            </div>
             <footer class="bg-slate-50 dark:bg-slate-800 p-4 border-t border-slate-200 dark:border-slate-700 shrink-0 flex gap-3">
                 <button onclick="fecharContrato()" class="flex-1 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 py-3 rounded-xl font-black text-xs hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors">FECHAR</button>
                 <button onclick="baixarPdfContrato()" class="flex-[2] bg-teal-600 text-white py-3 rounded-xl font-black text-xs hover:bg-teal-700 transition-colors flex items-center justify-center gap-2 shadow-lg shadow-teal-600/20"><i data-lucide="download" class="w-4 h-4"></i> SALVAR COMO PDF</button>
@@ -228,9 +227,6 @@
             'cancelled': { label: 'Cancelados', color: 'bg-slate-500', open: false, order: 7 }
         };
 
-        // ==========================================
-        // SISTEMA DE CONTRATO (BLINDADO)
-        // ==========================================
         window.visualizarContrato = async function(rentalId) {
             try {
                 const { data: contract, error } = await supabaseClient.from('contracts').select('contract_html').eq('rental_id', rentalId).single();
@@ -246,26 +242,23 @@
             document.getElementById('contractModal').classList.add('hidden');
         };
 
+        // GERAÇÃO DE PDF BLINDADA CONTRA CODE BLEEDING
         window.baixarPdfContrato = function() {
             const conteudo = document.getElementById('contractContent').innerHTML;
             const janelaPrint = window.open('', '', 'width=900,height=650');
+            janelaPrint.document.open();
             
-            // Injeção limpa de DOM
-            janelaPrint.document.body.innerHTML = conteudo;
-            const style = janelaPrint.document.createElement('style');
-            style.innerHTML = 'body { font-family: Arial, sans-serif; padding: 20px; color: #333; } @media print { @page { margin: 15mm; } button { display: none !important; } }';
-            janelaPrint.document.head.appendChild(style);
-            janelaPrint.document.title = 'Contrato de Locação - RYT';
+            // Construção das tags em string cortada para evitar interpretação do navegador
+            janelaPrint.document.write('<' + '!DOCTYPE html><' + 'html><' + 'head><' + 'title>Contrato de Locação - RYT<' + '/title>');
+            janelaPrint.document.write('<' + 'style>body { font-family: Arial, sans-serif; padding: 20px; color: #333; } @media print { @page { margin: 15mm; } button { display: none !important; } }<' + '/style>');
+            janelaPrint.document.write('<' + '/head><' + 'body>');
+            janelaPrint.document.write(conteudo);
+            janelaPrint.document.write('<' + 'script>setTimeout(function(){ window.print(); window.close(); }, 500);<' + '/script>');
+            janelaPrint.document.write('<' + '/body><' + '/html>');
             
             janelaPrint.document.close();
             janelaPrint.focus();
-            
-            setTimeout(() => {
-                janelaPrint.print();
-                janelaPrint.close();
-            }, 250);
         };
-        // ==========================================
 
         async function checkAuth() {
             const { data: { session }, error } = await supabaseClient.auth.getSession();
@@ -275,15 +268,11 @@
             document.getElementById('userName').innerText = meta?.full_name || user.email.split('@')[0];
             document.getElementById('userAvatar').src = meta?.avatar_url || 'https://via.placeholder.com/150';
 
-            // VERIFICA SE O USUÁRIO É ADMIN PARA EXIBIR O BOTÃO "CENTRO DE COMANDO"
             try {
                 const { data: profile } = await supabaseClient.from('profiles').select('role').eq('id', user.id).single();
                 if (profile && profile.role === 'admin') {
                     const btnAdmin = document.getElementById('adminNavBtn');
-                    if(btnAdmin) {
-                        btnAdmin.classList.remove('hidden');
-                        btnAdmin.classList.add('flex');
-                    }
+                    if(btnAdmin) { btnAdmin.classList.remove('hidden'); btnAdmin.classList.add('flex'); }
                 }
             } catch (err) { console.error("Erro ao verificar admin:", err); }
 
@@ -363,7 +352,7 @@
         window.responderSolicitacao = async function(event, id, acao, valorAtualEstimado) {
             let valorFinal = valorAtualEstimado;
             if (acao === 'aceitar') {
-                const inputValor = prompt("Qual o valor FINAL em R$ acordado para este aluguel?\n(Se não houve alteração, basta clicar em OK)", valorAtualEstimado);
+                const inputValor = prompt("Qual o valor FINAL em R$ acordado para este aluguel?\\n(Se não houve alteração, basta clicar em OK)", valorAtualEstimado);
                 if (inputValor === null) return;
                 valorFinal = parseFloat(inputValor.replace(',', '.'));
                 if (isNaN(valorFinal) || valorFinal <= 0) return alert("⚠️ Valor inválido. A aprovação foi cancelada.");

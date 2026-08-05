@@ -185,7 +185,6 @@
             iconDiv.className = `w-8 h-8 rounded-full flex items-center justify-center ${bgColorClass} ${iconColorClass}`; 
             iconDiv.innerHTML = `<i data-lucide="${iconName}" class="w-4 h-4"></i>`;
             
-            // MÁGICA DE UX: Muda o texto do mapa dependendo da categoria
             const labelLocal = document.getElementById('dynamicLocationLabel');
             if (nome === 'Espaços e Ranchos') {
                 labelLocal.innerHTML = '<i data-lucide="map-pin" class="w-3 h-3"></i> Localização do Espaço';
@@ -254,19 +253,32 @@
                 const phoneVal = phoneInput ? phoneInput.replace(/\D/g, '') : '';
                 const pixVal = document.getElementById('userPix').value.trim();
                 
-                await supabaseClient.from('profiles').update({ 
-                    phone: (phoneVal && phoneVal.length >= 10) ? phoneVal : null,
-                    pix_key: pixVal ? pixVal : null
-                }).eq('id', globalUser.id);
+                const profileUpdate = {};
+                if (phoneVal && phoneVal.length >= 10) profileUpdate.phone = phoneVal;
+                if (pixVal) profileUpdate.pix_key = pixVal;
+                
+                // Correção 1: Impede envio de atualização de perfil se o objeto estiver vazio
+                if (Object.keys(profileUpdate).length > 0) {
+                    const { error: profileErr } = await supabaseClient.from('profiles').update(profileUpdate).eq('id', globalUser.id);
+                    if (profileErr) console.warn(profileErr);
+                }
 
                 let uploadedUrls = [null, null, null, null];
                 for (let i = 0; i < 4; i++) {
                     const file = fotosArray[i];
                     if (file) {
+                        // Correção 2: Evita o erro de "No content provided" ignorando arquivos vazios gerados pela câmera
+                        if (file.size === 0) continue; 
                         const safeName = file.name ? file.name.replace(/\s+/g, '_') : 'photo.jpg'; 
                         const fileName = `${globalUser.id}/${Date.now()}_slot${i}_${safeName}`;
-                        const { error: uploadError } = await supabaseClient.storage.from('item-photos').upload(fileName, file);
-                        if (uploadError) throw uploadError;
+                        
+                        const { error: uploadError } = await supabaseClient.storage.from('item-photos').upload(fileName, file, {
+                            cacheControl: '3600',
+                            upsert: false,
+                            contentType: file.type || 'image/jpeg'
+                        });
+                        
+                        if (uploadError) throw new Error("Erro na foto " + (i+1) + ": " + uploadError.message);
                         uploadedUrls[i] = supabaseClient.storage.from('item-photos').getPublicUrl(fileName).data.publicUrl;
                     }
                 }
