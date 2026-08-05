@@ -90,7 +90,7 @@
                     <div class="flex items-center gap-4 mb-10 p-5 bg-white/80 dark:bg-slate-900/80 glass-panel rounded-[2rem] border border-slate-200/60 dark:border-slate-800/60 shadow-sm">
                         <div class="w-12 h-12 bg-slate-100 dark:bg-slate-800 rounded-2xl flex items-center justify-center text-teal-600 dark:text-teal-400"><i data-lucide="map-pin"></i></div>
                         <div>
-                            <p id="locationLabel" class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Localização de Retirada</p>
+                            <p id="locationLabel" class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Localização</p>
                             <p id="fullLocation" class="font-bold text-slate-800 dark:text-slate-200 mt-0.5"></p>
                         </div>
                     </div>
@@ -146,12 +146,12 @@
         <div class="bg-white dark:bg-slate-900 w-full max-w-md rounded-[2.5rem] shadow-2xl overflow-y-auto max-h-[90vh] animate-in fade-in slide-in-from-bottom-8 duration-300 border border-slate-100 dark:border-slate-800 no-scrollbar">
             
             <div id="step1Checkout">
-                <header class="bg-slate-50 dark:bg-slate-800/50 p-8 relative border-b border-slate-100 dark:border-slate-800">
-                    <button onclick="fecharCheckout()" class="absolute top-6 right-6 p-2 bg-white dark:bg-slate-800 rounded-full shadow-sm hover:scale-110 transition-all"><i data-lucide="x" class="w-5 h-5 text-slate-500"></i></button>
+                <header class="bg-slate-50 dark:bg-slate-800/50 p-6 md:p-8 relative border-b border-slate-100 dark:border-slate-800">
+                    <button type="button" onclick="fecharCheckout()" class="absolute top-5 right-5 md:top-6 md:right-6 p-2 bg-white dark:bg-slate-800 rounded-full shadow-sm hover:scale-110 transition-all"><i data-lucide="x" class="w-5 h-5 text-slate-500"></i></button>
                     <h3 id="modalTitle" class="font-black text-xl mb-1 text-slate-800 dark:text-white pr-8 truncate">...</h3>
                     <p id="modalPricePerDay" class="text-teal-600 dark:text-teal-400 font-black text-xs uppercase tracking-wider">R$ 0/dia</p>
                 </header>
-                <div class="p-8 pb-32 space-y-6">
+                <div class="p-6 md:p-8 pb-32 space-y-6">
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div class="space-y-1.5">
                             <label class="text-[10px] font-black text-slate-400 uppercase ml-1">Data de Início</label>
@@ -163,7 +163,7 @@
                         </div>
                     </div>
                     
-                    <p id="calendarWarning" class="text-xs font-bold text-red-500 hidden animate-pulse"><i data-lucide="alert-triangle" class="w-3 h-3 inline"></i> Atenção: O período cruza com dias reservados (em vermelho).</p>
+                    <p id="calendarWarning" class="text-xs font-bold text-red-500 hidden animate-pulse"><i data-lucide="alert-triangle" class="w-3 h-3 inline"></i> Atenção: O período cruza com dias reservados.</p>
                     
                     <div class="space-y-3">
                         <label class="text-[10px] font-black text-slate-400 uppercase ml-1">Método de Pagamento</label>
@@ -171,7 +171,7 @@
                             <label class="flex flex-col items-center p-4 bg-teal-50 dark:bg-teal-500/10 rounded-2xl border-2 border-teal-500 cursor-pointer transition-all group">
                                 <i data-lucide="qr-code" class="text-teal-600 mb-2 w-6 h-6"></i>
                                 <p class="font-black text-sm text-teal-700 dark:text-teal-400">PIX (Recomendado)</p>
-                                <p class="text-[9px] text-teal-600/70 mt-1 font-medium text-center">Será liberado no Painel assim que o dono aprovar e definir o preço final.</p>
+                                <p class="text-[9px] text-teal-600/70 mt-1 font-medium text-center">Liberado após dono aceitar a proposta.</p>
                                 <input type="radio" name="payMethod" value="PIX" checked class="hidden">
                             </label>
                         </div>
@@ -184,14 +184,23 @@
                         </div>
                     </div>
 
-                    <label class="flex items-start gap-3 p-3 mt-2 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl cursor-pointer group">
-                        <input type="checkbox" id="acceptTermsClient" class="mt-0.5 w-4 h-4 rounded text-teal-600 focus:ring-teal-500" required>
-                        <span class="text-[10px] leading-relaxed font-medium text-slate-600 dark:text-slate-300 group-hover:text-slate-800 dark:group-hover:text-white transition-colors">Li e aceito os <a href="#" class="text-teal-600 underline font-bold">Termos de Uso</a>, declarando ciência de que a RYT atua apenas como intermediadora.</span>
+                    <label class="flex items-start gap-3 p-3 mt-2 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl cursor-pointer group relative z-10">
+                        <input type="checkbox" id="acceptTermsClient" class="mt-0.5 w-5 h-5 rounded border-slate-300 text-teal-600 focus:ring-teal-500 cursor-pointer" required>
+                        <span class="text-[10px] leading-relaxed font-medium text-slate-600 dark:text-slate-300 group-hover:text-slate-800 dark:group-hover:text-white transition-colors">
+                            Li e aceito os <a href="termos.html" target="_blank" onclick="event.stopPropagation()" class="text-teal-600 underline font-bold hover:text-teal-500 relative z-20">Termos de Uso</a> e a <a href="#" onclick="previewContrato(event)" class="text-teal-600 underline font-bold hover:text-teal-500 relative z-20">Prévia do Contrato</a>, declarando ciência de que a RYT atua como intermediadora.
+                        </span>
                     </label>
 
-                    <div class="flex items-center justify-between pt-4 mt-2 border-t border-slate-100 dark:border-slate-800">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between pt-4 mt-2 border-t border-slate-100 dark:border-slate-800 gap-4">
                         <div><p class="text-[10px] font-black text-slate-400 uppercase">Total Estimado</p><p id="totalDisplay" class="text-3xl font-black text-slate-900 dark:text-white mt-1">R$ 0,00</p></div>
-                        <button id="btnSolicitar" onclick="processarSolicitacao()" class="relative z-[90] bg-slate-900 dark:bg-teal-500 text-white px-6 py-4 rounded-full font-black text-sm hover:shadow-lg transition-all hover:-translate-y-0.5 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed" disabled>SOLICITAR ALUGUEL <i data-lucide="send" class="w-4 h-4"></i></button>
+                        <div class="flex items-center gap-2 relative z-[90] w-full sm:w-auto">
+                            <button type="button" onclick="iniciarNegociacaoCheckout()" class="flex shrink-0 items-center justify-center bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 p-4 rounded-full font-black hover:shadow-md transition-all hover:text-teal-600 dark:hover:text-teal-400" title="Negociar no Chat">
+                                <i data-lucide="message-square" class="w-5 h-5"></i>
+                            </button>
+                            <button type="button" id="btnSolicitar" onclick="processarSolicitacao()" class="flex-1 sm:flex-none bg-slate-900 dark:bg-teal-500 text-white px-6 py-4 rounded-full font-black text-sm hover:shadow-lg transition-all hover:-translate-y-0.5 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                                SOLICITAR <i data-lucide="send" class="w-4 h-4"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -203,11 +212,24 @@
                 <h3 class="text-2xl font-black text-slate-800 dark:text-white tracking-tight">Solicitação Enviada!</h3>
                 <p class="text-sm font-medium text-slate-500 dark:text-slate-400">O dono do item foi notificado. Assim que ele aceitar e confirmar o valor para suas datas, a opção de pagamento via PIX será liberada no seu Painel.</p>
                 <div class="pt-6 border-t border-slate-100 dark:border-slate-800">
-                    <button onclick="window.location.href='dashboard.html'" class="w-full bg-slate-900 dark:bg-teal-500 text-white py-4 rounded-full font-black text-sm shadow-lg hover:shadow-teal-500/30 transition-all hover:-translate-y-1">IR PARA O PAINEL</button>
-                    <button onclick="fecharCheckout()" class="mt-4 text-xs font-bold text-slate-400 hover:text-slate-600 transition-colors uppercase">Fechar</button>
+                    <button type="button" onclick="window.location.href='dashboard.html'" class="w-full bg-slate-900 dark:bg-teal-500 text-white py-4 rounded-full font-black text-sm shadow-lg hover:shadow-teal-500/30 transition-all hover:-translate-y-1">IR PARA O PAINEL</button>
+                    <button type="button" onclick="fecharCheckout()" class="mt-4 text-xs font-bold text-slate-400 hover:text-slate-600 transition-colors uppercase">Fechar</button>
                 </div>
             </div>
+        </div>
+    </div>
 
+    <div id="contractModal" class="fixed inset-0 bg-slate-900/80 z-[110] flex items-center justify-center hidden modal-blur p-4 transition-opacity">
+        <div class="bg-white dark:bg-slate-900 w-full max-w-3xl h-[90vh] rounded-[2rem] shadow-2xl flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom-8 duration-300">
+            <header class="bg-slate-50 dark:bg-slate-800 p-4 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center shrink-0">
+                <h3 class="font-black text-slate-800 dark:text-white text-sm flex items-center"><i data-lucide="file-text" class="w-4 h-4 text-teal-600 mr-2"></i> Prévia do Contrato Digital</h3>
+                <button onclick="fecharPreview()" class="p-2 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 rounded-full text-slate-600 dark:text-slate-300 transition-colors"><i data-lucide="x" class="w-4 h-4"></i></button>
+            </header>
+            <div id="previewContent" class="flex-1 overflow-y-auto p-6 relative bg-white text-slate-800">
+                </div>
+            <footer class="bg-slate-50 dark:bg-slate-800 p-4 border-t border-slate-200 dark:border-slate-700 shrink-0 flex justify-center">
+                <button onclick="fecharPreview()" class="w-full bg-slate-900 dark:bg-teal-500 text-white py-3 rounded-xl font-black text-xs hover:opacity-90 transition-colors shadow-lg">FECHAR PRÉVIA</button>
+            </footer>
         </div>
     </div>
 
@@ -272,7 +294,6 @@
             ownerFullName = item.profiles?.full_name || 'Locador';
             document.getElementById('itemTitle').innerText = item.title;
             
-            // INTEGRAÇÃO DA DESCRIÇÃO / REGRAS DE PREÇO
             const desc = item.description ? item.description : 'Sem descrição detalhada.';
             document.getElementById('itemDesc').innerText = desc;
             
@@ -282,7 +303,6 @@
             document.getElementById('itemImage').src = item.image_url;
             document.getElementById('rentalCountText').innerText = `${item.rentals ? item.rentals.length : 0} locações`;
 
-            // MÁGICA DA UX: Altera o texto se for um rancho ou espaço
             if (item.category === 'Espaços e Ranchos') {
                 document.getElementById('locationLabel').innerText = 'Localização do Espaço';
             } else {
@@ -368,7 +388,7 @@
             document.getElementById('step1Checkout').classList.remove('hidden');
             
             const btn = document.getElementById('btnSolicitar'); 
-            btn.innerHTML = 'SOLICITAR ALUGUEL <i data-lucide="send" class="w-4 h-4"></i>'; 
+            btn.innerHTML = 'SOLICITAR <i data-lucide="send" class="w-4 h-4"></i>'; 
             btn.disabled = true;
             document.getElementById('acceptTermsClient').checked = false;
             
@@ -385,6 +405,105 @@
 
         function fecharCheckout() {
             document.getElementById('checkoutModal').classList.add('hidden');
+        }
+
+        async function previewContrato(e) {
+            if(e) { e.preventDefault(); e.stopPropagation(); }
+            if (!itemDataGlobal) return;
+            const start = document.getElementById('startDate').value; 
+            const end = document.getElementById('endDate').value;
+            
+            if(!start || !end) return alert("Selecione as datas de Retirada e Devolução para visualizar a minuta do contrato.");
+            
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            if(!session) return alert("Faça login para visualizar a minuta do contrato.");
+
+            const btn = e.target;
+            const textOrig = btn.innerText;
+            btn.innerText = "Gerando prévia...";
+            
+            try {
+                const { data: locador } = await supabaseClient.from('profiles').select('id, full_name').eq('id', itemDataGlobal.owner_id).single();
+                const { data: locatario } = await supabaseClient.from('profiles').select('id, full_name').eq('id', session.user.id).single();
+
+                const inicioBr = start.split('-').reverse().join('/');
+                const fimBr = end.split('-').reverse().join('/');
+                
+                const html = `
+                <div style="position: relative; font-family: Arial, sans-serif; padding: 10px; line-height: 1.6; color: #333;">
+                    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-35deg); font-size: 60px; font-weight: 900; color: rgba(220, 38, 38, 0.08); white-space: nowrap; pointer-events: none; z-index: 0; text-transform: uppercase; letter-spacing: 6px; user-select: none;">MINUTA - PRÉVIA</div>
+                    
+                    <div style="position: relative; z-index: 10;">
+                        <div style="background-color: #fef2f2; border: 1px solid #fecaca; color: #991b1b; padding: 12px 16px; border-radius: 8px; text-align: center; font-size: 12px; font-weight: bold; margin-bottom: 24px;">
+                            ⚠️ MINUTA DEMONSTRATIVA: Esta é apenas uma prévia das cláusulas. A versão oficial com IP, data/hora e carimbo digital será gerada e salva na plataforma após a confirmação.
+                        </div>
+
+                        <h2 style="text-align: center; color: #0f172a; margin-bottom: 4px; font-size: 18px;">CONTRATO PARTICULAR DE LOCAÇÃO</h2>
+                        <p style="text-align: center; font-size: 11px; color: #64748b; margin-top: 0;">Modelo Padrão - Plataforma RYT</p>
+                        <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 15px 0;">
+
+                        <h4 style="margin-top: 20px; margin-bottom: 5px; color: #0f172a; font-size: 14px;">1. DAS PARTES</h4>
+                        <p style="font-size: 13px;"><strong>LOCADOR(A):</strong> ${locador?.full_name || 'Locador'}</p>
+                        <p style="font-size: 13px;"><strong>LOCATÁRIO(A):</strong> ${locatario?.full_name || 'Você (Locatário)'}</p>
+
+                        <h4 style="margin-top: 20px; margin-bottom: 5px; color: #0f172a; font-size: 14px;">2. DO OBJETO</h4>
+                        <p style="font-size: 13px;">O presente contrato tem por objeto a locação do item <strong>"${itemDataGlobal.title}"</strong>, sob a categoria <strong>${itemDataGlobal.category || 'Geral'}</strong>.</p>
+
+                        <h4 style="margin-top: 20px; margin-bottom: 5px; color: #0f172a; font-size: 14px;">3. DO PERÍODO E VALORES ESTIMADOS</h4>
+                        <p style="font-size: 13px;">Período de locação estimado: de <strong>${inicioBr}</strong> a <strong>${fimBr}</strong>.</p>
+                        <p style="font-size: 13px;">Valor total estimado: <strong>R$ ${valorTotalComTaxa.toFixed(2)}</strong>.</p>
+
+                        <h4 style="margin-top: 20px; margin-bottom: 5px; color: #0f172a; font-size: 14px;">4. DA ISENÇÃO DE RESPONSABILIDADE</h4>
+                        <p style="background-color: #f8fafc; padding: 10px; border-left: 4px solid #0d9488; font-size: 12px; color: #334155;">
+                            A plataforma <strong>RYT (ryt.com.br)</strong> atua exclusivamente como intermediadora tecnológica. A negociação, entrega e uso do equipamento são de responsabilidade direta e exclusiva das partes.
+                        </p>
+
+                        <h4 style="margin-top: 20px; margin-bottom: 5px; color: #0f172a; font-size: 14px;">5. DAS OBRIGAÇÕES</h4>
+                        <p style="font-size: 13px;">O LOCATÁRIO declara receber o bem em perfeitas condições de funcionamento e se compromete a devolvê-lo nas mesmas condições ao término do período acordado.</p>
+
+                        <h4 style="margin-top: 20px; margin-bottom: 5px; color: #0f172a; font-size: 14px;">6. DA VALIDADE JURÍDICA</h4>
+                        <p style="font-size: 13px;">A assinatura eletrônica vinculando endereço IP, dispositivo e geolocalização do LOCATÁRIO será efetuada no momento do envio da solicitação, passando a ter validade jurídica após o aceite formal do LOCADOR.</p>
+                    </div>
+                </div>
+                `;
+                
+                document.getElementById('previewContent').innerHTML = html;
+                document.getElementById('contractModal').classList.remove('hidden');
+                lucide.createIcons();
+                
+            } catch (err) {
+                console.error(err);
+                alert("Erro ao gerar prévia do contrato.");
+            } finally {
+                btn.innerText = textOrig;
+            }
+        }
+
+        function fecharPreview() {
+            document.getElementById('contractModal').classList.add('hidden');
+        }
+
+        function iniciarNegociacaoCheckout() {
+            if (!itemDataGlobal) return;
+            const start = document.getElementById('startDate').value; 
+            const end = document.getElementById('endDate').value;
+            let msg = `Olá! Tenho interesse em alugar o item "${itemDataGlobal.title}". `;
+            
+            if (start && end) {
+                const startStr = start.split('-').reverse().join('/');
+                const endStr = end.split('-').reverse().join('/');
+                msg += `Para as datas de ${startStr} a ${endStr}. `;
+            }
+            msg += `Podemos negociar o valor final da diária?`;
+
+            fecharCheckout();
+            iniciarChatContextual(ownerFullName, itemDataGlobal.owner_id, itemDataGlobal.id, itemDataGlobal.title, itemDataGlobal.profiles?.avatar_url);
+            
+            setTimeout(() => {
+                const inputChat = document.getElementById('chatInput');
+                inputChat.value = msg;
+                inputChat.focus();
+            }, 400);
         }
 
         async function processarSolicitacao() { 
@@ -417,7 +536,7 @@
 
                 if (error) {
                     alert("Erro ao confirmar solicitação: " + error.message);
-                    btn.disabled = false; btn.innerHTML = 'SOLICITAR ALUGUEL <i data-lucide="send" class="w-4 h-4"></i>'; lucide.createIcons();
+                    btn.disabled = false; btn.innerHTML = 'SOLICITAR <i data-lucide="send" class="w-4 h-4"></i>'; lucide.createIcons();
                 } else {
                     document.getElementById('step1Checkout').classList.add('hidden');
                     document.getElementById('step2Success').classList.remove('hidden');
