@@ -32,6 +32,8 @@
         <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
             <a href="index.html" class="text-2xl font-black tracking-tighter hover:opacity-80 transition-opacity">RYT<span class="text-teal-500">.</span>com.br</a>
             <div class="flex items-center gap-4 md:gap-6">
+                <a href="admin_painel.html" id="adminNavBtn" class="hidden items-center gap-1.5 text-[10px] font-black text-white bg-red-600 hover:bg-red-700 px-3 py-2 rounded-lg transition-colors uppercase tracking-widest shadow-md border border-red-500"><i data-lucide="shield-alert" class="w-3.5 h-3.5"></i> Admin</a>
+                
                 <a href="tutorial.html" class="hidden md:flex items-center gap-2 text-xs font-bold text-slate-500 hover:text-teal-500 transition-colors"><i data-lucide="help-circle" class="w-4 h-4"></i> Como Funciona</a>
                 <a href="analytics.html" class="hidden md:flex items-center gap-2 text-xs font-bold text-slate-500 hover:text-teal-500 transition-colors uppercase tracking-widest"><i data-lucide="bar-chart-2" class="w-4 h-4"></i> Analytics</a>
                 <a href="simulador.html" class="hidden md:flex items-center gap-2 text-xs font-bold text-slate-500 hover:text-teal-500 transition-colors uppercase tracking-widest"><i data-lucide="calculator" class="w-4 h-4"></i> Simulador</a>
@@ -248,7 +250,7 @@
             const conteudo = document.getElementById('contractContent').innerHTML;
             const janelaPrint = window.open('', '', 'width=900,height=650');
             
-            // Injeção limpa de DOM, sem uso de strings HTML puras para evitar erros de leitura (parsing)
+            // Injeção limpa de DOM
             janelaPrint.document.body.innerHTML = conteudo;
             const style = janelaPrint.document.createElement('style');
             style.innerHTML = 'body { font-family: Arial, sans-serif; padding: 20px; color: #333; } @media print { @page { margin: 15mm; } button { display: none !important; } }';
@@ -272,6 +274,19 @@
             const meta = user.user_metadata;
             document.getElementById('userName').innerText = meta?.full_name || user.email.split('@')[0];
             document.getElementById('userAvatar').src = meta?.avatar_url || 'https://via.placeholder.com/150';
+
+            // VERIFICA SE O USUÁRIO É ADMIN PARA EXIBIR O BOTÃO "CENTRO DE COMANDO"
+            try {
+                const { data: profile } = await supabaseClient.from('profiles').select('role').eq('id', user.id).single();
+                if (profile && profile.role === 'admin') {
+                    const btnAdmin = document.getElementById('adminNavBtn');
+                    if(btnAdmin) {
+                        btnAdmin.classList.remove('hidden');
+                        btnAdmin.classList.add('flex');
+                    }
+                }
+            } catch (err) { console.error("Erro ao verificar admin:", err); }
+
             return user;
         }
 
@@ -392,7 +407,6 @@
             btn.innerHTML = '<i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i> PROCESSANDO...';
             lucide.createIcons();
             
-            // O Status agora vai para Análise ao invés de Confirmed
             const { error } = await supabaseClient.from('rentals').update({ status: 'payment_under_review' }).eq('id', pixRentalId);
             if(!error) {
                 alert("Aviso enviado! A RYT está analisando o seu pagamento. O status será atualizado em breve.");
@@ -528,9 +542,11 @@
         async function loadConversations(userId) { 
             const { data: msgs } = await supabaseClient.from('messages').select('*, items(title)').or(`sender_id.eq.${userId},recipient_id.eq.${userId}`).order('created_at', { ascending: false }); 
             const convContainer = document.getElementById('conversationsList'); 
+            const drawerConvContainer = document.getElementById('drawerConversationsList'); 
             
             if (!msgs || msgs.length === 0) { 
                 convContainer.innerHTML = `<p class="text-center text-xs text-slate-500 py-8">Sem mensagens.</p>`; 
+                if(drawerConvContainer) drawerConvContainer.innerHTML = '';
                 return; 
             } 
             
@@ -557,6 +573,7 @@
             }).join('');
             
             convContainer.innerHTML = htmlChats;
+            if(drawerConvContainer) drawerConvContainer.innerHTML = htmlChats; 
         }
 
         async function abrirChat(id, nome, itemId, itemTitle, avatarUrl) { 

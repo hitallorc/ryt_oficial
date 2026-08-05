@@ -49,9 +49,9 @@
             <section class="flex flex-col gap-4">
                 <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-2">
                     <h3 class="font-black text-lg text-slate-800 dark:text-white flex items-center gap-2">
-                        <i data-lucide="banknote" class="w-5 h-5 text-orange-500"></i> Validação de PIX
+                        <i data-lucide="banknote" class="w-5 h-5 text-yellow-500"></i> Pagamentos em Análise
                     </h3>
-                    <span id="countPix" class="bg-orange-100 text-orange-600 font-bold text-xs px-2 py-1 rounded-md">0</span>
+                    <span id="countPix" class="bg-yellow-100 text-yellow-700 font-bold text-xs px-2 py-1 rounded-md">0</span>
                 </div>
                 <div id="listaPix" class="space-y-4 max-h-[600px] overflow-y-auto no-scrollbar pb-4">
                     <div class="text-center py-10 text-slate-400"><i data-lucide="loader-2" class="w-6 h-6 animate-spin mx-auto"></i></div>
@@ -61,7 +61,7 @@
             <section class="flex flex-col gap-4">
                 <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-2">
                     <h3 class="font-black text-lg text-slate-800 dark:text-white flex items-center gap-2">
-                        <i data-lucide="alert-octagon" class="w-5 h-5 text-red-500"></i> Disputas em Análise
+                        <i data-lucide="alert-octagon" class="w-5 h-5 text-red-500"></i> Disputas Abertas
                     </h3>
                     <span id="countDisputas" class="bg-red-100 text-red-600 font-bold text-xs px-2 py-1 rounded-md">0</span>
                 </div>
@@ -101,14 +101,30 @@
 
         async function verificarAdmin() {
             const { data: { session }, error } = await supabaseClient.auth.getSession();
-            if (error || !session) { alert("Acesso restrito."); window.location.href = 'login.html'; return null; }
-            document.getElementById('adminEmail').innerText = session.user.email; return session.user;
+            if (error || !session) { 
+                alert("Acesso restrito. Faça login primeiro."); 
+                window.location.href = 'login.html'; 
+                return null; 
+            }
+
+            // SEGURANÇA: Vai na tabela profiles conferir se o role é admin
+            const { data: profile } = await supabaseClient.from('profiles').select('role').eq('id', session.user.id).single();
+
+            if (!profile || profile.role !== 'admin') {
+                alert("ACESSO NEGADO: Esta área é exclusiva para a equipe de Administração da RYT.");
+                window.location.href = 'dashboard.html';
+                return null;
+            }
+
+            document.getElementById('adminEmail').innerText = session.user.email; 
+            return session.user;
         }
 
         async function carregarPainelAdmin() {
             const user = await verificarAdmin(); if (!user) return;
             
-            const { data: pagamentos, error: erroPix } = await supabaseClient.from('rentals').select('*, items(title, owner_id)').eq('status', 'awaiting_payment').order('created_at', { ascending: false });
+            // FILTRO DE MOTOR ATUALIZADO: Puxa apenas quem disse que já pagou e aguarda análise
+            const { data: pagamentos, error: erroPix } = await supabaseClient.from('rentals').select('*, items(title, owner_id)').eq('status', 'payment_under_review').order('created_at', { ascending: false });
             if (erroPix) mostrarErroDB("Erro ao ler pagamentos: " + erroPix.message); else renderizarPagamentos(pagamentos);
 
             const { data: disputas, error: erroDisp } = await supabaseClient.from('rentals').select('*, items(title)').eq('status', 'issue_reported').order('created_at', { ascending: false });
@@ -129,7 +145,7 @@
         async function renderizarPagamentos(pagamentos) {
             const contPix = document.getElementById('listaPix'); document.getElementById('countPix').innerText = pagamentos ? pagamentos.length : 0;
             if (!pagamentos || pagamentos.length === 0) {
-                contPix.innerHTML = `<div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-8 text-center text-slate-400"><i data-lucide="check-circle" class="w-8 h-8 mx-auto mb-2 text-slate-300"></i><p class="font-medium text-sm">Nenhum PIX pendente.</p></div>`;
+                contPix.innerHTML = `<div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-8 text-center text-slate-400"><i data-lucide="check-circle" class="w-8 h-8 mx-auto mb-2 text-slate-300"></i><p class="font-medium text-sm">Nenhum PIX pendente de análise.</p></div>`;
                 lucide.createIcons(); return;
             }
             let html = '';
@@ -144,16 +160,15 @@
                     if (ownerProfile && ownerProfile.pix_key) pixLocador = ownerProfile.pix_key;
                 }
 
-                // MATEMÁTICA FINANCEIRA DO REPASSE RYT
-                const valorBase = p.total_price / 1.05; // Tira os 5% do locatário para achar a base
-                const repasseOwner = valorBase * 0.90;  // Tira os 10% do locador
-                const lucroRyt = p.total_price - repasseOwner; // O que fica na plataforma
+                const valorBase = p.total_price / 1.05; 
+                const repasseOwner = valorBase * 0.90;  
+                const lucroRyt = p.total_price - repasseOwner; 
 
                 html += `
-                    <div class="bg-white dark:bg-slate-900 border-2 border-orange-200 dark:border-orange-900/50 rounded-2xl p-5 shadow-sm relative overflow-hidden">
-                        <div class="absolute top-0 left-0 w-1 h-full bg-orange-500"></div>
+                    <div class="bg-white dark:bg-slate-900 border-2 border-yellow-200 dark:border-yellow-900/50 rounded-2xl p-5 shadow-sm relative overflow-hidden">
+                        <div class="absolute top-0 left-0 w-1 h-full bg-yellow-500"></div>
                         <div class="flex justify-between items-start mb-3 pl-2">
-                            <div><p class="text-[10px] font-black text-orange-500 uppercase tracking-widest mb-1">Aguardando Aprovação</p><h4 class="font-black text-sm text-slate-800 dark:text-white">${p.items?.title || 'Item Desconhecido'}</h4></div>
+                            <div><p class="text-[10px] font-black text-yellow-600 uppercase tracking-widest mb-1">Pagamento Informado</p><h4 class="font-black text-sm text-slate-800 dark:text-white">${p.items?.title || 'Item Desconhecido'}</h4></div>
                             <div class="text-right">
                                 <p class="font-black text-lg text-slate-800 dark:text-white">R$ ${p.total_price.toFixed(2)}</p>
                                 <p class="text-[9px] font-black text-slate-400 uppercase">Recebido via PIX</p>
@@ -176,7 +191,7 @@
                         </div>
                         <div class="flex gap-2 pt-3 mt-2 border-t border-slate-100 dark:border-slate-800 pl-2">
                             <button onclick="aprovarPix(event, '${p.id}', '${ownerId}', '${safeTitle}', '${nomeLocatario}')" class="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white py-3 rounded-xl font-black text-[10px] uppercase tracking-widest transition-colors flex items-center justify-center gap-1.5 shadow-sm"><i data-lucide="check-circle" class="w-4 h-4"></i> CONFIRMAR PIX</button>
-                            <button onclick="reprovarPix(event, '${p.id}')" class="bg-red-50 hover:bg-red-100 text-red-500 px-4 py-3 rounded-xl font-bold transition-colors border border-red-100"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                            <button onclick="reprovarPix(event, '${p.id}')" class="bg-red-50 hover:bg-red-100 text-red-500 px-4 py-3 rounded-xl font-bold transition-colors border border-red-100"><i data-lucide="trash-2" class="w-4 h-4"></i> RECUSAR (NÃO CAIU)</button>
                         </div>
                     </div>`;
             }
@@ -278,11 +293,25 @@
         };
 
         window.reprovarPix = async function(event, id) {
-            if(!confirm("Tem certeza que deseja CANCELAR este pedido por falta de pagamento? O cliente perderá a reserva.")) return;
-            const btn = event.currentTarget; btn.innerHTML = '<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> ...'; lucide.createIcons();
-            const dataHora = new Date().toLocaleString('pt-BR'); const carimboLog = `[REPROVADO] Pagamento não identificado/recusado pela Administração.\nData/Hora: ${dataHora}`;
+            if(!confirm("Tem certeza que deseja RECUSAR este pedido por falta de pagamento ou comprovante falso? O locatário perderá a reserva.")) return;
+            
+            const btn = event.currentTarget; 
+            const textoOriginal = btn.innerHTML;
+            btn.innerHTML = '<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> RECUSANDO...'; 
+            lucide.createIcons();
+            
+            const dataHora = new Date().toLocaleString('pt-BR'); 
+            const carimboLog = `[REPROVADO] Pagamento não identificado ou recusado pela Administração.\nData/Hora: ${dataHora}`;
+            
             const { error } = await supabaseClient.from('rentals').update({ status: 'cancelled', admin_log: carimboLog }).eq('id', id);
-            if(error) alert("Erro ao cancelar: " + error.message); else carregarPainelAdmin();
+            
+            if(error) {
+                alert("Erro ao recusar: " + error.message);
+                btn.innerHTML = textoOriginal;
+                lucide.createIcons();
+            } else {
+                carregarPainelAdmin();
+            }
         };
 
         document.addEventListener('DOMContentLoaded', carregarPainelAdmin);
