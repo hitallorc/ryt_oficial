@@ -92,9 +92,7 @@
                     <div id="dropdownList" class="absolute top-full left-0 w-full mt-2 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl shadow-xl z-[60] overflow-hidden hidden transform origin-top transition-all duration-200 scale-95 opacity-0">
                         <ul class="max-h-60 overflow-y-auto no-scrollbar py-2">
                             <li onclick="selecionarCategoria('Ferramentas', 'wrench', 'text-amber-500', 'bg-amber-50')" class="px-4 py-3 flex items-center gap-4 hover:bg-slate-50 dark:hover:bg-slate-700/50 cursor-pointer transition-colors"><div class="w-10 h-10 rounded-full bg-amber-50 dark:bg-amber-500/10 flex items-center justify-center text-amber-500"><i data-lucide="wrench" class="w-5 h-5"></i></div><span class="font-bold text-sm text-slate-800 dark:text-white">Ferramentas</span></li>
-                            
                             <li onclick="selecionarCategoria('Espaços e Ranchos', 'home', 'text-indigo-500', 'bg-indigo-50')" class="px-4 py-3 flex items-center gap-4 hover:bg-slate-50 dark:hover:bg-slate-700/50 cursor-pointer transition-colors"><div class="w-10 h-10 rounded-full bg-indigo-50 dark:bg-indigo-500/10 flex items-center justify-center text-indigo-500"><i data-lucide="home" class="w-5 h-5"></i></div><span class="font-bold text-sm text-slate-800 dark:text-white">Espaços e Ranchos</span></li>
-                            
                             <li onclick="selecionarCategoria('Moda', 'shirt', 'text-fuchsia-500', 'bg-fuchsia-50')" class="px-4 py-3 flex items-center gap-4 hover:bg-slate-50 dark:hover:bg-slate-700/50 cursor-pointer transition-colors"><div class="w-10 h-10 rounded-full bg-fuchsia-50 dark:bg-fuchsia-500/10 flex items-center justify-center text-fuchsia-500"><i data-lucide="shirt" class="w-5 h-5"></i></div><span class="font-bold text-sm text-slate-800 dark:text-white">Roupas e Acessórios</span></li>
                             <li onclick="selecionarCategoria('Infantil', 'baby', 'text-sky-500', 'bg-sky-50')" class="px-4 py-3 flex items-center gap-4 hover:bg-slate-50 dark:hover:bg-slate-700/50 cursor-pointer transition-colors"><div class="w-10 h-10 rounded-full bg-sky-50 dark:bg-sky-500/10 flex items-center justify-center text-sky-500"><i data-lucide="baby" class="w-5 h-5"></i></div><span class="font-bold text-sm text-slate-800 dark:text-white">Artigos Infantis</span></li>
                             <li onclick="selecionarCategoria('Eletronicos', 'laptop', 'text-blue-500', 'bg-blue-50')" class="px-4 py-3 flex items-center gap-4 hover:bg-slate-50 dark:hover:bg-slate-700/50 cursor-pointer transition-colors"><div class="w-10 h-10 rounded-full bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center text-blue-500"><i data-lucide="laptop" class="w-5 h-5"></i></div><span class="font-bold text-sm text-slate-800 dark:text-white">Eletrônicos</span></li>
@@ -167,7 +165,6 @@
     <script>
         lucide.createIcons();
         let globalUser = null; 
-        let fotosArray = [null, null, null, null]; 
 
         function toggleDropdown() {
             const dropdown = document.getElementById('dropdownList');
@@ -235,18 +232,60 @@
         };
 
         marker.on('dragend', () => reverseGeocode(marker.getLatLng().lat, marker.getLatLng().lng));
-        function handleSinglePhoto(event, index) { const file = event.target.files[0]; if (!file) return; fotosArray[index] = file; const reader = new FileReader(); reader.onload = (e) => { const preview = document.getElementById(`preview${index}`); preview.src = e.target.result; preview.classList.remove('hidden'); document.getElementById(`btnRemove${index}`).classList.remove('hidden'); }; reader.readAsDataURL(file); }
-        function removerFotoSlot(index, event) { event.preventDefault(); event.stopPropagation(); fotosArray[index] = null; document.getElementById(`img${index}`).value = ''; const preview = document.getElementById(`preview${index}`); preview.classList.add('hidden'); preview.src = ''; document.getElementById(`btnRemove${index}`).classList.add('hidden'); }
+        
+        function handleSinglePhoto(event, index) { 
+            const file = event.target.files[0]; 
+            if (!file) return; 
+            const reader = new FileReader(); 
+            reader.onload = (e) => { 
+                const preview = document.getElementById(`preview${index}`); 
+                preview.src = e.target.result; 
+                preview.classList.remove('hidden'); 
+                document.getElementById(`btnRemove${index}`).classList.remove('hidden'); 
+            }; 
+            reader.readAsDataURL(file); 
+        }
+        
+        function removerFotoSlot(index, event) { 
+            event.preventDefault(); 
+            event.stopPropagation(); 
+            document.getElementById(`img${index}`).value = ''; 
+            const preview = document.getElementById(`preview${index}`); 
+            preview.classList.add('hidden'); 
+            preview.src = ''; 
+            document.getElementById(`btnRemove${index}`).classList.add('hidden'); 
+        }
+
+        // MÁGICA: Converte o preview visual base64 em um arquivo Blob limpo
+        function dataURLtoBlob(dataurl) {
+            const arr = dataurl.split(',');
+            const mime = arr[0].match(/:(.*?);/)[1];
+            const bstr = atob(arr[1]);
+            let n = bstr.length;
+            const u8arr = new Uint8Array(n);
+            while(n--){
+                u8arr[n] = bstr.charCodeAt(n);
+            }
+            return new Blob([u8arr], {type:mime});
+        }
 
         document.getElementById('formCadastro').onsubmit = async (e) => {
-            e.preventDefault(); const btn = document.getElementById('btnSubmit'); const pos = marker.getLatLng();
+            e.preventDefault(); 
+            const btn = document.getElementById('btnSubmit'); 
+            const pos = marker.getLatLng();
             if (!globalUser) return alert("Sessão expirada. Faça login novamente.");
             
             const categoryValue = document.getElementById('itemCategory').value;
             if (!categoryValue) return alert("Por favor, clique para selecionar a Categoria do seu item.");
-            if (!fotosArray[0]) return alert("⚠️ Obrigatório: Por favor, tire ou selecione a Foto de Capa do item.");
+            
+            const previewCapa = document.getElementById('preview0');
+            if (previewCapa.classList.contains('hidden') || !previewCapa.src) {
+                return alert("⚠️ Obrigatório: Por favor, tire ou selecione a Foto de Capa do item.");
+            }
 
-            btn.disabled = true; btn.innerHTML = '<i data-lucide="loader-2" class="animate-spin inline w-5 h-5"></i> SALVANDO...'; lucide.createIcons();
+            btn.disabled = true; 
+            btn.innerHTML = '<i data-lucide="loader-2" class="animate-spin inline w-5 h-5"></i> SALVANDO...'; 
+            lucide.createIcons();
 
             try {
                 const phoneInput = document.getElementById('userPhone').value;
@@ -257,25 +296,24 @@
                 if (phoneVal && phoneVal.length >= 10) profileUpdate.phone = phoneVal;
                 if (pixVal) profileUpdate.pix_key = pixVal;
                 
-                // Correção 1: Impede envio de atualização de perfil se o objeto estiver vazio
                 if (Object.keys(profileUpdate).length > 0) {
                     const { error: profileErr } = await supabaseClient.from('profiles').update(profileUpdate).eq('id', globalUser.id);
                     if (profileErr) console.warn(profileErr);
                 }
 
                 let uploadedUrls = [null, null, null, null];
+                
+                // Envio 100% blindado lendo o que está visível na tela e ignorando problemas de cache da Câmera do iOS
                 for (let i = 0; i < 4; i++) {
-                    const file = fotosArray[i];
-                    if (file) {
-                        // Correção 2: Evita o erro de "No content provided" ignorando arquivos vazios gerados pela câmera
-                        if (file.size === 0) continue; 
-                        const safeName = file.name ? file.name.replace(/\s+/g, '_') : 'photo.jpg'; 
-                        const fileName = `${globalUser.id}/${Date.now()}_slot${i}_${safeName}`;
+                    const imgElement = document.getElementById(`preview${i}`);
+                    if (!imgElement.classList.contains('hidden') && imgElement.src.startsWith('data:image')) {
+                        const blob = dataURLtoBlob(imgElement.src);
+                        const fileName = `${globalUser.id}/${Date.now()}_slot${i}_photo.jpg`;
                         
-                        const { error: uploadError } = await supabaseClient.storage.from('item-photos').upload(fileName, file, {
+                        const { error: uploadError } = await supabaseClient.storage.from('item-photos').upload(fileName, blob, {
                             cacheControl: '3600',
                             upsert: false,
-                            contentType: file.type || 'image/jpeg'
+                            contentType: blob.type
                         });
                         
                         if (uploadError) throw new Error("Erro na foto " + (i+1) + ": " + uploadError.message);
@@ -303,7 +341,12 @@
 
                 if (error) throw error;
                 window.location.href = 'dashboard.html';
-            } catch (err) { alert("Erro ao salvar: " + err.message); btn.disabled = false; btn.innerHTML = '<i data-lucide="rocket" class="w-5 h-5"></i> PUBLICAR MEU ANÚNCIO'; lucide.createIcons(); }
+            } catch (err) { 
+                alert("Erro ao salvar: " + err.message); 
+                btn.disabled = false; 
+                btn.innerHTML = '<i data-lucide="rocket" class="w-5 h-5"></i> PUBLICAR MEU ANÚNCIO'; 
+                lucide.createIcons(); 
+            }
         };
     </script>
 </body>
