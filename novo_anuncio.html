@@ -32,7 +32,7 @@
                 <a href="dashboard.html" class="p-3 bg-white dark:bg-slate-900 rounded-full shadow-sm hover:scale-105 transition-transform border border-slate-100 dark:border-slate-800">
                     <i data-lucide="arrow-left" class="w-5 h-5 text-slate-600 dark:text-slate-300"></i>
                 </a>
-                <h1 class="text-2xl font-black tracking-tight">Anunciar Item <span class="text-teal-500 text-sm ml-1 align-top bg-teal-50 dark:bg-teal-900/30 px-2 py-0.5 rounded-md"></span></h1>
+                <h1 class="text-2xl font-black tracking-tight">Anunciar Item <span class="text-teal-500 text-sm ml-1 align-top bg-teal-50 dark:bg-teal-900/30 px-2 py-0.5 rounded-md">v2</span></h1>
             </div>
             <button onclick="toggleTheme()" class="p-3 bg-white dark:bg-slate-900 rounded-full shadow-sm border border-slate-100 dark:border-slate-800 hover:scale-105 transition-transform">
                 <i data-lucide="moon" id="themeIcon" class="w-5 h-5 text-teal-600"></i>
@@ -121,11 +121,21 @@
                     <label id="dynamicLocationLabel" class="block text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2"><i data-lucide="map-pin" class="w-3 h-3"></i> Ponto de Retirada</label>
                     <span id="gpsStatus" class="text-[9px] font-bold text-teal-600 flex items-center gap-1"><span class="w-1.5 h-1.5 bg-teal-500 rounded-full animate-pulse"></span> Buscando GPS...</span>
                 </div>
+
+                <div class="flex items-start gap-2 bg-blue-50 dark:bg-blue-900/10 p-3 rounded-xl border border-blue-100 dark:border-blue-800/50 mb-3 animate-in fade-in duration-500">
+                    <i data-lucide="info" class="w-4 h-4 text-blue-500 shrink-0 mt-0.5"></i>
+                    <p class="text-[10px] leading-relaxed text-blue-700 dark:text-blue-400">
+                        <strong>O item fica em outro local?</strong> Arraste o pino azul no mapa ou digite o nome da nova cidade abaixo para atualizar a localização.
+                    </p>
+                </div>
+
                 <div class="p-1 bg-slate-50 dark:bg-slate-800 rounded-[2rem] border border-slate-100 dark:border-slate-700"><div id="mapSelector"></div></div>
-                <input type="text" id="itemAddress" placeholder="Rua / Endereço (Opcional)" class="w-full bg-slate-50 dark:bg-slate-800 border-none rounded-2xl px-6 py-4 font-medium text-slate-700 dark:text-slate-300 focus:ring-2 focus:ring-teal-500">
+                
+                <input type="text" id="itemAddress" placeholder="Rua / Endereço (Opcional)" class="w-full bg-slate-50 dark:bg-slate-800 border-none rounded-2xl px-6 py-4 font-medium text-slate-700 dark:text-slate-300 focus:ring-2 focus:ring-teal-500 transition-shadow">
+                
                 <div class="grid grid-cols-3 gap-3">
-                    <input type="text" id="itemCity" required readonly placeholder="Cidade" class="col-span-2 w-full bg-slate-100 dark:bg-slate-950 border-none rounded-[1.5rem] px-6 py-4 font-black text-slate-800 dark:text-white text-lg focus:ring-0 cursor-not-allowed">
-                    <input type="text" id="itemState" required readonly placeholder="UF" class="w-full bg-slate-100 dark:bg-slate-950 border-none rounded-[1.5rem] px-6 py-4 font-black text-slate-800 dark:text-white text-lg text-center uppercase focus:ring-0 cursor-not-allowed">
+                    <input type="text" id="itemCity" required placeholder="Digite a Cidade..." class="col-span-2 w-full bg-slate-50 dark:bg-slate-800 border-none rounded-[1.5rem] px-6 py-4 font-black text-slate-800 dark:text-white text-lg focus:ring-2 focus:ring-teal-500 transition-shadow" onchange="buscarCidadeNoMapa()">
+                    <input type="text" id="itemState" required placeholder="UF" maxlength="2" class="w-full bg-slate-50 dark:bg-slate-800 border-none rounded-[1.5rem] px-6 py-4 font-black text-slate-800 dark:text-white text-lg text-center uppercase focus:ring-2 focus:ring-teal-500 transition-shadow" onchange="buscarCidadeNoMapa()">
                 </div>
             </div>
 
@@ -165,6 +175,7 @@
     <script>
         lucide.createIcons();
         let globalUser = null; 
+        let fotosArray = [null, null, null, null]; 
 
         function toggleDropdown() {
             const dropdown = document.getElementById('dropdownList');
@@ -222,6 +233,35 @@
             } catch (err) { document.getElementById('gpsStatus').innerHTML = '<span class="w-1.5 h-1.5 bg-red-500 rounded-full"></span> Erro no GPS'; }
         }
 
+        async function buscarCidadeNoMapa() {
+            const city = document.getElementById('itemCity').value.trim();
+            const state = document.getElementById('itemState').value.trim();
+            
+            if (!city) return;
+            
+            document.getElementById('gpsStatus').innerHTML = '<span class="w-1.5 h-1.5 bg-yellow-500 rounded-full animate-pulse"></span> Buscando cidade...';
+            
+            try {
+                const query = encodeURIComponent(`${city}${state ? ', ' + state : ''}, Brasil`);
+                const resp = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${query}&limit=1`);
+                const data = await resp.json();
+                
+                if (data && data.length > 0) {
+                    const lat = parseFloat(data[0].lat);
+                    const lon = parseFloat(data[0].lon);
+                    
+                    map.setView([lat, lon], 13);
+                    marker.setLatLng([lat, lon]);
+                    document.getElementById('gpsStatus').innerHTML = '<span class="w-1.5 h-1.5 bg-teal-500 rounded-full"></span> Encontrado';
+                } else {
+                    document.getElementById('gpsStatus').innerHTML = '<span class="w-1.5 h-1.5 bg-red-500 rounded-full"></span> Não encontrado';
+                }
+            } catch (err) {
+                console.error("Erro na busca por texto:", err);
+                document.getElementById('gpsStatus').innerHTML = '<span class="w-1.5 h-1.5 bg-red-500 rounded-full"></span> Erro na busca';
+            }
+        }
+
         window.onload = async () => {
             const isAuth = await checkAuthAndLock(); if (!isAuth) return;
             const { data: profile } = await supabaseClient.from('profiles').select('phone, pix_key').eq('id', globalUser.id).single();
@@ -256,7 +296,6 @@
             document.getElementById(`btnRemove${index}`).classList.add('hidden'); 
         }
 
-        // MÁGICA: Converte o preview visual base64 em um arquivo Blob limpo
         function dataURLtoBlob(dataurl) {
             const arr = dataurl.split(',');
             const mime = arr[0].match(/:(.*?);/)[1];
@@ -303,7 +342,6 @@
 
                 let uploadedUrls = [null, null, null, null];
                 
-                // Envio 100% blindado lendo o que está visível na tela e ignorando problemas de cache da Câmera do iOS
                 for (let i = 0; i < 4; i++) {
                     const imgElement = document.getElementById(`preview${i}`);
                     if (!imgElement.classList.contains('hidden') && imgElement.src.startsWith('data:image')) {
@@ -326,7 +364,7 @@
                     category: categoryValue,
                     title: padronizarTexto(document.getElementById('itemTitle').value), 
                     description: document.getElementById('itemDescription').value, 
-                    city: document.getElementById('itemCity').value, 
+                    city: padronizarTexto(document.getElementById('itemCity').value), 
                     state_code: document.getElementById('itemState').value.toUpperCase(), 
                     address: document.getElementById('itemAddress').value, 
                     daily_price: parseFloat(document.getElementById('itemPrice').value), 
