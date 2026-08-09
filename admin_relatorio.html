@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Relatório de Incidente - RYT</title>
+    <title>Relatório de Incidente e Auditoria - RYT Admin</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
@@ -12,105 +12,126 @@
             body { background: white; }
             .no-print { display: none !important; }
             .print-break { page-break-before: always; }
+            .shadow-sm, .shadow-xl, .shadow-lg { box-shadow: none !important; border: 1px solid #e2e8f0; }
         }
     </style>
 </head>
-<body class="p-8">
+<body class="p-4 md:p-8">
 
-    <div class="max-w-4xl mx-auto bg-white p-10 rounded-xl shadow-sm border border-slate-200">
-        <div class="flex justify-between items-center mb-8 no-print border-b pb-4">
-            <h1 class="text-xl font-black text-slate-800">Painel Administrativo</h1>
-            <button onclick="window.print()" class="bg-slate-900 text-white px-6 py-2 rounded-lg font-bold text-sm shadow-md hover:bg-slate-800 transition-colors">🖨️ Salvar como PDF / Imprimir</button>
+    <div class="max-w-4xl mx-auto bg-white p-6 md:p-10 rounded-xl shadow-sm border border-slate-200">
+        <div class="flex flex-col md:flex-row justify-between items-center mb-8 no-print border-b pb-4 gap-4">
+            <div class="flex items-center gap-3">
+                <button onclick="window.location.href='admin_painel.html'" class="p-2 bg-slate-100 rounded-full hover:bg-slate-200 transition-colors"><svg class="w-5 h-5 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg></button>
+                <h1 class="text-xl font-black text-slate-800">Painel Administrativo</h1>
+            </div>
+            <button onclick="window.print()" class="bg-slate-900 text-white px-6 py-2.5 rounded-lg font-bold text-sm shadow-md hover:bg-slate-800 transition-colors flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+                Salvar como PDF
+            </button>
         </div>
 
         <header class="text-center border-b-2 border-slate-900 pb-6 mb-8">
             <h1 class="text-4xl font-black tracking-tighter mb-2">RYT<span class="text-teal-500">Alugue</span></h1>
-            <h2 class="text-xl font-bold uppercase tracking-widest text-slate-600">Dossiê de Locação e Resolução</h2>
+            <h2 class="text-xl font-bold uppercase tracking-widest text-slate-600">Dossiê de Locação, Auditoria e Resolução</h2>
             <p class="text-sm text-slate-500 mt-2">Documento gerado para fins comprobatórios e legais da plataforma.</p>
             <p class="text-xs text-slate-400 mt-1">ID da Locação: <span id="rentalIdDisplay" class="font-mono text-slate-800">Carregando...</span></p>
         </header>
 
         <div id="loading" class="text-center py-10 font-bold text-slate-500 flex flex-col items-center justify-center gap-3">
             <svg class="animate-spin h-8 w-8 text-teal-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-            <span id="loadingText">Autenticando e buscando dados no banco...</span>
+            <span id="loadingText">Autenticando privilégios e buscando provas...</span>
         </div>
         
         <div id="relatorioContent" class="hidden space-y-8">
             
-            <div id="painelDisputa" class="hidden bg-red-50 border-2 border-red-500 rounded-xl p-6 no-print">
-                <div class="flex items-start gap-4">
+            <div id="painelDisputa" class="hidden bg-red-50 border-2 border-red-500 rounded-xl p-6 no-print mb-8">
+                <div class="flex flex-col sm:flex-row items-start gap-4">
                     <div class="text-3xl">⚠️</div>
-                    <div class="flex-1">
+                    <div class="flex-1 w-full">
                         <h3 class="font-black text-red-700 text-lg uppercase tracking-wide">Avaria Relatada - Ação Necessária</h3>
-                        <p class="text-red-900 font-medium mt-1">O locatário relatou o seguinte problema no momento da devolução:</p>
+                        <p class="text-red-900 font-medium mt-1 text-sm">O locatário relatou o seguinte problema no momento da devolução:</p>
                         <div class="bg-white p-4 rounded-lg border border-red-200 mt-3 mb-4 shadow-sm">
                             <p id="relatoAvariaTexto" class="text-slate-800 italic font-medium">"Aguardando texto..."</p>
                         </div>
                         
-                        <div id="botoesResolucao" class="hidden">
-                            <p class="text-xs text-red-600 mb-4">Como administrador e dono do item, após entrar em acordo com o locatário, utilize os botões abaixo para encerrar o caso e liberar o painel.</p>
-                            <div class="flex gap-3">
-                                <button onclick="resolverDisputa('acordo_amigavel')" class="flex-1 bg-emerald-600 text-white py-3 rounded-lg font-black text-sm hover:bg-emerald-700 transition-colors shadow-sm">
-                                    RESOLVIDO (SEM CUSTOS / AMIGÁVEL)
+                        <div id="botoesResolucao">
+                            <p class="text-xs font-bold text-red-600 mb-4 uppercase tracking-widest">Painel do Mediador (Admin)</p>
+                            <div class="flex flex-col sm:flex-row gap-3">
+                                <button onclick="resolverDisputa('acordo_amigavel')" class="flex-1 bg-emerald-600 text-white py-3 rounded-lg font-black text-xs hover:bg-emerald-700 transition-colors shadow-sm">
+                                    ENCERRAR: RESOLVIDO / AMIGÁVEL
                                 </button>
-                                <button onclick="resolverDisputa('cobrado')" class="flex-1 bg-slate-900 text-white py-3 rounded-lg font-black text-sm hover:bg-slate-800 transition-colors shadow-sm">
-                                    RESOLVIDO (VALOR COBRADO EXTERNAMENTE)
+                                <button onclick="resolverDisputa('cobrado')" class="flex-1 bg-slate-900 text-white py-3 rounded-lg font-black text-xs hover:bg-slate-800 transition-colors shadow-sm">
+                                    ENCERRAR: COBRANÇA EXTERNA
                                 </button>
                             </div>
                         </div>
-
-                        <div id="mensagemAguardando" class="hidden">
-                            <p class="text-sm font-bold text-red-600 bg-red-100 p-4 rounded-lg text-center border border-red-200">
-                                ⏳ Aguardando o proprietário do equipamento avaliar a situação e encerrar a disputa.
-                            </p>
-                        </div>
-
                     </div>
                 </div>
             </div>
 
             <section class="bg-slate-50 p-6 rounded-xl border border-slate-200">
                 <h3 class="font-black text-lg mb-4 uppercase text-slate-800 border-b pb-2">1. Dados da Locação</h3>
-                <div class="grid grid-cols-2 gap-4 text-sm">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
                     <div><span class="font-bold text-slate-500">Equipamento:</span> <span id="itemTitle" class="font-bold text-slate-900">...</span></div>
                     <div><span class="font-bold text-slate-500">Valor Total Pago:</span> <span id="itemPrice" class="font-bold text-slate-900">...</span></div>
                     <div><span class="font-bold text-slate-500">Data de Início (Retirada):</span> <span id="dateStart" class="font-bold text-slate-900">...</span></div>
                     <div><span class="font-bold text-slate-500">Data Fim (Devolução):</span> <span id="dateEnd" class="font-bold text-slate-900">...</span></div>
-                    <div><span class="font-bold text-slate-500">Status Atual no Sistema:</span> <span id="statusAtual" class="font-black uppercase text-slate-800 bg-slate-200 px-2 py-1 rounded">...</span></div>
+                    <div><span class="font-bold text-slate-500">Status Atual no Sistema:</span> <span id="statusAtual" class="font-black uppercase text-slate-800 bg-slate-200 px-2 py-1 rounded text-xs">...</span></div>
                 </div>
             </section>
 
-            <section class="border-l-4 border-blue-500 pl-6 py-2">
-                <h3 class="font-black text-lg mb-4 uppercase text-slate-800">2. Identificação do Locatário (Tomador)</h3>
-                <div class="flex items-start gap-6">
-                    <img id="renterAvatar" src="" class="w-24 h-24 rounded-lg object-cover border-2 border-slate-200 shadow-sm" alt="Foto do Locatário">
-                    <div class="space-y-2 text-sm">
-                        <p><span class="font-bold text-slate-500">Nome Completo:</span> <span id="renterName" class="font-bold text-lg text-slate-900">...</span></p>
-                        <p><span class="font-bold text-slate-500">ID de Usuário (UUID):</span> <span id="renterId" class="font-mono text-slate-700">...</span></p>
-                        <p><span class="font-bold text-slate-500">E-mail:</span> <span id="renterEmail" class="font-bold text-slate-900">Consulta via Painel Auth</span></p>
-                        <p><span class="font-bold text-slate-500">Membro desde:</span> <span id="renterCreated" class="font-bold text-slate-900">...</span></p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <section class="border-l-4 border-blue-500 pl-6 py-2">
+                    <h3 class="font-black text-lg mb-4 uppercase text-slate-800">2. O Locatário (Tomador)</h3>
+                    <div class="flex items-start gap-4">
+                        <img id="renterAvatar" src="" class="w-16 h-16 rounded-lg object-cover border border-slate-200 shadow-sm" alt="Foto do Locatário">
+                        <div class="space-y-1.5 text-sm">
+                            <p><span class="font-bold text-slate-500">Nome:</span> <span id="renterName" class="font-bold text-slate-900">...</span></p>
+                            <p><span class="font-bold text-slate-500">UUID:</span> <span id="renterId" class="font-mono text-[10px] text-slate-700 bg-slate-100 px-1 rounded break-all">...</span></p>
+                            <p><span class="font-bold text-slate-500">Telefone:</span> <span id="renterPhone" class="font-bold text-slate-900">...</span></p>
+                        </div>
                     </div>
-                </div>
-            </section>
+                </section>
 
-            <section class="border-l-4 border-teal-500 pl-6 py-2">
-                <h3 class="font-black text-lg mb-4 uppercase text-slate-800">3. Identificação do Proprietário (Locador)</h3>
-                <div class="space-y-2 text-sm">
-                    <p><span class="font-bold text-slate-500">Nome:</span> <span id="ownerName" class="font-bold text-slate-900">...</span></p>
-                    <p><span class="font-bold text-slate-500">ID de Usuário (UUID):</span> <span id="ownerId" class="font-mono text-slate-700">...</span></p>
+                <section class="border-l-4 border-teal-500 pl-6 py-2">
+                    <h3 class="font-black text-lg mb-4 uppercase text-slate-800">3. O Proprietário (Locador)</h3>
+                    <div class="flex items-start gap-4">
+                        <img id="ownerAvatar" src="" class="w-16 h-16 rounded-lg object-cover border border-slate-200 shadow-sm" alt="Foto do Locador">
+                        <div class="space-y-1.5 text-sm">
+                            <p><span class="font-bold text-slate-500">Nome:</span> <span id="ownerName" class="font-bold text-slate-900">...</span></p>
+                            <p><span class="font-bold text-slate-500">UUID:</span> <span id="ownerId" class="font-mono text-[10px] text-slate-700 bg-slate-100 px-1 rounded break-all">...</span></p>
+                            <p><span class="font-bold text-slate-500">Telefone:</span> <span id="ownerPhone" class="font-bold text-slate-900">...</span></p>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <section class="bg-slate-900 text-slate-200 p-6 rounded-xl border border-slate-800 shadow-inner">
+                <h3 class="font-black text-lg mb-4 uppercase text-white border-b border-slate-700 pb-2 flex items-center gap-2">
+                    <svg class="w-5 h-5 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                    4. Trilha de Auditoria e Assinatura
+                </h3>
+                <p class="text-xs text-slate-400 mb-4">Os metadados abaixo foram capturados no exato momento em que o Locatário aceitou os Termos de Uso e enviou a solicitação de locação.</p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm font-mono bg-slate-950 p-4 rounded-lg">
+                    <div><span class="font-bold text-slate-500 block text-[10px] uppercase">Endereço IP (Origem)</span> <span id="auditIp" class="text-teal-400 font-bold">N/A</span></div>
+                    <div><span class="font-bold text-slate-500 block text-[10px] uppercase">Data/Hora Exata do Aceite</span> <span id="auditDate" class="text-teal-400 font-bold">N/A</span></div>
+                    <div><span class="font-bold text-slate-500 block text-[10px] uppercase">Localização Geográfica (Aprox)</span> <span id="auditLoc" class="text-white">N/A</span></div>
+                    <div><span class="font-bold text-slate-500 block text-[10px] uppercase">Agente do Dispositivo (Navegador/SO)</span> <span id="auditUa" class="text-white text-xs break-words">N/A</span></div>
                 </div>
             </section>
 
             <section class="print-break pt-8">
-                <h3 class="font-black text-lg mb-4 uppercase text-slate-800 border-b border-slate-900 pb-2">4. Registros Fotográficos (Check-in)</h3>
+                <h3 class="font-black text-lg mb-4 uppercase text-slate-800 border-b border-slate-200 pb-2">5. Registros Fotográficos (Check-in)</h3>
                 <p class="text-sm text-slate-600 mb-6">As imagens abaixo foram anexadas ao sistema no momento da retirada do equipamento, atestando o estado do bem entregue.</p>
                 
-                <div id="checkinPhotosGrid" class="grid grid-cols-2 gap-6"></div>
+                <div id="checkinPhotosGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6"></div>
             </section>
             
             <footer class="mt-16 pt-8 border-t border-slate-300 text-center text-xs text-slate-500">
+                <p class="font-bold">RYT - Sistema de Locação Inteligente</p>
                 <p>Documento gerado eletronicamente pelo painel administrativo da RYT.com.br.</p>
-                <p>O presente relatório atesta as interações digitais registradas na base de dados da plataforma.</p>
+                <p>O presente relatório atesta as interações digitais registradas de forma imutável na base de dados da plataforma.</p>
             </footer>
         </div>
     </div>
@@ -127,14 +148,12 @@
             return d.toLocaleDateString('pt-BR') + ' às ' + d.toLocaleTimeString('pt-BR');
         }
 
-        async function checkAuth() {
+        async function checkAdminAuth() {
             const { data: { session }, error } = await supabaseClient.auth.getSession();
-            if (error || !session) {
-                document.getElementById('loadingText').innerText = "Acesso Negado: Você precisa fazer login.";
-                setTimeout(() => window.location.href = 'login.html', 2000);
-                return null;
-            }
-            return session.user;
+            if (error || !session) return false;
+            
+            const { data: profile } = await supabaseClient.from('profiles').select('role').eq('id', session.user.id).single();
+            return profile && profile.role === 'admin';
         }
 
         async function gerarRelatorio() {
@@ -144,12 +163,17 @@
                 return;
             }
 
-            const user = await checkAuth();
-            if (!user) return; 
+            const isAdmin = await checkAdminAuth();
+            if (!isAdmin) {
+                document.getElementById('loadingText').innerText = "Acesso Restrito: Exclusivo para Administradores da RYT.";
+                document.querySelector('.animate-spin').classList.add('hidden');
+                setTimeout(() => window.location.href = 'index.html', 3000);
+                return;
+            }
 
             document.getElementById('rentalIdDisplay').innerText = rentalId;
 
-            // Busca os dados
+            // Busca os dados (Locação + Item)
             const { data: rentalData, error: rentalError } = await supabaseClient
                 .from('rentals')
                 .select('*, items(*)')
@@ -159,12 +183,12 @@
             if (rentalError || !rentalData) {
                 document.getElementById('loadingText').innerText = "Erro ao localizar os dados desta locação no banco.";
                 document.querySelector('.animate-spin').classList.add('hidden');
-                console.error(rentalError);
                 return;
             }
 
             const { data: renterData } = await supabaseClient.from('profiles').select('*').eq('id', rentalData.renter_id).single();
             const { data: ownerData } = await supabaseClient.from('profiles').select('*').eq('id', rentalData.items.owner_id).single();
+            const { data: contractData } = await supabaseClient.from('contracts').select('*').eq('rental_id', rentalId).single();
 
             // Preenche o HTML Básico
             document.getElementById('itemTitle').innerText = rentalData.items.title;
@@ -175,30 +199,35 @@
             const badgeStatus = document.getElementById('statusAtual');
             badgeStatus.innerText = rentalData.status;
             
-            // LÓGICA DA DISPUTA DE ACORDO COM O USUÁRIO LOGADO
+            // LÓGICA DA DISPUTA (Admin View)
             if (rentalData.status === 'issue_reported') {
-                badgeStatus.className = "font-black uppercase text-white bg-red-600 px-3 py-1 rounded shadow-sm";
+                badgeStatus.className = "font-black uppercase text-white bg-red-600 px-3 py-1 rounded shadow-sm text-xs";
                 document.getElementById('painelDisputa').classList.remove('hidden');
-                document.getElementById('relatoAvariaTexto').innerText = rentalData.return_notes || "Nenhum texto adicional fornecido pelo usuário.";
-
-                // Validação: Só o dono do item vê os botões de resolver
-                if (user.id === rentalData.items.owner_id) {
-                    document.getElementById('botoesResolucao').classList.remove('hidden');
-                } else {
-                    document.getElementById('mensagemAguardando').classList.remove('hidden');
-                }
+                document.getElementById('relatoAvariaTexto').innerText = `"${rentalData.return_notes || 'Nenhum texto adicional fornecido pelo usuário.'}"`;
             }
 
             // Preenche Usuários
             if (renterData) {
                 document.getElementById('renterName').innerText = renterData.full_name || 'Usuário RYT';
                 document.getElementById('renterId').innerText = renterData.id;
+                document.getElementById('renterPhone').innerText = renterData.phone || 'Não Cadastrado';
                 document.getElementById('renterAvatar').src = renterData.avatar_url || 'https://via.placeholder.com/150';
-                document.getElementById('renterCreated').innerText = formatarData(renterData.created_at);
             }
             if (ownerData) {
                 document.getElementById('ownerName').innerText = ownerData.full_name || 'Locador';
                 document.getElementById('ownerId').innerText = ownerData.id;
+                document.getElementById('ownerPhone').innerText = ownerData.phone || 'Não Cadastrado';
+                document.getElementById('ownerAvatar').src = ownerData.avatar_url || 'https://via.placeholder.com/150';
+            }
+
+            // Preenche Trilha de Auditoria (Contrato)
+            if (contractData) {
+                document.getElementById('auditIp').innerText = contractData.ip_address || 'N/A';
+                document.getElementById('auditDate').innerText = formatarData(contractData.created_at);
+                document.getElementById('auditUa').innerText = contractData.user_agent || 'N/A';
+                if(contractData.location_data) {
+                    document.getElementById('auditLoc').innerText = `${contractData.location_data.cidade || ''} / ${contractData.location_data.uf || ''}`;
+                }
             }
 
             // LÓGICA BLINDADA DE LEITURA DAS FOTOS
@@ -208,7 +237,6 @@
                     fotosArray = rentalData.checkin_photos;
                 } else if (typeof rentalData.checkin_photos === 'string') {
                     try {
-                        // Trata o caso de ter retornado como string de array do Postgres
                         if(rentalData.checkin_photos.startsWith('{')) {
                             fotosArray = rentalData.checkin_photos.slice(1, -1).split(',').map(s => s.replace(/^"|"$/g, '').trim());
                         } else {
@@ -223,13 +251,15 @@
             const photosContainer = document.getElementById('checkinPhotosGrid');
             if (fotosArray.length > 0) {
                 photosContainer.innerHTML = fotosArray.map(url => `
-                    <div class="border border-slate-200 p-2 rounded-lg bg-white shadow-sm">
-                        <img src="${url}" class="w-full h-48 object-cover rounded">
-                        <p class="text-[10px] text-center mt-2 text-slate-400 font-mono">Registro: Check-in</p>
+                    <div class="border border-slate-200 p-2 rounded-lg bg-white shadow-sm break-inside-avoid mb-4">
+                        <a href="${url}" target="_blank">
+                            <img src="${url}" class="w-full h-48 sm:h-64 object-cover rounded hover:opacity-80 transition-opacity">
+                        </a>
+                        <p class="text-[10px] text-center mt-2 text-slate-400 font-mono uppercase tracking-widest">Registro de Check-in</p>
                     </div>
                 `).join('');
             } else {
-                photosContainer.innerHTML = `<p class="col-span-2 text-slate-400 text-sm italic border-2 border-dashed border-slate-200 p-8 text-center rounded-xl">Nenhuma foto de check-in registrada no sistema para esta locação. O Check-in pode ter sido feito sem anexo.</p>`;
+                photosContainer.innerHTML = `<p class="col-span-full text-slate-400 text-sm italic border-2 border-dashed border-slate-200 p-8 text-center rounded-xl">Nenhuma foto de check-in registrada no sistema para esta locação. O Check-in pode ter sido feito sem anexo.</p>`;
             }
 
             // Exibe o painel
@@ -237,15 +267,21 @@
             document.getElementById('relatorioContent').classList.remove('hidden');
         }
 
-        async function resolverDisputa(tipoResolucao) {
-            if(!confirm("Tem certeza que deseja marcar este incidente como resolvido? O status do aluguel mudará para 'Concluído' e a avaliação será liberada para os usuários.")) return;
+        window.resolverDisputa = async function(tipoResolucao) {
+            if(!confirm("Tem certeza que deseja marcar este incidente como resolvido?\nO status mudará para 'Concluído' e esta ação fica registrada na trilha de auditoria.")) return;
 
-            const notaAdmin = tipoResolucao === 'acordo_amigavel' ? 'Resolvido: Sem custos' : 'Resolvido: Cobrança externa realizada';
+            const notaAdmin = tipoResolucao === 'acordo_amigavel' ? 'Resolvido: Sem custos / Amigável' : 'Resolvido: Cobrança externa realizada com sucesso';
+            const dataHora = new Date().toLocaleString('pt-BR');
+            const carimboAdmin = `\n\n[ADMIN - MEDIAÇÃO] ${notaAdmin} em ${dataHora}`;
+
+            const notasAtuais = document.getElementById('relatoAvariaTexto').innerText.replace(/"/g, '');
+
             const { error } = await supabaseClient
                 .from('rentals')
                 .update({ 
                     status: 'completed', 
-                    return_notes: document.getElementById('relatoAvariaTexto').innerText + ` | [Admin: ${notaAdmin}]` 
+                    admin_log: carimboAdmin,
+                    return_notes: notasAtuais + carimboAdmin 
                 })
                 .eq('id', rentalId);
 
