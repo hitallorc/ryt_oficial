@@ -275,18 +275,25 @@
 
             const dataHora = new Date().toLocaleString('pt-BR');
             const carimboLog = `[APROVADO] PIX validado pela Administração. Retirada Liberada.\nData/Hora: ${dataHora}`;
+            
+            // MÁGICA: Gera o PIN de 4 dígitos aleatório
+            const codigoPIN = Math.floor(1000 + Math.random() * 9000).toString();
 
-            const { error } = await supabaseClient.from('rentals').update({ status: 'confirmed', admin_log: carimboLog }).eq('id', id_locacao);
+            const { error } = await supabaseClient.from('rentals').update({ 
+                status: 'confirmed', 
+                admin_log: carimboLog,
+                pickup_code: codigoPIN
+            }).eq('id', id_locacao);
             
             if(error) { 
                 alert("Erro ao aprovar: " + error.message); btn.innerHTML = textoOriginal; abaWhatsApp.close(); 
             } else { 
                 if (donoTelefone && donoTelefone.trim() !== '') {
-                    const msg = `Olá ${nomeDono}! Boas notícias da *RYT*. O seu item *"${nome_item}"* acabou de ser alugado por *${nome_locatario}*, e o pagamento PIX já foi confirmado e garantido por nós!\n\nAcesse o seu Painel no link abaixo para enviar uma mensagem ao cliente e combinar a retirada:\nhttps://ryt.com.br/dashboard.html`;
+                    const msg = `Olá ${nomeDono}! Boas notícias da *RYT*. O seu item *"${nome_item}"* acabou de ser alugado por *${nome_locatario}*, e o pagamento PIX já foi confirmado!\n\nEle receberá um PIN secreto de 4 dígitos no painel dele. Cobre este PIN no momento da entrega do equipamento para liberar o sistema!\nhttps://ryt.com.br/dashboard.html`;
                     const numeroLimpo = donoTelefone.replace(/\D/g, '');
                     abaWhatsApp.location.href = `https://wa.me/55${numeroLimpo}?text=${encodeURIComponent(msg)}`;
                 } else {
-                    abaWhatsApp.close(); alert("✅ PIX Aprovado com sucesso!\n\nNota: O dono deste item não cadastrou um WhatsApp.");
+                    abaWhatsApp.close(); alert("✅ PIX Aprovado com sucesso e PIN gerado!\n\nNota: O dono não cadastrou WhatsApp.");
                 }
                 carregarPainelAdmin(); 
             }

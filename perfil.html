@@ -1,14 +1,13 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-pt">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RYT - Meu Perfil</title>
+    <title>RYT - O Meu Perfil</title>
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#0f172a">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="RYT">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -16,13 +15,14 @@
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; transition: all 0.4s ease; }
         .glass-panel { backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
     </style>
 </head>
 <body class="bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-950 min-h-screen text-slate-900 dark:text-slate-100">
 
     <nav class="bg-white/70 dark:bg-slate-900/70 glass-panel border-b border-slate-200/50 dark:border-slate-800/50 mb-8 sticky top-0 z-40">
         <div class="max-w-xl mx-auto p-6 flex justify-between items-center">
-            <button onclick="history.back()" class="p-2.5 bg-slate-100/80 dark:bg-slate-800/80 rounded-full hover:scale-110 transition-transform"><i data-lucide="arrow-left" class="w-5 h-5"></i></button>
+            <button onclick="window.location.href='dashboard.html'" class="p-2.5 bg-slate-100/80 dark:bg-slate-800/80 rounded-full hover:scale-110 transition-transform"><i data-lucide="arrow-left" class="w-5 h-5"></i></button>
             <h1 class="text-lg font-black tracking-widest uppercase">Meu Perfil</h1>
             <div class="flex gap-2">
                 <button onclick="toggleTheme()" class="p-2.5 bg-slate-100/80 dark:bg-slate-800/80 rounded-full hover:scale-110 transition-transform"><i data-lucide="moon" id="themeIcon" class="w-4 h-4 text-teal-600 dark:text-teal-400"></i></button>
@@ -34,21 +34,32 @@
     <main class="max-w-xl mx-auto px-6 pb-12">
         <div class="bg-white/80 dark:bg-slate-900/80 glass-panel rounded-[3rem] p-8 md:p-10 shadow-xl shadow-slate-200/50 dark:shadow-black/50 border border-slate-200/60 dark:border-slate-800/60">
             
-            <div class="flex flex-col items-center mb-10 relative">
-                <div id="avatarLetter" class="w-24 h-24 bg-gradient-to-tr from-teal-500 to-emerald-400 rounded-full flex items-center justify-center text-4xl text-white font-black mb-4 shadow-lg shadow-teal-500/30"></div>
-                <p id="userEmail" class="text-slate-500 dark:text-slate-400 font-bold text-xs uppercase tracking-widest"></p>
-            </div>
-
             <form id="profileForm" class="space-y-6">
+                <div class="flex flex-col items-center justify-center space-y-4 mb-10">
+                    <div class="relative group cursor-pointer">
+                        <div class="w-32 h-32 rounded-full overflow-hidden border-4 border-teal-500 shadow-lg relative bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
+                            <div id="avatarLetter" class="w-full h-full bg-gradient-to-tr from-teal-500 to-emerald-400 flex items-center justify-center text-4xl text-white font-black"></div>
+                            <img id="avatarPreview" src="" class="absolute inset-0 w-full h-full object-cover hidden">
+                            
+                            <div class="absolute inset-0 bg-black/40 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                <i data-lucide="camera" class="w-8 h-8 text-white"></i>
+                                <span class="text-[9px] text-white font-bold mt-1 uppercase">Mudar Foto</span>
+                            </div>
+                        </div>
+                        <input type="file" id="avatarInput" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" onchange="handleAvatarSelection(event)">
+                    </div>
+                    <p id="userEmail" class="text-slate-500 dark:text-slate-400 font-bold text-xs uppercase tracking-widest"></p>
+                </div>
+
                 <div class="space-y-4">
                     <div>
                         <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-2">Nome Completo</label>
-                        <input type="text" id="fullName" placeholder="Seu nome..." class="w-full px-6 py-4 rounded-2xl bg-slate-50/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-teal-500 font-bold text-slate-800 dark:text-white transition-all">
+                        <input type="text" id="fullName" required placeholder="Seu nome..." class="w-full px-6 py-4 rounded-2xl bg-slate-50/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-teal-500 font-bold text-slate-800 dark:text-white transition-all outline-none">
                     </div>
 
                     <div>
                         <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-2">WhatsApp / Telefone</label>
-                        <input type="text" id="phone" placeholder="(11) 9..." class="w-full px-6 py-4 rounded-2xl bg-slate-50/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-teal-500 font-bold text-slate-800 dark:text-white transition-all">
+                        <input type="tel" id="phone" placeholder="(DD) 9..." class="w-full px-6 py-4 rounded-2xl bg-slate-50/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-teal-500 font-bold text-slate-800 dark:text-white transition-all outline-none">
                     </div>
                 </div>
 
@@ -56,34 +67,25 @@
 
                 <div class="space-y-4 pt-2">
                     <div class="flex items-center justify-between mb-2 ml-2">
-                        <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest">Cartão de Crédito</label>
+                        <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest">Recebimento (Seus Aluguéis)</label>
                     </div>
 
-                    <div class="relative overflow-hidden rounded-3xl p-6 shadow-lg bg-gradient-to-br from-slate-900 to-slate-800 dark:from-slate-800 dark:to-slate-950 border border-slate-700 text-white mb-6">
-                        <div class="absolute -right-6 -top-6 w-24 h-24 rounded-full bg-white/5 blur-2xl"></div>
+                    <div class="relative overflow-hidden rounded-3xl p-6 shadow-lg bg-gradient-to-br from-amber-600 to-orange-500 dark:from-amber-700 dark:to-orange-800 border border-amber-500 text-white mb-6">
+                        <div class="absolute -right-6 -top-6 w-24 h-24 rounded-full bg-white/10 blur-2xl"></div>
                         <div class="flex justify-between items-center mb-6 relative z-10">
-                            <p class="text-[10px] font-black uppercase tracking-widest text-teal-400">Cartão Preferencial</p>
-                            <i data-lucide="contactless-payment" class="text-white/80 w-6 h-6"></i>
+                            <p class="text-[10px] font-black uppercase tracking-widest text-amber-100">Chave PIX Cadastrada</p>
+                            <i data-lucide="scan-line" class="text-white w-6 h-6"></i>
                         </div>
-                        <p id="displayCardName" class="font-black text-lg tracking-wide relative z-10 truncate">Nenhum cartão</p>
-                        <div class="flex justify-between items-end mt-4 relative z-10">
-                            <p id="displayCardDigits" class="text-xs font-bold font-mono tracking-widest text-white/60">**** **** **** 0000</p>
-                            <i data-lucide="credit-card" class="text-white/40 w-8 h-8"></i>
-                        </div>
+                        <p id="displayPixKey" class="font-black text-xl tracking-wider relative z-10 truncate select-all">Sem chave cadastrada</p>
                     </div>
 
-                    <div class="grid grid-cols-3 gap-3">
-                        <div class="col-span-2">
-                            <input type="text" id="cardName" placeholder="Ex: Visa Infinite Personallite" class="w-full px-6 py-4 rounded-2xl bg-slate-50/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-teal-500 font-bold text-slate-800 dark:text-white text-sm transition-all" oninput="updateCardVisuals()">
-                        </div>
-                        <div>
-                            <input type="text" id="cardDigits" placeholder="Finais" maxlength="4" class="w-full px-6 py-4 rounded-2xl bg-slate-50/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-teal-500 font-bold text-slate-800 dark:text-white text-sm text-center transition-all" oninput="updateCardVisuals()">
-                        </div>
+                    <div>
+                        <input type="text" id="pixKey" placeholder="Nova Chave PIX (E-mail, CPF, Tel...)" class="w-full px-6 py-4 rounded-2xl bg-slate-50/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-amber-500 font-bold text-slate-800 dark:text-white text-sm transition-all outline-none" oninput="updatePixVisuals()">
                     </div>
                 </div>
 
-                <button type="submit" id="btnSave" class="w-full bg-gradient-to-r from-teal-600 to-teal-500 text-white py-5 rounded-full font-black text-sm uppercase tracking-widest shadow-lg shadow-teal-500/30 hover:-translate-y-1 transition-all mt-8">
-                    SALVAR ALTERAÇÕES
+                <button type="submit" id="btnSave" class="w-full bg-gradient-to-r from-teal-600 to-teal-500 text-white py-5 rounded-full font-black text-sm uppercase tracking-widest shadow-lg shadow-teal-500/30 hover:-translate-y-1 transition-all mt-8 flex justify-center items-center gap-2">
+                    <i data-lucide="save" class="w-5 h-5"></i> SALVAR ALTERAÇÕES
                 </button>
             </form>
         </div>
@@ -93,32 +95,123 @@
     <script src="config.js"></script>
     <script>
         lucide.createIcons();
-        function toggleTheme() { document.documentElement.classList.toggle('dark'); const isDark = document.documentElement.classList.contains('dark'); document.getElementById('themeIcon').setAttribute('data-lucide', isDark ? 'sun' : 'moon'); lucide.createIcons(); }
+        let globalUser = null;
+        let newAvatarBase64 = null;
 
-        // Atualiza a visualização do cartão enquanto o usuário digita
-        function updateCardVisuals() {
-            const name = document.getElementById('cardName').value;
-            const digits = document.getElementById('cardDigits').value;
-            document.getElementById('displayCardName').innerText = name || 'Nenhum cartão';
-            document.getElementById('displayCardDigits').innerText = `**** **** **** ${digits || '0000'}`;
+        function toggleTheme() { 
+            document.documentElement.classList.toggle('dark'); 
+            const isDark = document.documentElement.classList.contains('dark'); 
+            document.getElementById('themeIcon').setAttribute('data-lucide', isDark ? 'sun' : 'moon'); 
+            lucide.createIcons(); 
+        }
+
+        function updatePixVisuals() {
+            const val = document.getElementById('pixKey').value;
+            document.getElementById('displayPixKey').innerText = val || 'Sem chave cadastrada';
+        }
+
+        // MOTOR DE COMPRESSÃO LOCAL (Para o Avatar não falhar por excesso de memória)
+        async function compressImage(file, maxWidth = 800) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = event => {
+                    const img = new Image();
+                    img.src = event.target.result;
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        let width = img.width;
+                        let height = img.height;
+
+                        if (width > maxWidth) {
+                            height = Math.round((height * maxWidth) / width);
+                            width = maxWidth;
+                        }
+
+                        canvas.width = width;
+                        canvas.height = height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, width, height);
+                        
+                        // Retorna JPEG otimizado a 80%
+                        resolve(canvas.toDataURL('image/jpeg', 0.8)); 
+                    };
+                    img.onerror = error => reject(error);
+                };
+            });
+        }
+
+        async function handleAvatarSelection(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            try {
+                newAvatarBase64 = await compressImage(file);
+                
+                // Atualiza UI instantaneamente
+                const preview = document.getElementById('avatarPreview');
+                preview.src = newAvatarBase64;
+                preview.classList.remove('hidden');
+                document.getElementById('avatarLetter').classList.add('hidden');
+            } catch (err) {
+                alert("Erro ao ler a imagem. Escolha uma foto mais leve.");
+            }
+        }
+
+        function dataURLtoBlob(dataurl) {
+            const arr = dataurl.split(',');
+            const mime = arr[0].match(/:(.*?);/)[1];
+            const bstr = atob(arr[1]);
+            let n = bstr.length;
+            const u8arr = new Uint8Array(n);
+            while(n--){
+                u8arr[n] = bstr.charCodeAt(n);
+            }
+            return new Blob([u8arr], {type:mime});
         }
 
         async function loadProfile() {
             const { data: { user } } = await supabaseClient.auth.getUser();
             if (!user) return window.location.href = 'login.html'; 
+            
+            globalUser = user;
             document.getElementById('userEmail').innerText = user.email;
 
             const { data: profile } = await supabaseClient.from('profiles').select('*').eq('id', user.id).single();
+            
             if (profile) {
-                document.getElementById('fullName').value = profile.full_name || '';
-                document.getElementById('phone').value = profile.phone || '';
-                document.getElementById('cardName').value = profile.card_name || '';
-                document.getElementById('cardDigits').value = profile.card_last_digits || '';
+                if (profile.full_name) {
+                    document.getElementById('fullName').value = profile.full_name;
+                    document.getElementById('avatarLetter').innerText = profile.full_name.charAt(0).toUpperCase();
+                } else {
+                    document.getElementById('avatarLetter').innerText = 'U';
+                }
                 
-                if(profile.full_name) document.getElementById('avatarLetter').innerText = profile.full_name.charAt(0).toUpperCase();
-                else document.getElementById('avatarLetter').innerText = 'R';
+                if (profile.phone) document.getElementById('phone').value = profile.phone;
+                
+                if (profile.pix_key) {
+                    document.getElementById('pixKey').value = profile.pix_key;
+                    updatePixVisuals();
+                }
 
-                updateCardVisuals();
+                if (profile.avatar_url) {
+                    const preview = document.getElementById('avatarPreview');
+                    preview.src = profile.avatar_url;
+                    preview.classList.remove('hidden');
+                    document.getElementById('avatarLetter').classList.add('hidden');
+                }
+            } else {
+                // Tentativa de puxar do Auth (Google/Facebook) se a tabela Profiles falhar
+                const meta = globalUser.user_metadata;
+                if (meta?.full_name) {
+                    document.getElementById('fullName').value = meta.full_name;
+                    document.getElementById('avatarLetter').innerText = meta.full_name.charAt(0).toUpperCase();
+                }
+                if (meta?.avatar_url) {
+                    const preview = document.getElementById('avatarPreview');
+                    preview.src = meta.avatar_url;
+                    preview.classList.remove('hidden');
+                    document.getElementById('avatarLetter').classList.add('hidden');
+                }
             }
         }
 
@@ -126,37 +219,69 @@
             e.preventDefault();
             const btn = document.getElementById('btnSave'); 
             btn.innerHTML = '<i data-lucide="loader-2" class="animate-spin inline w-5 h-5"></i> SALVANDO...'; 
+            btn.disabled = true;
             lucide.createIcons();
 
-            const { data: { user } } = await supabaseClient.auth.getUser();
-            const updates = { 
-                id: user.id, 
-                full_name: document.getElementById('fullName').value, 
-                phone: document.getElementById('phone').value,
-                card_name: document.getElementById('cardName').value,
-                card_last_digits: document.getElementById('cardDigits').value,
-                updated_at: new Date() 
-            };
+            try {
+                let currentAvatarUrl = document.getElementById('avatarPreview').src;
 
-            const { error } = await supabaseClient.from('profiles').upsert(updates);
-            
-            if (error) alert("Erro ao salvar: " + error.message); 
-            else { 
-                btn.innerHTML = '<i data-lucide="check-circle" class="inline w-5 h-5"></i> SALVO!';
+                // Se houver uma nova foto comprimida, processa o upload para o Supabase Storage
+                if (newAvatarBase64) {
+                    const blob = dataURLtoBlob(newAvatarBase64);
+                    const fileName = `${globalUser.id}/${Date.now()}_avatar.jpg`;
+                    
+                    const { error: uploadError } = await supabaseClient.storage.from('avatars').upload(fileName, blob, {
+                        cacheControl: '3600',
+                        upsert: true,
+                        contentType: 'image/jpeg'
+                    });
+
+                    if (uploadError) throw new Error("Erro ao enviar a nova foto. Tente novamente.");
+                    
+                    currentAvatarUrl = supabaseClient.storage.from('avatars').getPublicUrl(fileName).data.publicUrl;
+                }
+
+                // Atualiza a tabela Profiles
+                const phoneInput = document.getElementById('phone').value;
+                const phoneVal = phoneInput ? phoneInput.replace(/\D/g, '') : null;
+                const pixVal = document.getElementById('pixKey').value.trim();
+                
+                const updates = { 
+                    id: globalUser.id, 
+                    full_name: document.getElementById('fullName').value, 
+                    phone: (phoneVal && phoneVal.length >= 10) ? phoneVal : null,
+                    pix_key: pixVal ? pixVal : null,
+                    avatar_url: currentAvatarUrl,
+                    updated_at: new Date() 
+                };
+
+                const { error: updateError } = await supabaseClient.from('profiles').upsert(updates);
+                if (updateError) throw updateError;
+
+                // Força atualização dos metadados do Auth do Supabase
+                await supabaseClient.auth.updateUser({
+                    data: { full_name: updates.full_name, avatar_url: currentAvatarUrl }
+                });
+
+                alert("✅ Perfil atualizado com sucesso!");
+                window.location.href = 'dashboard.html';
+
+            } catch (err) {
+                alert("Erro ao guardar: " + err.message);
+                btn.disabled = false;
+                btn.innerHTML = '<i data-lucide="save" class="inline w-5 h-5"></i> SALVAR ALTERAÇÕES';
                 lucide.createIcons();
-                setTimeout(() => { btn.innerHTML = 'SALVAR ALTERAÇÕES'; }, 2000);
             }
         };
 
-        document.getElementById('btnLogout').onclick = async () => { await supabaseClient.auth.signOut(); window.location.href = 'login.html'; };
-        loadProfile();
+        document.getElementById('btnLogout').onclick = async () => { 
+            if(confirm("Tem a certeza que quer sair?")) {
+                await supabaseClient.auth.signOut(); 
+                window.location.href = 'login.html'; 
+            }
+        };
+
+        document.addEventListener('DOMContentLoaded', loadProfile);
     </script>
-    <script>
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-            navigator.serviceWorker.register('sw.js').catch(err => console.log('Erro no PWA:', err));
-        });
-    }
-</script>
 </body>
 </html>
