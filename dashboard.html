@@ -38,9 +38,9 @@
                 <a href="simulador.html" class="hidden md:flex items-center gap-2 text-xs font-bold text-slate-500 hover:text-teal-500 transition-colors uppercase tracking-widest"><i data-lucide="calculator" class="w-4 h-4"></i> Simulador</a>
                 <button onclick="toggleTheme()" class="p-2.5 bg-slate-100/80 dark:bg-slate-800/80 rounded-full hover:scale-110 transition-all"><i data-lucide="moon" id="themeIcon" class="w-5 h-5 text-teal-600 dark:text-teal-400"></i></button>
                 <div class="flex items-center gap-3 border-l border-slate-200 dark:border-slate-700 pl-4 md:pl-6">
-                    <img id="userAvatar" src="https://via.placeholder.com/150" class="w-10 h-10 rounded-full object-cover border-2 border-teal-500 shadow-sm">
-                    <div class="hidden md:block">
-                        <p id="userName" class="text-xs font-black text-slate-800 dark:text-white">Carregando...</p>
+                    <img id="userAvatar" src="https://via.placeholder.com/150" class="w-10 h-10 rounded-full object-cover border-2 border-teal-500 shadow-sm shrink-0">
+                    <div class="hidden md:block max-w-[120px]">
+                        <p id="userName" class="text-xs font-black text-slate-800 dark:text-white truncate">Carregando...</p>
                         <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Painel</p>
                     </div>
                     <button onclick="logout()" class="ml-2 p-2.5 bg-red-50 text-red-500 rounded-full hover:scale-110 transition-all" title="Sair"><i data-lucide="log-out" class="w-4 h-4"></i></button>
@@ -50,7 +50,7 @@
     </nav>
 
     <main class="max-w-7xl mx-auto px-6 py-12">
-        <header class="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4">
+        <header class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
             <div><h1 class="text-3xl font-black text-slate-800 dark:text-white mb-2 tracking-tight">Visão Geral</h1><p class="text-sm font-medium text-slate-500 dark:text-slate-400">Gerencie anúncios, aluguéis e pedidos de terceiros.</p></div>
             <div class="flex gap-3 w-full md:w-auto">
                 <a href="tutorial.html" class="md:hidden bg-white px-4 py-3.5 rounded-2xl shadow-sm border border-slate-200 text-slate-600"><i data-lucide="help-circle" class="w-5 h-5"></i></a>
@@ -58,13 +58,15 @@
             </div>
         </header>
 
-        <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
-            <section class="lg:col-span-1 bg-white/80 dark:bg-slate-900/80 glass-panel rounded-[2.5rem] p-6 sm:p-8 shadow-xl border border-slate-200/60 dark:border-slate-800/60">
-                <div class="flex items-center gap-3 mb-8"><div class="p-3 bg-teal-50 text-teal-600 rounded-2xl"><i data-lucide="package"></i></div><h2 class="text-xl font-black">Meus Itens</h2></div>
-                <div id="myItemsList" class="space-y-4 max-h-[500px] overflow-y-auto no-scrollbar pr-2"></div>
-            </section>
+        <div id="actionCenterContainer" class="hidden mb-10">
+            <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest mb-3 flex items-center gap-2"><i data-lucide="bell-ring" class="w-4 h-4"></i> Pendências e Ações</h3>
+            <div id="actionCenterGrid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-8 flex flex-col lg:grid">
             
-            <section class="lg:col-span-2 space-y-8">
+            <section class="order-1 lg:order-2 lg:col-span-2 space-y-8">
                 <div class="bg-white/80 dark:bg-slate-900/80 glass-panel rounded-[2.5rem] p-6 sm:p-8 shadow-xl border border-slate-200/60 dark:border-slate-800/60">
                     <div class="flex items-center gap-3 mb-6"><div class="p-3 bg-blue-50 text-blue-600 rounded-2xl"><i data-lucide="arrow-up-right"></i></div><h2 class="text-xl font-black">Aluguéis que eu fiz</h2></div>
                     <div id="myRentalsList" class="space-y-2 max-h-[600px] overflow-y-auto no-scrollbar pr-2"></div>
@@ -76,7 +78,12 @@
                 </div>
             </section>
 
-            <section class="lg:col-span-1 bg-white/80 dark:bg-slate-900/80 glass-panel rounded-[2.5rem] p-6 sm:p-8 shadow-xl border border-slate-200/60 dark:border-slate-800/60">
+            <section class="order-2 lg:order-1 lg:col-span-1 bg-white/80 dark:bg-slate-900/80 glass-panel rounded-[2.5rem] p-6 sm:p-8 shadow-xl border border-slate-200/60 dark:border-slate-800/60">
+                <div class="flex items-center gap-3 mb-8"><div class="p-3 bg-teal-50 text-teal-600 rounded-2xl"><i data-lucide="package"></i></div><h2 class="text-xl font-black">Meus Itens</h2></div>
+                <div id="myItemsList" class="space-y-4 max-h-[500px] overflow-y-auto no-scrollbar pr-2"></div>
+            </section>
+
+            <section class="order-3 lg:order-3 lg:col-span-1 bg-white/80 dark:bg-slate-900/80 glass-panel rounded-[2.5rem] p-6 sm:p-8 shadow-xl border border-slate-200/60 dark:border-slate-800/60">
                 <div class="flex items-center gap-3 mb-8"><div class="relative p-3 bg-purple-50 text-purple-600 rounded-2xl"><i data-lucide="message-square"></i><span id="unreadBadge" class="hidden absolute -top-1 -right-1 flex h-3.5 w-3.5"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span><span class="relative inline-flex rounded-full h-3.5 w-3.5 bg-red-500 border-2 border-white"></span></span></div><h2 class="text-xl font-black">Mensagens</h2></div>
                 <div id="conversationsList" class="space-y-1 max-h-[500px] overflow-y-auto no-scrollbar pr-2"></div>
             </section>
@@ -89,8 +96,7 @@
                 <h3 class="font-black text-slate-800 dark:text-white text-sm flex items-center"><i data-lucide="file-text" class="w-4 h-4 text-teal-600 mr-2"></i> Contrato Digital Oficial</h3>
                 <button onclick="fecharContrato()" class="p-2 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 rounded-full text-slate-600 dark:text-slate-300 transition-colors"><i data-lucide="x" class="w-4 h-4"></i></button>
             </header>
-            <div id="contractContent" class="flex-1 overflow-y-auto p-6 relative bg-white text-slate-800">
-            </div>
+            <div id="contractContent" class="flex-1 overflow-y-auto p-6 relative bg-white text-slate-800"></div>
             <footer class="bg-slate-50 dark:bg-slate-800 p-4 border-t border-slate-200 dark:border-slate-700 shrink-0 flex gap-3">
                 <button onclick="fecharContrato()" class="flex-1 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 py-3 rounded-xl font-black text-xs hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors">FECHAR</button>
                 <button onclick="baixarPdfContrato()" class="flex-[2] bg-teal-600 text-white py-3 rounded-xl font-black text-xs hover:bg-teal-700 transition-colors flex items-center justify-center gap-2 shadow-lg shadow-teal-600/20"><i data-lucide="download" class="w-4 h-4"></i> SALVAR COMO PDF</button>
@@ -102,16 +108,12 @@
         <div class="bg-white dark:bg-slate-900 w-full max-w-sm rounded-[2rem] shadow-2xl p-8 relative border border-slate-100 dark:border-slate-800 animate-in zoom-in-95 duration-200">
             <button onclick="fecharModalPix()" class="absolute top-5 right-5 p-2 bg-slate-100 dark:bg-slate-800 rounded-full text-slate-500 hover:scale-110 transition-transform"><i data-lucide="x" class="w-4 h-4"></i></button>
             <div class="text-center space-y-4">
-                <div class="w-16 h-16 bg-teal-100 dark:bg-teal-900/30 rounded-full flex items-center justify-center mx-auto mb-2">
-                    <i data-lucide="qr-code" class="w-8 h-8 text-teal-600 dark:text-teal-400"></i>
-                </div>
+                <div class="w-16 h-16 bg-teal-100 dark:bg-teal-900/30 rounded-full flex items-center justify-center mx-auto mb-2"><i data-lucide="qr-code" class="w-8 h-8 text-teal-600 dark:text-teal-400"></i></div>
                 <h3 class="text-xl font-black text-slate-800 dark:text-white">Pagamento PIX</h3>
                 <p class="text-sm font-bold text-slate-500">Valor a transferir: <span id="pixModalValor" class="text-teal-600 text-lg ml-1"></span></p>
                 <div class="w-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-3 flex items-center justify-between gap-3 shadow-inner">
                     <p class="text-sm font-black text-teal-600 dark:text-teal-400 truncate flex-1 select-all text-left" id="pixCodeDashboard">pagamentos@ryt.com.br</p>
-                    <button onclick="navigator.clipboard.writeText('pagamentos@ryt.com.br'); alert('Chave PIX copiada!');" class="bg-teal-50 dark:bg-teal-900/30 text-teal-600 p-2 rounded-lg hover:bg-teal-100 transition-colors flex shrink-0">
-                        <i data-lucide="copy" class="w-4 h-4"></i>
-                    </button>
+                    <button onclick="navigator.clipboard.writeText('pagamentos@ryt.com.br'); alert('Chave PIX copiada!');" class="bg-teal-50 dark:bg-teal-900/30 text-teal-600 p-2 rounded-lg hover:bg-teal-100 transition-colors flex shrink-0"><i data-lucide="copy" class="w-4 h-4"></i></button>
                 </div>
                 <button onclick="confirmarPagamentoPix(event)" class="w-full bg-teal-500 hover:bg-teal-600 text-white py-4 rounded-xl font-black text-sm transition-all flex items-center justify-center gap-2 shadow-lg shadow-teal-500/30 mt-4">
                     <i data-lucide="check-circle" class="w-5 h-5"></i> JÁ REALIZEI O PAGAMENTO
@@ -222,40 +224,34 @@
             'payment_under_review': { label: 'Pagamento em Análise', color: 'bg-yellow-500', open: true, order: 2 },
             'confirmed': { label: 'Aguardando Retirada', color: 'bg-blue-500', open: true, order: 3 },
             'in_use': { label: 'Equipamento em Uso', color: 'bg-amber-500', open: true, order: 4 },
-            'issue_reported': { label: 'Em Análise (Avaria)', color: 'bg-red-500', open: true, order: 5 },
-            'completed': { label: 'Concluídos', color: 'bg-emerald-500', open: false, order: 6 },
-            'cancelled': { label: 'Cancelados', color: 'bg-slate-500', open: false, order: 7 }
+            'returned_by_renter': { label: 'Aguardando Dono (Devolvido)', color: 'bg-indigo-500', open: true, order: 5 },
+            'issue_reported': { label: 'Em Análise (Avaria)', color: 'bg-red-500', open: true, order: 6 },
+            'completed': { label: 'Concluídos', color: 'bg-emerald-500', open: false, order: 7 },
+            'cancelled': { label: 'Cancelados', color: 'bg-slate-500', open: false, order: 8 }
         };
 
         window.visualizarContrato = async function(rentalId) {
             try {
                 const { data: contract, error } = await supabaseClient.from('contracts').select('contract_html').eq('rental_id', rentalId).single();
                 if (error || !contract) return alert("⚠️ Contrato não localizado.");
-
                 document.getElementById('contractContent').innerHTML = contract.contract_html;
                 document.getElementById('contractModal').classList.remove('hidden');
                 lucide.createIcons();
             } catch (err) { alert("Erro: " + err.message); }
         };
 
-        window.fecharContrato = function() {
-            document.getElementById('contractModal').classList.add('hidden');
-        };
+        window.fecharContrato = function() { document.getElementById('contractModal').classList.add('hidden'); };
 
-        // GERAÇÃO DE PDF BLINDADA CONTRA CODE BLEEDING
         window.baixarPdfContrato = function() {
             const conteudo = document.getElementById('contractContent').innerHTML;
             const janelaPrint = window.open('', '', 'width=900,height=650');
             janelaPrint.document.open();
-            
-            // Construção das tags em string cortada para evitar interpretação do navegador
             janelaPrint.document.write('<' + '!DOCTYPE html><' + 'html><' + 'head><' + 'title>Contrato de Locação - RYT<' + '/title>');
             janelaPrint.document.write('<' + 'style>body { font-family: Arial, sans-serif; padding: 20px; color: #333; } @media print { @page { margin: 15mm; } button { display: none !important; } }<' + '/style>');
             janelaPrint.document.write('<' + '/head><' + 'body>');
             janelaPrint.document.write(conteudo);
             janelaPrint.document.write('<' + 'script>setTimeout(function(){ window.print(); window.close(); }, 500);<' + '/script>');
             janelaPrint.document.write('<' + '/body><' + '/html>');
-            
             janelaPrint.document.close();
             janelaPrint.focus();
         };
@@ -292,7 +288,7 @@
                         <div class="flex items-start gap-3">
                             <img src="${i.image_url}" class="w-12 h-12 rounded-xl object-cover border border-slate-100 dark:border-slate-700 shrink-0 opacity-${i.is_active ? '100' : '50'}">
                             <div class="flex-1 min-w-0 pt-1">
-                                <p class="font-black text-sm text-slate-800 dark:text-white line-clamp-2 leading-snug group-hover:text-teal-600 transition-colors ${i.is_active ? '' : 'line-through text-slate-400'}">${i.title}</p>
+                                <p class="font-black text-sm text-slate-800 dark:text-white truncate group-hover:text-teal-600 transition-colors ${i.is_active ? '' : 'line-through text-slate-400'}">${i.title}</p>
                             </div>
                         </div>
                         <div class="flex items-center justify-between pt-3 border-t border-slate-100 dark:border-slate-700/50">
@@ -311,6 +307,54 @@
             
             const { data: rentals } = await supabaseClient.from('rentals').select('*, items(title, image_url, owner_id)').eq('renter_id', user.id).order('created_at', { ascending: false });
             const cRentals = document.getElementById('myRentalsList');
+            
+            const { data: theirRentals } = (myItems && myItems.length > 0) ? await supabaseClient.from('rentals').select('*, items(title, image_url)').in('item_id', myItems.map(i => i.id)).order('created_at', { ascending: false }) : { data: [] };
+            const c = document.getElementById('rentalsOfMyItemsList');
+
+            // --- LÓGICA DO MINI DASHBOARD (ACTION CENTER) ---
+            let actionHtml = '';
+            let hasActions = false;
+
+            let pendingOwner = theirRentals ? theirRentals.filter(r => r.status === 'pending_approval').length : 0;
+            let returnedRenter = theirRentals ? theirRentals.filter(r => r.status === 'returned_by_renter').length : 0;
+
+            let pendingPayment = rentals ? rentals.filter(r => r.status === 'awaiting_payment').length : 0;
+            let pendingCheckin = rentals ? rentals.filter(r => r.status === 'confirmed').length : 0;
+            let pendingReturn = rentals ? rentals.filter(r => r.status === 'in_use').length : 0;
+
+            function buildActionCard(count, title, icon, color, actionText) {
+                if(count === 0) return '';
+                hasActions = true;
+                return `
+                    <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-${color}-200 dark:border-${color}-900/50 shadow-md flex items-center gap-3 relative overflow-hidden">
+                        <div class="w-10 h-10 bg-${color}-100 dark:bg-${color}-500/20 text-${color}-600 rounded-xl flex items-center justify-center shrink-0">
+                            <i data-lucide="${icon}" class="w-5 h-5"></i>
+                        </div>
+                        <div>
+                            <div class="flex items-end gap-1.5"><h4 class="text-xl font-black text-slate-800 dark:text-white leading-none">${count}</h4><p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-0.5">${title}</p></div>
+                            <p class="text-[10px] font-bold text-${color}-600 mt-1">${actionText}</p>
+                        </div>
+                    </div>
+                `;
+            }
+
+            actionHtml += buildActionCard(pendingOwner, 'Aprovações', 'clock', 'purple', 'Requer sua aprovação');
+            actionHtml += buildActionCard(returnedRenter, 'Devoluções', 'check-square', 'indigo', 'Confirme o recebimento');
+            actionHtml += buildActionCard(pendingPayment, 'Pagamentos', 'qr-code', 'orange', 'PIX pendente');
+            actionHtml += buildActionCard(pendingCheckin, 'Retiradas', 'map-pin', 'blue', 'Faça o Check-in');
+            actionHtml += buildActionCard(pendingReturn, 'Em uso', 'package', 'amber', 'Devolva no prazo');
+
+            const actionContainer = document.getElementById('actionCenterContainer');
+            const actionGrid = document.getElementById('actionCenterGrid');
+            
+            if(hasActions) {
+                actionGrid.innerHTML = actionHtml;
+                actionContainer.classList.remove('hidden');
+            } else {
+                actionContainer.classList.add('hidden');
+            }
+            // ------------------------------------------------
+
             if (!rentals || rentals.length === 0) {
                 cRentals.innerHTML = `<p class="text-center text-xs text-slate-500 py-8">Você ainda não alugou nada.</p>`;
             } else {
@@ -323,31 +367,26 @@
                 cRentals.innerHTML = renderRentalsGrouped(rentals, true);
             }
 
-            if (myItems && myItems.length > 0) {
-                const myItemIds = myItems.map(i => i.id);
-                const { data: theirRentals } = await supabaseClient.from('rentals').select('*, items(title, image_url)').in('item_id', myItemIds).order('created_at', { ascending: false });
-                const c = document.getElementById('rentalsOfMyItemsList');
+            if (!theirRentals || theirRentals.length === 0) { 
+                c.innerHTML = `<p class="text-center text-xs text-slate-500 py-8">Nenhum pedido recebido ainda.</p>`; 
+            } else {
+                const renterIds = [...new Set(theirRentals.map(r => r.renter_id))];
+                const { data: profiles } = await supabaseClient.from('profiles').select('id, full_name, avatar_url').in('id', renterIds);
+                const pMap = {}; if (profiles) profiles.forEach(p => pMap[p.id] = p);
                 
-                if (!theirRentals || theirRentals.length === 0) { 
-                    c.innerHTML = `<p class="text-center text-xs text-slate-500 py-8">Nenhum pedido recebido ainda.</p>`; 
-                } else {
-                    const renterIds = [...new Set(theirRentals.map(r => r.renter_id))];
-                    const { data: profiles } = await supabaseClient.from('profiles').select('id, full_name, avatar_url').in('id', renterIds);
-                    const pMap = {}; if (profiles) profiles.forEach(p => pMap[p.id] = p);
-                    
-                    theirRentals.forEach(r => {
-                        r.renter_name = pMap[r.renter_id]?.full_name || 'Usuário';
-                        r.renter_avatar = pMap[r.renter_id]?.avatar_url || 'https://via.placeholder.com/100';
-                    });
-                    c.innerHTML = renderRentalsGrouped(theirRentals, false);
-                }
+                theirRentals.forEach(r => {
+                    r.renter_name = pMap[r.renter_id]?.full_name || 'Usuário';
+                    r.renter_avatar = pMap[r.renter_id]?.avatar_url || 'https://via.placeholder.com/100';
+                });
+                c.innerHTML = renderRentalsGrouped(theirRentals, false);
             }
+            
             lucide.createIcons();
             loadConversations(user.id);
         }
 
         window.alternarStatusItem = async function(event, id, statusAtual) { event.preventDefault(); event.stopPropagation(); const btn = event.currentTarget; const iconeOriginal = btn.innerHTML; btn.innerHTML = '<i data-lucide="loader-2" class="w-3.5 h-3.5 animate-spin text-slate-500"></i>'; lucide.createIcons(); const novoStatus = !statusAtual; const { error } = await supabaseClient.from('items').update({ is_active: novoStatus }).eq('id', id); if (error) { alert("Erro: " + error.message); btn.innerHTML = iconeOriginal; lucide.createIcons(); } else { loadDashboard(); } };
-        window.excluirItem = async function(event, id) { event.preventDefault(); event.stopPropagation(); const btn = event.currentTarget; const iconeOriginal = btn.innerHTML; const { data: rent } = await supabaseClient.from('rentals').select('id').eq('item_id', id).in('status', ['confirmed', 'in_use', 'issue_reported', 'awaiting_payment', 'pending_approval', 'payment_under_review']); if (rent && rent.length > 0) return alert("⚠️ Item possui aluguéis pendentes. Aguarde ou pause o anúncio."); if (!confirm("Excluir este anúncio definitivamente?")) return; btn.innerHTML = '<i data-lucide="loader-2" class="w-3.5 h-3.5 animate-spin text-red-500"></i>'; lucide.createIcons(); const { error } = await supabaseClient.from('items').delete().eq('id', id); if (error) { if (error.code === '23503') { alert("ℹ️ Item possui histórico financeiro. Ele foi PAUSADO."); await supabaseClient.from('items').update({ is_active: false }).eq('id', id); loadDashboard(); } else { alert("Erro: " + error.message); btn.innerHTML = iconeOriginal; lucide.createIcons(); } } else { loadDashboard(); } };
+        window.excluirItem = async function(event, id) { event.preventDefault(); event.stopPropagation(); const btn = event.currentTarget; const iconeOriginal = btn.innerHTML; const { data: rent } = await supabaseClient.from('rentals').select('id').eq('item_id', id).in('status', ['confirmed', 'in_use', 'issue_reported', 'awaiting_payment', 'pending_approval', 'payment_under_review', 'returned_by_renter']); if (rent && rent.length > 0) return alert("⚠️ Item possui aluguéis pendentes. Aguarde ou pause o anúncio."); if (!confirm("Excluir este anúncio definitivamente?")) return; btn.innerHTML = '<i data-lucide="loader-2" class="w-3.5 h-3.5 animate-spin text-red-500"></i>'; lucide.createIcons(); const { error } = await supabaseClient.from('items').delete().eq('id', id); if (error) { if (error.code === '23503') { alert("ℹ️ Item possui histórico financeiro. Ele foi PAUSADO."); await supabaseClient.from('items').update({ is_active: false }).eq('id', id); loadDashboard(); } else { alert("Erro: " + error.message); btn.innerHTML = iconeOriginal; lucide.createIcons(); } } else { loadDashboard(); } };
 
         window.responderSolicitacao = async function(event, id, acao, valorAtualEstimado) {
             let valorFinal = valorAtualEstimado;
@@ -408,8 +447,15 @@
             lucide.createIcons();
         };
 
+        window.confirmarRecebimentoItem = async function(id) {
+            if(!confirm("Tem certeza que recebeu o item de volta e em boas condições?")) return;
+            const { error } = await supabaseClient.from('rentals').update({ status: 'completed' }).eq('id', id);
+            if(!error) { alert("Transação finalizada com sucesso!"); loadDashboard(); }
+            else { alert("Erro ao confirmar: " + error.message); }
+        };
+
         function renderRentalsGrouped(rentalsArray, isRenterView) {
-            const grouped = { 'pending_approval': [], 'awaiting_payment': [], 'payment_under_review': [], 'in_use': [], 'confirmed': [], 'completed': [], 'cancelled': [], 'issue_reported': [] };
+            const grouped = { 'pending_approval': [], 'awaiting_payment': [], 'payment_under_review': [], 'in_use': [], 'returned_by_renter': [], 'confirmed': [], 'completed': [], 'cancelled': [], 'issue_reported': [] };
             rentalsArray.forEach(r => { if(grouped[r.status]) grouped[r.status].push(r); });
 
             let htmlOutput = '';
@@ -433,8 +479,11 @@
 
                 groupItems.forEach(r => {
                     let actionHtml = '';
+                    let needsAction = false;
                     
                     if (isRenterView) { 
+                        if (['awaiting_payment', 'confirmed', 'in_use'].includes(r.status)) needsAction = true;
+
                         if (r.status === 'pending_approval') {
                             actionHtml = `<span class="flex-1 block bg-purple-50 text-purple-600 border border-purple-200 py-3 rounded-xl text-[10px] font-black uppercase text-center flex items-center justify-center gap-1.5"><i data-lucide="clock" class="w-3 h-3"></i> AGUARDANDO APROVAÇÃO DO DONO</span>`;
                         } else if (r.status === 'awaiting_payment') {
@@ -445,11 +494,13 @@
                             actionHtml = `<span class="flex-1 block bg-yellow-50 text-yellow-600 border border-yellow-200 py-3 rounded-xl text-[10px] font-black uppercase text-center flex items-center justify-center gap-1.5"><i data-lucide="shield-alert" class="w-3 h-3"></i> AGUARDANDO CONFIRMAÇÃO DA RYT</span>`;
                         } else if (r.status === 'confirmed') {
                             actionHtml = `
-                                <button onclick="abrirModalEvidencia('${r.id}', 'checkin')" class="flex-1 bg-emerald-500 text-white py-3 px-3 rounded-xl text-[10px] font-black hover:bg-emerald-600 transition-colors text-center uppercase shadow-sm">CHECK-IN</button>
+                                <button onclick="abrirModalEvidencia('${r.id}', 'checkin')" class="flex-1 bg-emerald-500 text-white py-3 px-3 rounded-xl text-[10px] font-black hover:bg-emerald-600 transition-colors text-center uppercase shadow-sm">CHECK-IN DA RETIRADA</button>
                                 <a href="voucher.html?id=${r.id}" class="flex-1 bg-slate-800 text-white py-3 px-3 rounded-xl text-[10px] font-black text-center hover:bg-slate-900 transition-colors uppercase shadow-sm flex items-center justify-center gap-1.5"><i data-lucide="ticket" class="w-3 h-3 shrink-0"></i> VOUCHER</a>
                                 <button onclick="cancelarAluguel('${r.id}', '${r.items?.owner_id}', '${r.item_id}')" class="shrink-0 px-4 py-3 bg-red-50 text-red-500 border border-red-200 rounded-xl hover:bg-red-100 transition-colors flex justify-center items-center"><i data-lucide="x" class="w-4 h-4"></i></button>`;
                         } else if (r.status === 'in_use') {
                             actionHtml = `<button onclick="abrirModalDevolucao('${r.id}')" class="flex-1 bg-blue-600 text-white py-3 rounded-xl text-[10px] font-black shadow-sm text-center uppercase hover:bg-blue-700 transition-colors">DEVOLVER EQUIPAMENTO</button>`;
+                        } else if (r.status === 'returned_by_renter') {
+                            actionHtml = `<span class="flex-1 block bg-indigo-50 text-indigo-600 py-3 rounded-xl text-[10px] font-black uppercase text-center border border-indigo-200 flex items-center justify-center gap-1.5"><i data-lucide="clock" class="w-3 h-3"></i> AGUARDANDO DONO CONFIRMAR DEVOLUÇÃO</span>`;
                         } else if (r.status === 'completed') {
                             actionHtml = `<a href="detalhes.html?id=${r.item_id}" class="flex-1 block text-center bg-emerald-50 text-emerald-600 border border-emerald-200 py-3 rounded-xl text-[10px] font-black uppercase hover:bg-emerald-100 transition-colors">AVALIAR EXPERIÊNCIA</a>`;
                         } else if (r.status === 'issue_reported') {
@@ -458,6 +509,8 @@
                             actionHtml = `<span class="flex-1 block bg-slate-100 text-slate-500 py-3 rounded-xl text-[10px] font-black uppercase text-center border border-slate-200">CANCELADO</span>`;
                         }
                     } else { 
+                        if (['pending_approval', 'returned_by_renter'].includes(r.status)) needsAction = true;
+
                         if (r.status === 'pending_approval') {
                             actionHtml = `
                                 <button onclick="responderSolicitacao(event, '${r.id}', 'aceitar', ${r.total_price})" class="flex-1 bg-emerald-500 text-white py-3 px-3 rounded-xl text-[10px] font-black hover:bg-emerald-600 transition-colors text-center uppercase shadow-sm flex items-center justify-center gap-1"><i data-lucide="check" class="w-3 h-3"></i> ACEITAR</button>
@@ -467,18 +520,22 @@
                             actionHtml = `<span class="flex-1 block bg-orange-50 text-orange-600 border border-orange-200 py-3 rounded-xl text-[10px] font-black uppercase text-center flex items-center justify-center gap-1.5"><i data-lucide="clock" class="w-3 h-3"></i> AGUARDANDO PAGAMENTO (LOCATÁRIO)</span>`;
                         } else if (r.status === 'payment_under_review') {
                             actionHtml = `<span class="flex-1 block bg-yellow-50 text-yellow-600 border border-yellow-200 py-3 rounded-xl text-[10px] font-black uppercase text-center flex items-center justify-center gap-1.5"><i data-lucide="shield-alert" class="w-3 h-3"></i> RYT ANALISANDO PAGAMENTO</span>`;
-                        } else if (r.status === 'issue_reported') {
-                            actionHtml = `<a href="admin_relatorio.html?id=${r.id}" class="flex-1 block text-center bg-red-600 text-white py-3 rounded-xl text-[10px] font-black shadow-sm uppercase hover:bg-red-700 transition-colors flex items-center justify-center gap-2"><i data-lucide="file-text" class="w-3 h-3"></i> VER RELATÓRIO / RESOLVER</a>`;
                         } else if (r.status === 'confirmed') {
                             actionHtml = `<span class="flex-1 block bg-blue-50 text-blue-600 py-3 rounded-xl text-[10px] font-black uppercase text-center border border-blue-200">AGUARDANDO RETIRADA</span>`;
                         } else if (r.status === 'in_use') {
                             actionHtml = `<span class="flex-1 block bg-amber-50 text-amber-600 py-3 rounded-xl text-[10px] font-black uppercase text-center border border-amber-200">EM USO PELO LOCATÁRIO</span>`;
+                        } else if (r.status === 'returned_by_renter') {
+                            actionHtml = `<button onclick="confirmarRecebimentoItem('${r.id}')" class="flex-1 bg-indigo-600 text-white py-3 rounded-xl text-[10px] font-black shadow-sm uppercase hover:bg-indigo-700 transition-colors flex items-center justify-center gap-2"><i data-lucide="check-square" class="w-3 h-3"></i> CONFIRMAR RECEBIMENTO</button>`;
                         } else if (r.status === 'completed') {
                             actionHtml = `<span class="flex-1 block bg-emerald-50 text-emerald-600 py-3 rounded-xl text-[10px] font-black uppercase text-center border border-emerald-200 flex items-center justify-center gap-1.5"><i data-lucide="check-circle" class="w-3 h-3"></i> DEVOLVIDO (LIVRE)</span>`;
+                        } else if (r.status === 'issue_reported') {
+                            actionHtml = `<a href="admin_relatorio.html?id=${r.id}" class="flex-1 block text-center bg-red-600 text-white py-3 rounded-xl text-[10px] font-black shadow-sm uppercase hover:bg-red-700 transition-colors flex items-center justify-center gap-2"><i data-lucide="file-text" class="w-3 h-3"></i> VER RELATÓRIO / RESOLVER</a>`;
                         } else if (r.status === 'cancelled') {
                             actionHtml = `<span class="flex-1 block bg-slate-100 text-slate-500 py-3 rounded-xl text-[10px] font-black uppercase text-center border border-slate-200">CANCELADO</span>`;
                         }
                     }
+
+                    const badgeAction = needsAction ? `<span class="absolute -top-2 -right-2 bg-red-500 text-white text-[9px] font-black px-2 py-0.5 rounded-full shadow-md shadow-red-500/30 animate-pulse">AÇÃO NECESSÁRIA</span>` : '';
 
                     let contractBtnHtml = '';
                     if (r.status !== 'cancelled' && r.status !== 'pending_approval') {
@@ -487,13 +544,14 @@
 
                     let pessoaInfoHtml = '';
                     if(isRenterView) {
-                        pessoaInfoHtml = `<p class="text-[10px] text-slate-500 font-bold flex items-center gap-1.5 truncate mt-1.5"><i data-lucide="user" class="w-3.5 h-3.5 text-blue-500 shrink-0"></i> Locador: <span class="text-slate-800 dark:text-slate-300 truncate">${r.owner_name || 'Usuário'}</span></p>`;
+                        pessoaInfoHtml = `<p class="text-[10px] text-slate-500 font-bold flex items-center gap-1.5 mt-1.5"><i data-lucide="user" class="w-3.5 h-3.5 text-blue-500 shrink-0"></i> Locador: <span class="text-slate-800 dark:text-slate-300 truncate">${r.owner_name || 'Usuário'}</span></p>`;
                     } else {
-                        pessoaInfoHtml = `<p class="text-[10px] text-slate-500 font-bold flex items-center gap-1.5 truncate mt-1.5"><img src="${r.renter_avatar}" class="w-4 h-4 rounded-full object-cover border border-slate-200 shrink-0"> Locatário: <span class="text-slate-800 dark:text-slate-300 truncate">${r.renter_name}</span></p>`;
+                        pessoaInfoHtml = `<p class="text-[10px] text-slate-500 font-bold flex items-center gap-1.5 mt-1.5"><img src="${r.renter_avatar}" class="w-4 h-4 rounded-full object-cover border border-slate-200 shrink-0"> Locatário: <span class="text-slate-800 dark:text-slate-300 truncate">${r.renter_name}</span></p>`;
                     }
 
                     htmlOutput += `
-                    <div class="bg-white dark:bg-slate-800/80 rounded-2xl p-4 border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-all flex flex-col gap-4">
+                    <div class="bg-white dark:bg-slate-800/80 rounded-2xl p-4 border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-all flex flex-col gap-4 relative">
+                        ${badgeAction}
                         <div class="flex gap-4 items-center">
                             <img src="${r.items?.image_url}" class="w-16 h-16 rounded-xl object-cover border border-slate-100 dark:border-slate-700 shrink-0">
                             <div class="flex-1 min-w-0">
@@ -516,12 +574,22 @@
             return htmlOutput;
         }
 
+        // LÓGICA DE DEVOLUÇÃO ATUALIZADA (Não vai direto para completed)
         function abrirModalDevolucao(id) { idLocacaoParaDevolver = id; document.getElementById('textoProblema').value = ''; document.getElementById('devolucaoNormalView').classList.remove('hidden'); document.getElementById('devolucaoDisputaView').classList.add('hidden'); const btnRapida = document.getElementById('btnDevolucaoRapida'); btnRapida.disabled = false; btnRapida.innerHTML = '<i data-lucide="thumbs-up" class="w-5 h-5"></i> SIM, TUDO PERFEITO'; const btnDisputa = document.getElementById('btnDevolucaoDisputa'); btnDisputa.disabled = false; btnDisputa.innerHTML = '<i data-lucide="alert-triangle" class="w-5 h-5"></i> ENVIAR PARA ANÁLISE'; document.getElementById('modalDevolucao').classList.remove('hidden'); lucide.createIcons(); }
         function fecharModalDevolucao() { document.getElementById('modalDevolucao').classList.add('hidden'); idLocacaoParaDevolver = null; }
         function abrirTelaDisputa() { document.getElementById('devolucaoNormalView').classList.add('hidden'); document.getElementById('devolucaoDisputaView').classList.remove('hidden'); }
         function voltarDevolucaoNormal() { document.getElementById('devolucaoDisputaView').classList.add('hidden'); document.getElementById('devolucaoNormalView').classList.remove('hidden'); document.getElementById('textoProblema').value = ''; }
-        async function processarDevolucaoRapida() { const btn = document.getElementById('btnDevolucaoRapida'); btn.disabled = true; btn.innerHTML = '<i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i> FINALIZANDO...'; lucide.createIcons(); const { error } = await supabaseClient.from('rentals').update({ status: 'completed', return_condition: 'ok', return_notes: null }).eq('id', idLocacaoParaDevolver); if (error) { alert("Erro ao processar: " + error.message); fecharModalDevolucao(); } else { fecharModalDevolucao(); alert("Devolução confirmada com sucesso!"); loadDashboard(); } }
+        
+        async function processarDevolucaoRapida() { 
+            const btn = document.getElementById('btnDevolucaoRapida'); btn.disabled = true; btn.innerHTML = '<i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i> FINALIZANDO...'; lucide.createIcons(); 
+            // Agora vai para 'returned_by_renter' em vez de 'completed'
+            const { error } = await supabaseClient.from('rentals').update({ status: 'returned_by_renter', return_condition: 'ok', return_notes: null }).eq('id', idLocacaoParaDevolver); 
+            if (error) { alert("Erro ao processar: " + error.message); fecharModalDevolucao(); } 
+            else { fecharModalDevolucao(); alert("Aviso enviado ao Dono! Assim que ele confirmar o recebimento, o aluguel será concluído."); loadDashboard(); } 
+        }
+        
         async function processarDevolucaoComDisputa() { const notas = document.getElementById('textoProblema').value.trim(); if (notas === '') return alert("Por favor, descreva detalhadamente o que aconteceu."); const btn = document.getElementById('btnDevolucaoDisputa'); btn.disabled = true; btn.innerHTML = '<i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i> ENVIANDO...'; lucide.createIcons(); const { error } = await supabaseClient.from('rentals').update({ status: 'issue_reported', return_condition: 'damaged', return_notes: notas }).eq('id', idLocacaoParaDevolver); if (error) { alert("Erro ao processar: " + error.message); fecharModalDevolucao(); } else { fecharModalDevolucao(); alert("Problema registrado."); loadDashboard(); } }
+        
         function abrirModalEvidencia(id, tipo) { evidenceRentalId = id; evidenceType = tipo; selectedEvidenceFiles = []; document.getElementById('evidenceTitle').innerText = 'Check-in (Retirada)'; document.getElementById('evidenceCount').innerText = `0/3 Fotos`; document.getElementById('evidencePreviewGrid').classList.add('hidden'); document.getElementById('evidencePreviewGrid').innerHTML = ''; document.getElementById('evidencePhotosInput').value = ''; document.getElementById('evidenceModal').classList.remove('hidden'); }
         function fecharEvidenceModal() { document.getElementById('evidenceModal').classList.add('hidden'); }
         document.getElementById('evidencePhotosInput').addEventListener('change', function(e) { const files = Array.from(e.target.files); selectedEvidenceFiles = [...selectedEvidenceFiles, ...files].slice(0, 3); document.getElementById('evidenceCount').innerText = `${selectedEvidenceFiles.length}/3 Fotos`; const grid = document.getElementById('evidencePreviewGrid'); if(selectedEvidenceFiles.length > 0) { grid.classList.remove('hidden'); grid.innerHTML = selectedEvidenceFiles.map(file => `<img src="${URL.createObjectURL(file)}" class="w-full h-20 object-cover rounded-xl shadow-sm border border-slate-200">`).join(''); } });
@@ -531,11 +599,9 @@
         async function loadConversations(userId) { 
             const { data: msgs } = await supabaseClient.from('messages').select('*, items(title)').or(`sender_id.eq.${userId},recipient_id.eq.${userId}`).order('created_at', { ascending: false }); 
             const convContainer = document.getElementById('conversationsList'); 
-            const drawerConvContainer = document.getElementById('drawerConversationsList'); 
             
             if (!msgs || msgs.length === 0) { 
                 convContainer.innerHTML = `<p class="text-center text-xs text-slate-500 py-8">Sem mensagens.</p>`; 
-                if(drawerConvContainer) drawerConvContainer.innerHTML = '';
                 return; 
             } 
             
@@ -562,7 +628,6 @@
             }).join('');
             
             convContainer.innerHTML = htmlChats;
-            if(drawerConvContainer) drawerConvContainer.innerHTML = htmlChats; 
         }
 
         async function abrirChat(id, nome, itemId, itemTitle, avatarUrl) { 

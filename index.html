@@ -161,7 +161,7 @@
                         </span>
                     </label>
 
-                    <button type="button" onclick="previewContrato(event)" class="w-full bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 py-3 rounded-xl text-xs font-black uppercase tracking-widest flex justify-center items-center gap-2 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors mt-2">
+                    <button type="button" onclick="previewContrato(event)" class="w-full bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 py-3 rounded-xl text-xs font-black uppercase tracking-widest flex justify-center items-center gap-2 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors mt-3">
                         <i data-lucide="file-text" class="w-4 h-4 text-teal-600 dark:text-teal-400"></i> LER PRÉVIA DO CONTRATO
                     </button>
 
@@ -196,16 +196,16 @@
         </div>
     </div>
 
-    <div id="previewModal" class="fixed inset-0 bg-slate-900/80 z-[110] flex items-center justify-center hidden modal-blur p-4">
-        <div class="bg-white dark:bg-slate-900 w-full max-w-2xl h-[90vh] rounded-[2rem] shadow-2xl flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom-8 duration-300">
+    <div id="previewModal" class="fixed inset-0 bg-slate-900/80 z-[110] flex items-center justify-center hidden modal-blur p-4 transition-opacity">
+        <div class="bg-white dark:bg-slate-900 w-full max-w-3xl h-[90vh] rounded-[2rem] shadow-2xl flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom-8 duration-300">
             <header class="bg-slate-50 dark:bg-slate-800 p-4 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center shrink-0">
-                <h3 class="font-black text-slate-800 dark:text-white text-sm"><i data-lucide="file-text" class="inline w-4 h-4 text-teal-600 mr-1"></i> Prévia do Contrato Digital</h3>
-                <button type="button" onclick="fecharPreview()" class="p-2 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 rounded-full text-slate-600 dark:text-slate-300 transition-colors"><i data-lucide="x" class="w-4 h-4"></i></button>
+                <h3 class="font-black text-slate-800 dark:text-white text-sm flex items-center"><i data-lucide="file-text" class="w-4 h-4 text-teal-600 mr-2"></i> Prévia do Contrato Digital</h3>
+                <button onclick="fecharPreview()" class="p-2 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 rounded-full text-slate-600 dark:text-slate-300 transition-colors"><i data-lucide="x" class="w-4 h-4"></i></button>
             </header>
             <div id="previewContent" class="flex-1 overflow-y-auto p-6 relative bg-white text-slate-800">
-            </div>
-            <footer class="bg-slate-50 dark:bg-slate-800 p-4 border-t border-slate-200 dark:border-slate-700 shrink-0">
-                <button type="button" onclick="fecharPreview()" class="w-full bg-slate-900 dark:bg-teal-500 text-white py-3 rounded-xl font-black text-xs uppercase hover:opacity-90 transition-colors shadow-lg">FECHAR PRÉVIA</button>
+                </div>
+            <footer class="bg-slate-50 dark:bg-slate-800 p-4 border-t border-slate-200 dark:border-slate-700 shrink-0 flex justify-center">
+                <button onclick="fecharPreview()" class="w-full bg-slate-900 dark:bg-teal-500 text-white py-3 rounded-xl font-black text-xs hover:opacity-90 transition-colors shadow-lg">FECHAR PRÉVIA</button>
             </footer>
         </div>
     </div>
@@ -299,7 +299,7 @@
             if(d.toDateString() === hoje.toDateString()) return "Ontem";
             return d.toLocaleDateString('pt-BR', {day:'2-digit', month:'2-digit'});
         }
-        
+
         window.dispensarInstalacaoIOS = function() {
             const iosModal = document.getElementById('iosInstallModal');
             if (iosModal) {
@@ -1149,7 +1149,7 @@
             } catch (err) {
                 alert(err.message); 
                 btn.disabled = false; 
-                btn.innerHTML = 'SOLICITAR ALUGUEL <i data-lucide="send" class="w-4 h-4"></i>'; 
+                btn.innerHTML = 'SOLICITAR <i data-lucide="send" class="w-4 h-4"></i>'; 
                 lucide.createIcons(); 
             }
         }
